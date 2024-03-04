@@ -17,4 +17,8 @@ public class AuthUser extends User {
     public String id() {
         return user.getId().toString();
     }
+
+    public String login() {
+        return user.getLogin();
+    }
 }

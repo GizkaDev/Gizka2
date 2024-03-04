@@ -26,14 +26,14 @@ public class AuthController {
     @PostMapping("/registration")
     public ResponseEntity<ResponseAppUserDto> create(@Valid @RequestBody RequestAppUserDto userDto,
                                                      BindingResult bindingResult)  {
-        log.info("Контроллер аутентификации принял запрос POST /registration для {}", userDto.getLogin());
+        log.info("Контроллер аутентификации принял запрос POST /registration для пользователя: {}", userDto.getLogin());
         ResponseAppUserDto responseUser = authFacade.create(userDto, bindingResult);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }
 
     @PostMapping("/token")
     public ResponseEntity<String> getToken(@RequestBody RequestAppUserDto userDto) {
-        log.info("Контроллер аутентификации принял запрос POST /token для {}", userDto.getLogin());
+        log.info("Контроллер аутентификации принял запрос POST /token для пользователя: {}", userDto.getLogin());
         return ResponseEntity.ok(authFacade.getToken(userDto));
     }
 }

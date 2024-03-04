@@ -30,18 +30,24 @@ public class AppUserService {
     }
 
     public Optional<AppUser> getByLogin(String login) {
-        log.info("Сервис пользователей начинает поиск пользователя: {}", login);
+        log.info("Сервис пользователей ищет пользователя: {}", login);
         return appUserRepo.findByLogin(login);
     }
 
     @Transactional
     public AppUser create(AppUser user) {
-        log.info("Сервис пользователей начинает создание нового пользователя: {}", user.getLogin());
+        log.info("Сервис пользователей создает нового пользователя: {}", user.getLogin());
         Set<Role> roles = new HashSet<>();
         user.setRoles(roles);
         user.getRoles().add(Role.USER);
         user.setRegisteredAt(new Date());
         user.setPassword(PASSWORD_ENCODER.encode((user.getPassword())));
         return appUserRepo.save(user);
+    }
+
+    @Transactional
+    public void delete(AppUser user) {
+        log.info("Сервис пользователей удаляет пользователя: {}", user.getLogin());
+        appUserRepo.deleteById(user.getId());
     }
 }
