@@ -1,6 +1,7 @@
 package ru.gizka.api.service;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import static ru.gizka.api.config.security.SecurityConfig.PASSWORD_ENCODER;
 
 @Service
 @Transactional(readOnly = true)
+@Slf4j
 public class AppUserService {
 
     private final AppUserRepo appUserRepo;
@@ -28,11 +30,13 @@ public class AppUserService {
     }
 
     public Optional<AppUser> getByLogin(String login) {
+        log.info("Сервис пользователей начинает поиск пользователя: {}", login);
         return appUserRepo.findByLogin(login);
     }
 
     @Transactional
     public AppUser create(AppUser user) {
+        log.info("Сервис пользователей начинает создание нового пользователя: {}", user.getLogin());
         Set<Role> roles = new HashSet<>();
         user.setRoles(roles);
         user.getRoles().add(Role.USER);

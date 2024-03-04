@@ -44,6 +44,7 @@ public class AuthFacade {
     }
 
     public ResponseAppUserDto create(RequestAppUserDto userDto, BindingResult bindingResult) {
+        log.info("Сервис аутентификации начинает создание нового пользователя: {}", userDto.getLogin());
         checkValues(userDto, bindingResult);
         AppUser userToSave = dtoConverter.getModel(userDto);
         AppUser savedUser = appUserService.create(userToSave);
@@ -51,6 +52,7 @@ public class AuthFacade {
     }
 
     public String getToken(RequestAppUserDto userDto) {
+        log.info("Сервис аутентификации начинает выдачу токена для {}", userDto.getLogin());
         Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getLogin(), userDto.getPassword()));
         if (authentication.isAuthenticated()) {
             return jwtService.generateToken(userDto.getLogin());
@@ -60,6 +62,7 @@ public class AuthFacade {
 
     private void checkValues(RequestAppUserDto userDto,
                              BindingResult bindingResult) {
+        log.info("Сервис аутентификации начинает проверку валидности нового пользователя: {}", userDto.getLogin());
         appUserValidator.validate(userDto, bindingResult);
         List<ObjectError> errors = bindingResult.getAllErrors();
         if (bindingResult.hasErrors()) {

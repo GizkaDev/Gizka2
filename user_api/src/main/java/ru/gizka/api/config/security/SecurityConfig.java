@@ -74,7 +74,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/api/registration", "/api/token").permitAll()
+                                .requestMatchers("/api/auth/registration", "/api/auth/token").permitAll()
                                 .requestMatchers("/api/**").authenticated())
                 .httpBasic(withDefaults())
                 .sessionManagement((sessionManagement) ->
