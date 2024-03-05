@@ -19,6 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ru.gizka.api.model.AppUser;
 import ru.gizka.api.model.AuthUser;
+import ru.gizka.api.model.Role;
 import ru.gizka.api.service.AppUserService;
 
 import java.util.Optional;
@@ -73,8 +74,9 @@ public class SecurityConfig {
         log.debug("Загрузка фильтров аутентификации...");
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
-                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/api/auth/registration", "/api/auth/token").permitAll()
+                                .requestMatchers("/api/admin/**").hasRole(Role.ADMIN.name())
+                                .requestMatchers("/api/auth/registration").anonymous()
+                                .requestMatchers("/api/auth/token").permitAll()
                                 .requestMatchers("/api/**").authenticated())
                 .httpBasic(withDefaults())
                 .sessionManagement((sessionManagement) ->

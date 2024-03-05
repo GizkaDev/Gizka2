@@ -7,6 +7,7 @@ import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -66,6 +67,13 @@ public class ServiceExceptionHandler {
         logException(e);
         ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage(), "");
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler
+    ResponseEntity<ExceptionResponse> handleException(HttpMessageNotReadableException e) {
+        logException(e);
+        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage(), "");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     private void logException(Exception e){

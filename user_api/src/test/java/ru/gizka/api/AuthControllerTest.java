@@ -1,16 +1,15 @@
 package ru.gizka.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Description;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +19,7 @@ import java.util.Random;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -38,7 +38,7 @@ public class AuthControllerTest {
 
     @Nested
     @DisplayName(value = "Тесты на регистрацию пользователя")
-    class AppUserCreationTest {
+    class RegistrationTest {
         private RequestAppUserDto userDto;
 
         @BeforeEach
@@ -309,6 +309,125 @@ public class AuthControllerTest {
                     .andExpect(result -> {
                                 String json = result.getResponse().getContentAsString();
                                 assertThat(json, containsString("\"exception\":\"jakarta.validation.ValidationException\""));
+                            }
+                    );
+        }
+
+        @Test
+        @Description(value = "Тест на повторную регистрацию аутентифицированного пользователя")
+        void Registration_DoubleRegistration() throws Exception {
+            //given
+            requestBuilder.content(new ObjectMapper().writeValueAsString(this.userDto));
+            mockMvc.perform(requestBuilder);
+            RequestBuilder tokenRequest = MockMvcRequestBuilders
+                    .post(uri + "/token")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString(this.userDto));
+            MvcResult mvcResult = mockMvc.perform(tokenRequest).andReturn();
+            String token = mvcResult.getResponse().getContentAsString();
+
+            this.userDto.setLogin("AnotherLogin");
+            requestBuilder = MockMvcRequestBuilders
+                    .post(uri + "/registration")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", "Bearer " + token)
+                    .content(new ObjectMapper().writeValueAsString(this.userDto));
+
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isForbidden());
+        }
+    }
+
+    @Nested
+    @DisplayName(value = "Тесты на получение токена")
+    class TokenTest {
+        private RequestAppUserDto userDto;
+
+        @BeforeEach
+        void setUp() throws Exception {
+            this.userDto = RequestAppUserDto.builder()
+                    .login("Login123_.-")
+                    .password("Qwerty12345!")
+                    .build();
+
+            requestBuilder = MockMvcRequestBuilders.post(uri + "/token")
+                    .contentType(MediaType.APPLICATION_JSON);
+
+            MockHttpServletRequestBuilder registrationRequest = MockMvcRequestBuilders
+                    .post(uri + "/registration")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString(this.userDto));
+            mockMvc.perform(registrationRequest);
+        }
+
+        @Test
+        @Description(value = "Тест на успешность получения токена")
+        void Token_getTokenSuccess() throws Exception {
+            //given
+            requestBuilder.content(new ObjectMapper().writeValueAsString(this.userDto));
+            //when
+            Integer length = mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isOk())
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString()
+                    .length();
+            assertEquals(212, length);
+        }
+
+        @Test
+        @Description(value = "Тест на получение токена без учетной записи")
+        void Token_noBody() throws Exception {
+            //given
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isBadRequest())
+                    .andExpect(result -> {
+                                String json = result.getResponse().getContentAsString();
+                                assertThat(json, containsString("\"exception\":\"org.springframework.http.converter.HttpMessageNotReadableException\""));
+                            }
+                    );
+        }
+
+        @Test
+        @Description(value = "Тест на получение токена с неверным логином")
+        void Token_getTokenWrongLogin() throws Exception {
+            //given
+            this.userDto.setLogin("WrongLogin");
+            requestBuilder.content(new ObjectMapper().writeValueAsString(this.userDto));
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isForbidden())
+                    .andExpect(result -> {
+                        String json = result.getResponse().getContentAsString();
+                        assertThat(json, containsString("\"exception\":\"org.springframework.security.authentication.InternalAuthenticationServiceException\""));
+                    }
+            );
+        }
+
+        @Test
+        @Description(value = "Тест на получение токена с неверным паролем")
+        void Token_getTokenWrongPassword() throws Exception {
+            //given
+            this.userDto.setPassword("WrongPassword");
+            requestBuilder.content(new ObjectMapper().writeValueAsString(this.userDto));
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isForbidden())
+                    .andExpect(result -> {
+                                String json = result.getResponse().getContentAsString();
+                                assertThat(json, containsString("\"exception\":\"org.springframework.security.authentication.BadCredentialsException\""));
                             }
                     );
         }

@@ -44,10 +44,9 @@ public class JwtFilter extends OncePerRequestFilter {
             if (jwt.isEmpty() || jwt.isBlank()) {
                 throw new JWTVerificationException("Токен отсутствует");
             } else {
-                try {
                     String username = jwtService.validateToken(jwt);
                     Optional<AppUser> optionalUser = appUserService.getByLogin(username);
-                    log.info("Извлечен токен из логина: {}", username);
+                    log.info("Извлечен логин из токена: {}", username);
 
                     UserDetails userDetails = new AuthUser(optionalUser.orElseThrow(
                             () -> new EntityNotFoundException(String.format("Пользователь не найден: %s", username))
@@ -61,9 +60,6 @@ public class JwtFilter extends OncePerRequestFilter {
                     if (SecurityContextHolder.getContext().getAuthentication() == null) {
                         SecurityContextHolder.getContext().setAuthentication(authToken);
                     }
-                } catch (JWTVerificationException e) {
-                    throw new JWTVerificationException("Токен не валиден");
-                }
             }
         }
         filterChain.doFilter(request, response);
