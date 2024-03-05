@@ -70,7 +70,7 @@ public class ServiceExceptionHandler {
 
     private void logException(Exception e){
         log.error("""
-                Перехвачена ошибка: {},
+                Перехвачено исключение: {},
                 Сообщение: {},
                 {}""", e.getClass().getName(), e.getMessage(), Arrays.toString(e.getStackTrace()));
     }

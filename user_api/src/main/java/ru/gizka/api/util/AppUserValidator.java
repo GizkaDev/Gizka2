@@ -27,7 +27,7 @@ public class AppUserValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         RequestAppUserDto userDto = (RequestAppUserDto) target;
-        log.info("Валидатор пользователей начинает проверку нового пользователя: {}", userDto.getLogin());
+        log.info("Валидатор пользователей проверяет нового пользователя: {}", userDto.getLogin());
         validateCreate(userDto, errors);
     }
 
