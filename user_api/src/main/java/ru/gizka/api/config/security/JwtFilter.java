@@ -1,5 +1,6 @@
 package ru.gizka.api.config.security;
 
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.FilterChain;
@@ -19,6 +20,7 @@ import ru.gizka.api.service.AppUserService;
 import ru.gizka.api.service.JwtService;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Optional;
 
 @Component
@@ -42,8 +44,9 @@ public class JwtFilter extends OncePerRequestFilter {
             String jwt = authHeader.substring(7);
 
             if (jwt.isEmpty() || jwt.isBlank()) {
-                throw new JWTVerificationException("Токен отсутствует");
+                log.error("Фильтр перехватил пустой токен");
             } else {
+                try{
                     String username = jwtService.validateToken(jwt);
                     Optional<AppUser> optionalUser = appUserService.getByLogin(username);
                     log.info("Извлечен логин из токена: {}", username);
@@ -55,11 +58,14 @@ public class JwtFilter extends OncePerRequestFilter {
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(),
                                     userDetails.getAuthorities());
-                    log.info("Токен проверен для пользователя: {}", username);
+                    log.info("Фильтр проверил токен для пользователя: {}", username);
 
                     if (SecurityContextHolder.getContext().getAuthentication() == null) {
                         SecurityContextHolder.getContext().setAuthentication(authToken);
                     }
+                } catch (JWTVerificationException e){
+                    log.error(String.format("Исключение: %s\nСообщение: %s\n stackTrace: %s", e.getClass(), e.getMessage(), Arrays.toString(e.getStackTrace())));
+                }
             }
         }
         filterChain.doFilter(request, response);

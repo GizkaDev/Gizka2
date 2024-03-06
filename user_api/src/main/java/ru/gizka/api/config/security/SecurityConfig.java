@@ -33,12 +33,15 @@ public class SecurityConfig {
     public static final PasswordEncoder PASSWORD_ENCODER = PasswordEncoderFactories.createDelegatingPasswordEncoder();
     private final AppUserService appUserService;
     private final JwtFilter jwtFilter;
+    private final AuthEntryPoint authEntryPoint;
 
     @Autowired
     public SecurityConfig(AppUserService appUserService,
-                          JwtFilter jwtFilter) {
+                          JwtFilter jwtFilter,
+                          AuthEntryPoint authEntryPoint) {
         this.appUserService = appUserService;
         this.jwtFilter = jwtFilter;
+        this.authEntryPoint = authEntryPoint;
     }
 
     @Bean
@@ -78,6 +81,9 @@ public class SecurityConfig {
                                 .requestMatchers("/api/auth/registration").anonymous()
                                 .requestMatchers("/api/auth/token").permitAll()
                                 .requestMatchers("/api/**").authenticated())
+                .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
+                        httpSecurityExceptionHandlingConfigurer
+                                .authenticationEntryPoint(authEntryPoint))
                 .httpBasic(withDefaults())
                 .sessionManagement((sessionManagement) ->
                         sessionManagement

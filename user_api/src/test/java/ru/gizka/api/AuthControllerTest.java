@@ -1,7 +1,10 @@
 package ru.gizka.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,9 +20,7 @@ import ru.gizka.api.dto.RequestAppUserDto;
 
 import java.util.Random;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -80,11 +81,8 @@ public class AuthControllerTest {
                     //then
                     .andExpect(
                             status().isBadRequest())
-                    .andExpect(result -> {
-                                String json = result.getResponse().getContentAsString();
-                                assertThat(json, containsString("\"exception\":\"jakarta.validation.ValidationException\""));
-                            }
-                    );
+                    .andExpect(
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
         }
 
         @Test
@@ -98,11 +96,8 @@ public class AuthControllerTest {
                     //then
                     .andExpect(
                             status().isBadRequest())
-                    .andExpect(result -> {
-                                String json = result.getResponse().getContentAsString();
-                                assertThat(json, containsString("\"exception\":\"jakarta.validation.ValidationException\""));
-                            }
-                    );
+                    .andExpect(
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
         }
 
         @Test
@@ -116,11 +111,8 @@ public class AuthControllerTest {
                     //then
                     .andExpect(
                             status().isBadRequest())
-                    .andExpect(result -> {
-                                String json = result.getResponse().getContentAsString();
-                                assertThat(json, containsString("\"exception\":\"jakarta.validation.ValidationException\""));
-                            }
-                    );
+                    .andExpect(
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
         }
 
         @Test
@@ -139,11 +131,8 @@ public class AuthControllerTest {
                     //then
                     .andExpect(
                             status().isBadRequest())
-                    .andExpect(result -> {
-                                String json = result.getResponse().getContentAsString();
-                                assertThat(json, containsString("\"exception\":\"jakarta.validation.ValidationException\""));
-                            }
-                    );
+                    .andExpect(
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
         }
 
         @Test
@@ -157,11 +146,8 @@ public class AuthControllerTest {
                     //then
                     .andExpect(
                             status().isBadRequest())
-                    .andExpect(result -> {
-                                String json = result.getResponse().getContentAsString();
-                                assertThat(json, containsString("\"exception\":\"jakarta.validation.ValidationException\""));
-                            }
-                    );
+                    .andExpect(
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
         }
 
         @Test
@@ -175,11 +161,8 @@ public class AuthControllerTest {
                     //then
                     .andExpect(
                             status().isBadRequest())
-                    .andExpect(result -> {
-                                String json = result.getResponse().getContentAsString();
-                                assertThat(json, containsString("\"exception\":\"jakarta.validation.ValidationException\""));
-                            }
-                    );
+                    .andExpect(
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
         }
 
         @Test
@@ -193,11 +176,8 @@ public class AuthControllerTest {
                     //then
                     .andExpect(
                             status().isBadRequest())
-                    .andExpect(result -> {
-                                String json = result.getResponse().getContentAsString();
-                                assertThat(json, containsString("\"exception\":\"jakarta.validation.ValidationException\""));
-                            }
-                    );
+                    .andExpect(
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
         }
 
         @Test
@@ -216,11 +196,8 @@ public class AuthControllerTest {
                     //then
                     .andExpect(
                             status().isBadRequest())
-                    .andExpect(result -> {
-                                String json = result.getResponse().getContentAsString();
-                                assertThat(json, containsString("\"exception\":\"jakarta.validation.ValidationException\""));
-                            }
-                    );
+                    .andExpect(
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
         }
 
         @Test
@@ -234,11 +211,8 @@ public class AuthControllerTest {
                     //then
                     .andExpect(
                             status().isBadRequest())
-                    .andExpect(result -> {
-                                String json = result.getResponse().getContentAsString();
-                                assertThat(json, containsString("\"exception\":\"jakarta.validation.ValidationException\""));
-                            }
-                    );
+                    .andExpect(
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
         }
 
         @Test
@@ -252,11 +226,8 @@ public class AuthControllerTest {
                     //then
                     .andExpect(
                             status().isBadRequest())
-                    .andExpect(result -> {
-                                String json = result.getResponse().getContentAsString();
-                                assertThat(json, containsString("\"exception\":\"jakarta.validation.ValidationException\""));
-                            }
-                    );
+                    .andExpect(
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
         }
 
         @Test
@@ -270,11 +241,8 @@ public class AuthControllerTest {
                     //then
                     .andExpect(
                             status().isBadRequest())
-                    .andExpect(result -> {
-                                String json = result.getResponse().getContentAsString();
-                                assertThat(json, containsString("\"exception\":\"jakarta.validation.ValidationException\""));
-                            }
-                    );
+                    .andExpect(
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
         }
 
         @Test
@@ -288,11 +256,8 @@ public class AuthControllerTest {
                     //then
                     .andExpect(
                             status().isBadRequest())
-                    .andExpect(result -> {
-                                String json = result.getResponse().getContentAsString();
-                                assertThat(json, containsString("\"exception\":\"jakarta.validation.ValidationException\""));
-                            }
-                    );
+                    .andExpect(
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
         }
 
         @Test
@@ -306,11 +271,8 @@ public class AuthControllerTest {
                     //then
                     .andExpect(
                             status().isBadRequest())
-                    .andExpect(result -> {
-                                String json = result.getResponse().getContentAsString();
-                                assertThat(json, containsString("\"exception\":\"jakarta.validation.ValidationException\""));
-                            }
-                    );
+                    .andExpect(
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
         }
 
         @Test
@@ -389,11 +351,8 @@ public class AuthControllerTest {
                     //then
                     .andExpect(
                             status().isBadRequest())
-                    .andExpect(result -> {
-                                String json = result.getResponse().getContentAsString();
-                                assertThat(json, containsString("\"exception\":\"org.springframework.http.converter.HttpMessageNotReadableException\""));
-                            }
-                    );
+                    .andExpect(
+                            jsonPath("$.exception").value("org.springframework.http.converter.HttpMessageNotReadableException"));
         }
 
         @Test
@@ -407,11 +366,10 @@ public class AuthControllerTest {
                     //then
                     .andExpect(
                             status().isForbidden())
-                    .andExpect(result -> {
-                        String json = result.getResponse().getContentAsString();
-                        assertThat(json, containsString("\"exception\":\"org.springframework.security.authentication.InternalAuthenticationServiceException\""));
-                    }
-            );
+                    .andExpect(
+                            jsonPath("$.exception").value("org.springframework.security.authentication.InternalAuthenticationServiceException"))
+                    .andExpect(
+                            jsonPath("$.descr").value(String.format("Неверные учетные данные: %s", userDto.getLogin())));
         }
 
         @Test
@@ -425,11 +383,10 @@ public class AuthControllerTest {
                     //then
                     .andExpect(
                             status().isForbidden())
-                    .andExpect(result -> {
-                                String json = result.getResponse().getContentAsString();
-                                assertThat(json, containsString("\"exception\":\"org.springframework.security.authentication.BadCredentialsException\""));
-                            }
-                    );
+                    .andExpect(
+                            jsonPath("$.exception").value("org.springframework.security.authentication.BadCredentialsException"))
+                    .andExpect(
+                            jsonPath("$.descr").value("Bad credentials"));
         }
     }
 }
