@@ -24,7 +24,7 @@ public class AppUserFacade {
     }
 
     public ResponseAppUserDto getByLogin(String login) {
-        log.info("Сервис пользователя начинает поиск пользователя: {}", login);
+        log.info("Сервис пользователей начинает поиск пользователя: {}", login);
         AppUser user = appUserService.getByLogin(login)
                 .orElseThrow(()->
                         new EntityNotFoundException("Пользователь не найден"));
@@ -32,7 +32,7 @@ public class AppUserFacade {
     }
 
     public void deleteByLogin(String login) {
-        log.info("Сервис пользователя начинает удаление пользователя: {}", login);
+        log.info("Сервис пользователей начинает удаление пользователя: {}", login);
         AppUser user = appUserService.getByLogin(login)
                 .orElseThrow(()->
                         new EntityNotFoundException("Пользователь не найден"));

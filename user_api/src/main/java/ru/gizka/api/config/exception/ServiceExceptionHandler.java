@@ -76,6 +76,13 @@ public class ServiceExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler
+    ResponseEntity<ExceptionResponse> handleException(IllegalArgumentException e) {
+        logException(e);
+        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage(), "");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
     private void logException(Exception e){
         log.error("""
                 Перехвачено исключение: {},

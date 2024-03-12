@@ -21,7 +21,6 @@ import static ru.gizka.api.config.security.SecurityConfig.PASSWORD_ENCODER;
 @Transactional(readOnly = true)
 @Slf4j
 public class AppUserService {
-
     private final AppUserRepo appUserRepo;
 
     @Autowired
