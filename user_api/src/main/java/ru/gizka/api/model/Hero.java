@@ -46,9 +46,7 @@ public class Hero {
 
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
-    @NotNull
-    @PastOrPresent
-    private Date created_at;
+    private Date createdAt;
 
     @ManyToOne
     @JoinColumn(name = "app_user_login", referencedColumnName = "login")

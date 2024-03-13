@@ -44,7 +44,7 @@ public class DtoConverter {
     }
 
     public ResponseHeroDto getResponseDto(Hero hero) {
-        log.debug("Конвертер переводит {} в {}", Hero.class, ResponseHeroDto.class);
+        log.info("Конвертер переводит {} в {}", Hero.class, ResponseHeroDto.class);
         ResponseHeroDto heroDto = modelMapper.map(hero, ResponseHeroDto.class);
         heroDto.setUserLogin(hero.getAppUser().getLogin());
         return heroDto;

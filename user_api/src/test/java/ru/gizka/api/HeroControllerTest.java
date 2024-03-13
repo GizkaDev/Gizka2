@@ -1,26 +1,30 @@
 package ru.gizka.api;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Description;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.dto.RequestAppUserDto;
 import ru.gizka.api.dto.RequestHeroDto;
+import ru.gizka.api.dto.ResponseHeroDto;
+import ru.gizka.api.model.Status;
 
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Random;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.gizka.api.RequestParentTest.requestWithTokenCheckForbidden;
@@ -78,6 +82,85 @@ public class HeroControllerTest {
         requestBuilder = MockMvcRequestBuilders
                 .post(uri)
                 .contentType(MediaType.APPLICATION_JSON);
+    }
+
+    @Nested
+    @DisplayName(value = "Тесты на получение текущего героя пользователя")
+    class HeroCurrentTest {
+
+        @BeforeEach
+        void setUp() throws Exception {
+            requestBuilder
+                    .content(objectMapper.writeValueAsString(heroDto))
+                    .header("Authorization", String.format("Bearer %s", token));
+            mockMvc.perform(requestBuilder);
+        }
+
+        @Test
+        @Description(value = "Тест на получение текущего героя пользователя")
+        void Hero_getCurrentHero_Success() throws Exception {
+            //given
+            RequestBuilder getCurrentHeroRequest = MockMvcRequestBuilders
+                    .get(uri)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token));
+
+            //when
+            mockMvc.perform(getCurrentHeroRequest)
+                    //then
+                    .andExpect(
+                            status().isOk())
+                    .andExpect(
+                            jsonPath("$[0].name").value(heroDto.getName()))
+                    .andExpect(
+                            jsonPath("$[0].lastname").value(heroDto.getLastName()))
+                    .andExpect(
+                            jsonPath("$[0].str").value(heroDto.getStr()))
+                    .andExpect(
+                            jsonPath("$[0].dex").value(heroDto.getDex()))
+                    .andExpect(
+                            jsonPath("$[0].con").value(heroDto.getCon()))
+                    .andExpect(
+                            jsonPath("$[0].createdAt").value(Matchers.not(Matchers.empty())))
+                    .andExpect(
+                            jsonPath("$[0].userLogin").value(userDto.getLogin()))
+                    .andExpect(
+                            jsonPath("$[0].status").value("ALIVE"));
+        }
+
+        @Test
+        @Description(value = "Тест на получение текущего героя c неверным логином и паролем")
+        void Hero_getCurrentHero_WrongLoginPassword() throws Exception {
+            //given
+            StringBuilder wrongToken = new StringBuilder();
+            Random random = new Random();
+            for (int i = 0; i < 213; i++) {
+                wrongToken.append(Character.toString('A' + random.nextInt(26)));
+            }
+            requestBuilder = MockMvcRequestBuilders
+                    .get("/game/user/hero")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", wrongToken));
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isForbidden());
+        }
+
+        @Test
+        @Description(value = "Тест на получение текущего героя без авторизации.")
+        void Hero_getById_Unauthorized() throws Exception {
+            //given
+            requestBuilder = MockMvcRequestBuilders
+                    .get("/game/user/hero")
+                    .contentType(MediaType.APPLICATION_JSON);
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isForbidden());
+        }
     }
 
     @Nested

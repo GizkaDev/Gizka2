@@ -29,8 +29,8 @@ public class HeroService {
         if (heroes.isEmpty()) {
             log.info("Сервис героев создает нового героя {} для пользователя: {}", hero, appUser.getLogin());
             hero.setAppUser(appUser);
-            hero.setCreated_at(new Date());
             hero.setStatus(Status.ALIVE);
+            hero.setCreatedAt(new Date());
         } else {
             log.error("Сервис героев прервал создание героя для пользователя: {} , т.к. у пользователя есть герой: {} со статусом ALIVE",
                     appUser.getLogin(), String.format("%s %s", heroes.get(0).getName(), heroes.get(0).getLastname()));
@@ -38,5 +38,9 @@ public class HeroService {
                     appUser.getLogin(), String.format("%s %s", heroes.get(0).getName(), heroes.get(0).getLastname())));
         }
         return heroRepo.save(hero);
+    }
+
+    public List<Hero> getAliveByUser(AppUser appUser) {
+        return heroRepo.findAllByLoginAndAlive(appUser.getLogin());
     }
 }

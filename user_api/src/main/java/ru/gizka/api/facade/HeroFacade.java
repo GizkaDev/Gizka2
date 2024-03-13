@@ -42,6 +42,14 @@ public class HeroFacade {
         return dtoConverter.getResponseDto(hero);
     }
 
+    public List<ResponseHeroDto> getCurrent(AppUser appUser){
+        log.info("Сервис героев начинает поиск текущего героя для пользователя: {}", appUser.getLogin());
+        List<Hero> heroes = heroService.getAliveByUser(appUser);
+        return heroes.stream()
+                .map(dtoConverter::getResponseDto)
+                .toList();
+    }
+
     private void checkValues(RequestHeroDto heroDto,
                              BindingResult bindingResult) {
         log.info("Сервис героев начинает проверку валидности нового героя: {}", heroDto);

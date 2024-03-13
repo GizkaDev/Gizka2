@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -39,9 +40,7 @@ public class AppUser {
 
     @Column(name = "registered_at")
     @Temporal(TemporalType.TIMESTAMP)
-    @NotNull
-    @PastOrPresent
-    private Date registeredAt = new Date();
+    private Date registeredAt;
 
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "role",
@@ -51,5 +50,10 @@ public class AppUser {
     @ElementCollection(fetch = FetchType.EAGER)
     @NotNull
     private Set<Role> roles;
+
+    @OneToMany(mappedBy = "appUser",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE)
+    private List<Hero> heroes;
 }
 

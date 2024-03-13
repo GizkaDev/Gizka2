@@ -17,6 +17,6 @@ public class ResponseAppUserDto {
 
     private Long id;
     private String login;
-    private Date registeredAt;
+    private String registeredAt;
     private Set<Role> roles;
 }
