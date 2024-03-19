@@ -1,8 +1,6 @@
 package ru.gizka.api.config.security;
 
-import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,8 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.gizka.api.model.AppUser;
-import ru.gizka.api.model.AuthUser;
+import ru.gizka.api.model.user.AppUser;
+import ru.gizka.api.model.user.AuthUser;
 import ru.gizka.api.service.AppUserService;
 import ru.gizka.api.service.JwtService;
 
@@ -67,7 +65,8 @@ public class JwtFilter extends OncePerRequestFilter {
                         SecurityContextHolder.getContext().setAuthentication(authToken);
                     }
                 } catch (JWTVerificationException e) {
-                    log.error(String.format("Исключение: %s\nСообщение: %s\n stackTrace: %s", e.getClass(), e.getMessage(), Arrays.toString(e.getStackTrace())));
+                    log.error(String.format("Исключение: %s\nСообщение: %s", e.getClass(), e.getMessage()));
+                    e.printStackTrace();
                 }
             }
         }

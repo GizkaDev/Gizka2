@@ -17,9 +17,9 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import ru.gizka.api.model.AppUser;
-import ru.gizka.api.model.AuthUser;
-import ru.gizka.api.model.Role;
+import ru.gizka.api.model.user.AppUser;
+import ru.gizka.api.model.user.AuthUser;
+import ru.gizka.api.model.user.Role;
 import ru.gizka.api.service.AppUserService;
 
 import java.util.Optional;

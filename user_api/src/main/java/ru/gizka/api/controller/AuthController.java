@@ -7,8 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.gizka.api.dto.RequestAppUserDto;
-import ru.gizka.api.dto.ResponseAppUserDto;
+import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.dto.user.ResponseAppUserDto;
 import ru.gizka.api.facade.AuthFacade;
 
 @RestController

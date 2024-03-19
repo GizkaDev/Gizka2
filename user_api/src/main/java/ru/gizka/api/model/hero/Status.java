@@ -1,4 +1,4 @@
-package ru.gizka.api.model;
+package ru.gizka.api.model.hero;
 
 public enum Status {
     ALIVE("Жив"),

@@ -1,4 +1,4 @@
-package ru.gizka.api.dto;
+package ru.gizka.api.dto.user;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

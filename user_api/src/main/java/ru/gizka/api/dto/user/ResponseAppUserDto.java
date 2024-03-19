@@ -1,12 +1,11 @@
-package ru.gizka.api.dto;
+package ru.gizka.api.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.gizka.api.model.Role;
+import ru.gizka.api.model.user.Role;
 
-import java.util.Date;
 import java.util.Set;
 
 @Data

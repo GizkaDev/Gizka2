@@ -1,0 +1,18 @@
+package ru.gizka.api.dto.fight;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Date;
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class FightDto {
+    private Long id;
+    private List<Fighter> fighters;
+    private List<Turn> turns;
+    private String createdAt;
+}

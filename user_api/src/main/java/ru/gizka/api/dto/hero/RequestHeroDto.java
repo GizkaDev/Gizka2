@@ -1,4 +1,4 @@
-package ru.gizka.api.dto;
+package ru.gizka.api.dto.hero;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;

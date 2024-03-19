@@ -1,4 +1,4 @@
-package ru.gizka.api.dto;
+package ru.gizka.api.dto.hero;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class ResponseHeroDto {
+    private Long id;
     private String name;
     private String lastname;
     private Integer str;

@@ -5,14 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.gizka.api.model.AppUser;
-import ru.gizka.api.model.Role;
+import ru.gizka.api.model.hero.Hero;
+import ru.gizka.api.model.user.AppUser;
+import ru.gizka.api.model.user.Role;
 import ru.gizka.api.repo.AppUserRepo;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static ru.gizka.api.config.security.SecurityConfig.PASSWORD_ENCODER;
 
@@ -37,6 +35,8 @@ public class AppUserService {
     public AppUser create(AppUser user) {
         log.info("Сервис пользователей создает нового пользователя: {}", user.getLogin());
         Set<Role> roles = new HashSet<>();
+        List<Hero> heroes = new ArrayList<>();
+        user.setHeroes(heroes);
         user.setRoles(roles);
         user.getRoles().add(Role.USER);
         user.setRegisteredAt(new Date());

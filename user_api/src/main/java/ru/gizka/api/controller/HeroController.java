@@ -8,10 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.gizka.api.dto.RequestHeroDto;
-import ru.gizka.api.dto.ResponseHeroDto;
+import ru.gizka.api.dto.hero.RequestHeroDto;
+import ru.gizka.api.dto.hero.ResponseHeroDto;
 import ru.gizka.api.facade.HeroFacade;
-import ru.gizka.api.model.AuthUser;
+import ru.gizka.api.model.user.AuthUser;
 
 import java.util.List;
 

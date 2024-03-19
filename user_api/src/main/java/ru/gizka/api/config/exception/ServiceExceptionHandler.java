@@ -23,70 +23,71 @@ public class ServiceExceptionHandler {
     @ExceptionHandler
     private ResponseEntity<ExceptionResponse> handleException(Exception e) {
         logException(e);
-        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage(), Arrays.toString(e.getStackTrace()));
+        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler
     private ResponseEntity<ExceptionResponse> handleException(ValidationException e) {
         logException(e);
-        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage(), "");
+        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
     private ResponseEntity<ExceptionResponse> handleException(BadCredentialsException e) {
         logException(e);
-        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage(), "");
+        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler
     private ResponseEntity<ExceptionResponse> handleException(JWTVerificationException e) {
         logException(e);
-        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage(), "");
+        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler
     private ResponseEntity<ExceptionResponse> handleException(InternalAuthenticationServiceException e) {
         logException(e);
-        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage(), "");
+        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler
     ResponseEntity<ExceptionResponse> handleException(EntityNotFoundException e) {
         logException(e);
-        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage(), "");
+        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
     ResponseEntity<ExceptionResponse> handleException(JWTDecodeException e) {
         logException(e);
-        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage(), "");
+        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler
     ResponseEntity<ExceptionResponse> handleException(HttpMessageNotReadableException e) {
         logException(e);
-        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage(), "");
+        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
     ResponseEntity<ExceptionResponse> handleException(IllegalArgumentException e) {
         logException(e);
-        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage(), "");
+        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     private void logException(Exception e){
         log.error("""
                 Перехвачено исключение: {},
-                Сообщение: {},
-                {}""", e.getClass().getName(), e.getMessage(), Arrays.toString(e.getStackTrace()));
+                Сообщение: {}
+                """, e.getClass().getName(), e.getMessage());
+        e.printStackTrace();
     }
 }

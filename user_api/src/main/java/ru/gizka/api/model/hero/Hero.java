@@ -1,4 +1,4 @@
-package ru.gizka.api.model;
+package ru.gizka.api.model.hero;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -6,8 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.gizka.api.model.fight.Fight;
+import ru.gizka.api.model.user.AppUser;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "hero")
@@ -55,4 +58,12 @@ public class Hero {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "hero_fight",
+            joinColumns = @JoinColumn(name = "hero_id"),
+            inverseJoinColumns = @JoinColumn(name = "fight_id")
+    )
+    private List<Fight> fights;
 }

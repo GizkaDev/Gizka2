@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import ru.gizka.api.dto.RequestAppUserDto;
+import ru.gizka.api.dto.user.RequestAppUserDto;
 
 import java.util.Random;
 

@@ -4,8 +4,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.gizka.api.dto.ResponseAppUserDto;
-import ru.gizka.api.model.AppUser;
+import ru.gizka.api.dto.user.ResponseAppUserDto;
+import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.service.AppUserService;
 import ru.gizka.api.util.DtoConverter;
 
