@@ -29,10 +29,9 @@ public class FightController {
         return fightFacade.simulateDuel(authUser.getUser(), login);
     }
 
-    @GetMapping("/hero/{id}/fight")
-    public ResponseEntity<List<FightDto>> getAllByHeroId(@AuthenticationPrincipal AuthUser authUser,
-                                                         @PathVariable Long id) {
-        log.info("Контроллер сражений принял запрос GET /hero/{}/fight для пользователя: {}", id, authUser.login());
-        return fightFacade.getAllByOwnHeroId(authUser.getUser(), id);
+    @GetMapping("/hero/fight")
+    public ResponseEntity<List<FightDto>> getAllForCurrentHero(@AuthenticationPrincipal AuthUser authUser) {
+        log.info("Контроллер сражений принял запрос GET /hero/fight для пользователя: {}", authUser.login());
+        return fightFacade.getAllForCurrentHero(authUser.getUser());
     }
 }

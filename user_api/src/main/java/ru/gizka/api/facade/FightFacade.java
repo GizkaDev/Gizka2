@@ -58,14 +58,12 @@ public class FightFacade {
         return ResponseEntity.ok(dtoConverter.getResponseDto(fight));
     }
 
-    public ResponseEntity<List<FightDto>> getAllByOwnHeroId(AppUser appUser, Long id) {
-        log.info("Сервис сражений начинает поиск сражений для героя id: {} пользователя: {}", id, appUser.getLogin());
-        if (heroService.checkOwner(id, appUser)) {
-            List<Fight> fights = fightService.getAllByHeroId(id);
-            return ResponseEntity.ok(fights.stream()
-                    .map(dtoConverter::getResponseDto)
-                    .toList());
-        }
-        throw new EntityNotFoundException(String.format("У героя %s не найден герой id: %d", appUser.getLogin(), id));
+    public ResponseEntity<List<FightDto>> getAllForCurrentHero(AppUser appUser) {
+        log.info("Сервис сражений начинает поиск сражений для текущего героя пользователя: {}", appUser.getLogin());
+        List<Hero> heroes = heroService.getAliveByUser(appUser);
+        List<Fight> fights = fightService.getAllByHeroId(heroes.get(0).getId());
+        return ResponseEntity.ok(fights.stream()
+                .map(dtoConverter::getResponseDto)
+                .toList());
     }
 }
