@@ -1,13 +1,12 @@
 package ru.gizka.api.facade;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.ws.rs.ForbiddenException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import ru.gizka.api.dto.fight.FightDto;
-import ru.gizka.api.model.fight.Fight;
+import ru.gizka.api.dto.fight.DuelDto;
+import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.service.AppUserService;
@@ -41,7 +40,7 @@ public class FightFacade {
         this.fightService = fightService;
     }
 
-    public ResponseEntity<FightDto> simulateDuel(AppUser user1, String login) {
+    public ResponseEntity<DuelDto> simulateDuel(AppUser user1, String login) {
         log.info("Сервис сражений начинает симуляцию дуэли для пользователей: {} {}", user1.getLogin(), login);
         if (user1.getLogin().equals(login)) {
             throw new IllegalArgumentException("Нельзя выбрать своего героя в качестве соперника");
@@ -54,15 +53,15 @@ public class FightFacade {
         if (heroes1.isEmpty() || heroes2.isEmpty()) {
             throw new EntityNotFoundException("У одного из пользователей нет героя со статусом ALIVE.");
         }
-        Fight fight = fightLogic.simulate(heroes1.get(0), heroes2.get(0));
-        return ResponseEntity.ok(dtoConverter.getResponseDto(fight));
+        Duel duel = fightLogic.simulate(heroes1.get(0), heroes2.get(0));
+        return ResponseEntity.ok(dtoConverter.getResponseDto(duel));
     }
 
-    public ResponseEntity<List<FightDto>> getAllForCurrentHero(AppUser appUser) {
-        log.info("Сервис сражений начинает поиск сражений для текущего героя пользователя: {}", appUser.getLogin());
+    public ResponseEntity<List<DuelDto>> getAllDuelsForCurrentHero(AppUser appUser) {
+        log.info("Сервис сражений начинает поиск дуэлей для текущего героя пользователя: {}", appUser.getLogin());
         List<Hero> heroes = heroService.getAliveByUser(appUser);
-        List<Fight> fights = fightService.getAllByHeroId(heroes.get(0).getId());
-        return ResponseEntity.ok(fights.stream()
+        List<Duel> duels = fightService.getAllDuelsByHeroId(heroes.get(0).getId());
+        return ResponseEntity.ok(duels.stream()
                 .map(dtoConverter::getResponseDto)
                 .toList());
     }

@@ -4,9 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.gizka.api.model.fight.Fight;
-import ru.gizka.api.model.hero.Hero;
-import ru.gizka.api.model.user.AppUser;
+import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.repo.FightRepo;
 
 import java.util.List;
@@ -26,15 +24,15 @@ public class FightService {
     }
 
     @Transactional
-    public Fight save(Fight fight) {
+    public Duel save(Duel duel) {
         log.info("Сервис сражений сохраняет сражение между: {} {}({}) и: {} {}({})",
-                fight.getHeroes().get(0).getName(), fight.getHeroes().get(0).getLastname(), fight.getHeroes().get(0).getAppUser().getLogin(),
-                fight.getHeroes().get(1).getName(), fight.getHeroes().get(1).getLastname(), fight.getHeroes().get(1).getAppUser().getLogin());
-        return fightRepo.save(fight);
+                duel.getHeroes().get(0).getName(), duel.getHeroes().get(0).getLastname(), duel.getHeroes().get(0).getAppUser().getLogin(),
+                duel.getHeroes().get(1).getName(), duel.getHeroes().get(1).getLastname(), duel.getHeroes().get(1).getAppUser().getLogin());
+        return fightRepo.save(duel);
     }
 
-    public List<Fight> getAllByHeroId(Long id) {
+    public List<Duel> getAllDuelsByHeroId(Long id) {
         log.info("Сервис сражений ищет сражения для героя id: {}", id);
-        return fightRepo.findAllByHeroId(id);
+        return fightRepo.findAllDuelsByHeroId(id);
     }
 }

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.gizka.api.model.fight.Fight;
+import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.hero.Status;
@@ -14,7 +14,6 @@ import ru.gizka.api.repo.HeroRepo;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -32,8 +31,8 @@ public class HeroService {
         List<Hero> heroes = heroRepo.findAllByLoginAndAlive(appUser.getLogin());
         if (heroes.isEmpty()) {
             log.info("Сервис героев создает нового героя: {} для пользователя: {}", hero, appUser.getLogin());
-            List<Fight> fights = new ArrayList<>();
-            hero.setFights(fights);
+            List<Duel> duels = new ArrayList<>();
+            hero.setDuels(duels);
             hero.setAppUser(appUser);
             hero.setStatus(Status.ALIVE);
             hero.setCreatedAt(new Date());
@@ -56,12 +55,12 @@ public class HeroService {
         return heroRepo.isOwner(id, appUser.getLogin());
     }
 
-    public Hero getByIdWithFights(Long id) {
+    public Hero getByIdWithDuels(Long id) {
         log.info("Сервис героев ищет героя id: {}", id);
-        Hero hero = heroRepo.findByIdWithFights(id).orElseThrow(
+        Hero hero = heroRepo.findByIdWithDuels(id).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Герой с id: %d не найден", id))
         );
-        hero.setFights(hero.getFights());
+        hero.setDuels(hero.getDuels());
         return hero;
     }
 

@@ -15,9 +15,9 @@ public interface HeroRepo extends JpaRepository<Hero, Long> {
     @Query("SELECT h FROM Hero h WHERE h.appUser.login = :login AND h.status = 'ALIVE'")
     List<Hero> findAllByLoginAndAlive(@Param("login") String login);
 
-    @EntityGraph(attributePaths = {"fights"}, type = EntityGraph.EntityGraphType.LOAD)
+    @EntityGraph(attributePaths = {"duels"}, type = EntityGraph.EntityGraphType.LOAD)
     @Query("SELECT h FROM Hero h WHERE h.id = :id")
-    Optional<Hero> findByIdWithFights(Long id);
+    Optional<Hero> findByIdWithDuels(Long id);
 
     @Query("SELECT COUNT(h) > 0 FROM Hero h WHERE h.id = :heroId AND h.appUser.login = :userLogin")
     boolean isOwner(@Param("heroId") Long heroId, @Param("userLogin") String userLogin);

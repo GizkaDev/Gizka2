@@ -7,12 +7,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.gizka.api.dto.fight.FightDto;
+import ru.gizka.api.dto.fight.DuelDto;
 import ru.gizka.api.dto.hero.RequestHeroDto;
 import ru.gizka.api.dto.hero.ResponseHeroDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 import ru.gizka.api.dto.user.ResponseAppUserDto;
-import ru.gizka.api.model.fight.Fight;
+import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.service.fightLogic.FighterBuilder;
@@ -64,18 +64,18 @@ public class DtoConverter {
         return heroDto;
     }
 
-    public FightDto getResponseDto(Fight fight) {
-        log.info("Конвертер переводит {} в {}", Fight.class, FightDto.class);
-        FightDto fightDto = modelMapper.map(fight, FightDto.class);
+    public DuelDto getResponseDto(Duel duel) {
+        log.info("Конвертер переводит {} в {}", Duel.class, DuelDto.class);
+        DuelDto duelDto = modelMapper.map(duel, DuelDto.class);
         try {
-            fightDto.setTurns(objectMapper.readValue(fight.getTurns(), new TypeReference<>() {
+            duelDto.setTurns(objectMapper.readValue(duel.getTurns(), new TypeReference<>() {
             }));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        fightDto.setFighters(fight.getHeroes().stream()
+        duelDto.setFighters(duel.getHeroes().stream()
                 .map(fighterBuilder::build)
                 .toList());
-        return fightDto;
+        return duelDto;
     }
 }

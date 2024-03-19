@@ -4,15 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FightDto {
+public class DuelDto {
     private Long id;
     private List<Fighter> fighters;
     private List<Turn> turns;
+    private String result;
     private String createdAt;
 }

@@ -90,19 +90,15 @@ public class TurnLogic {
             defender = fighter2;
             attackerInit = init1;
             defenderInit = init2;
-//            attacker.setInitiative(attacker.getInitiative() - 1);
         } else {
             attacker = fighter2;
             defender = fighter1;
             attackerInit = init2;
             defenderInit = init1;
-//            fighter2.setInitiative(fighter2.getInitiative() - 1);
         }
 
         log.info("Сервис логики хода: герой: {} {}({}) атакует",
                 attacker.getName(), attacker.getLastname(), attacker.getUserLogin());
-//        log.info("Сервис логики хода: инициатива атакующего героя: {} {}({}) снижена на 1 до {}",
-//                attacker.getName(), attacker.getLastname(), attacker.getUserLogin(), fighter1.getInitiative());
         log.info("Сервис логики хода: герой: {} {}({}) защищается",
                 defender.getName(), defender.getLastname(), defender.getUserLogin());
 

@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.gizka.api.model.fight.Fight;
+import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.model.user.AppUser;
 
 import java.util.Date;
@@ -61,9 +61,9 @@ public class Hero {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "hero_fight",
+            name = "hero_duel",
             joinColumns = @JoinColumn(name = "hero_id"),
-            inverseJoinColumns = @JoinColumn(name = "fight_id")
+            inverseJoinColumns = @JoinColumn(name = "duel_id")
     )
-    private List<Fight> fights;
+    private List<Duel> duels;
 }

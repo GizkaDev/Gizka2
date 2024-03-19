@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import ru.gizka.api.dto.fight.FightDto;
+import ru.gizka.api.dto.fight.DuelDto;
 import ru.gizka.api.facade.FightFacade;
 import ru.gizka.api.model.user.AuthUser;
 
@@ -23,15 +23,15 @@ public class FightController {
     }
 
     @PostMapping("/hero/duel")
-    public ResponseEntity<FightDto> simulateDuel(@AuthenticationPrincipal AuthUser authUser,
-                                                 @RequestParam String login) {
+    public ResponseEntity<DuelDto> simulateDuel(@AuthenticationPrincipal AuthUser authUser,
+                                                @RequestParam String login) {
         log.info("Контроллер сражений принял запрос POST /hero/duel для пользователя: {}", authUser.login());
         return fightFacade.simulateDuel(authUser.getUser(), login);
     }
 
-    @GetMapping("/hero/fight")
-    public ResponseEntity<List<FightDto>> getAllForCurrentHero(@AuthenticationPrincipal AuthUser authUser) {
-        log.info("Контроллер сражений принял запрос GET /hero/fight для пользователя: {}", authUser.login());
-        return fightFacade.getAllForCurrentHero(authUser.getUser());
+    @GetMapping("/hero/duel")
+    public ResponseEntity<List<DuelDto>> getAllForCurrentHero(@AuthenticationPrincipal AuthUser authUser) {
+        log.info("Контроллер сражений принял запрос GET /hero/duel для пользователя: {}", authUser.login());
+        return fightFacade.getAllDuelsForCurrentHero(authUser.getUser());
     }
 }

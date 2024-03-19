@@ -10,23 +10,27 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "fight")
+@Table(name = "duel")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Fight {
+public class Duel {
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany(mappedBy = "fights")
+    @ManyToMany(mappedBy = "duels")
     private List<Hero> heroes;
 
     @Column(name = "turns")
     @Lob
     private String turns;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "result")
+    private Result result;
 
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
