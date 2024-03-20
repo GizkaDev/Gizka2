@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.gizka.api.model.event.Event;
 import ru.gizka.api.model.hero.Hero;
 
 import java.util.Date;
@@ -55,5 +56,10 @@ public class AppUser {
             fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE)
     private List<Hero> heroes;
+
+    @OneToMany(mappedBy = "appUser",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE)
+    private List<Event> events;
 }
 

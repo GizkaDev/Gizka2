@@ -6,13 +6,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gizka.api.dto.fight.Fighter;
+import ru.gizka.api.model.event.Event;
 import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.dto.fight.Turn;
 import ru.gizka.api.model.fight.Result;
 import ru.gizka.api.model.hero.Hero;
+import ru.gizka.api.service.EventService;
 import ru.gizka.api.service.FightService;
 import ru.gizka.api.service.HeroService;
 
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,18 +28,21 @@ public class FightLogic {
     private final FightService fightService;
     private final ObjectMapper objectMapper;
     private final HeroService heroService;
+    private final EventService eventService;
 
     @Autowired
     public FightLogic(FighterBuilder fighterBuilder,
                       TurnLogic turnLogic,
                       FightService fightService,
                       ObjectMapper objectMapper,
-                      HeroService heroService) {
+                      HeroService heroService,
+                      EventService eventService) {
         this.fighterBuilder = fighterBuilder;
         this.turnLogic = turnLogic;
         this.fightService = fightService;
         this.objectMapper = objectMapper;
         this.heroService = heroService;
+        this.eventService = eventService;
     }
 
     public Duel simulate(Hero hero1, Hero hero2) {
@@ -59,6 +65,7 @@ public class FightLogic {
         duel.setCreatedAt(new Date());
         duel = fightService.save(duel);
         saveRelation(hero1.getId(), hero2.getId(), duel);
+        saveEvent(duel);
         return duel;
     }
 
@@ -98,6 +105,7 @@ public class FightLogic {
                 hero2.getName(), hero2.getLastname(), hero2.getAppUser().getLogin());
         hero1.getDuels().add(duel);
         hero2.getDuels().add(duel);
+        //здесь косяк, видимо, лучше написать отдельный метод для сохранения в hero_duel
         heroService.save(hero1);
         heroService.save(hero2);
     }
@@ -124,5 +132,51 @@ public class FightLogic {
                     lastTurnAttacker.getName(), lastTurnAttacker.getLastname(), lastTurnAttacker.getUserLogin());
         }
         return result;
+    }
+
+    private void saveEvent(Duel duel) {
+        saveEventForAttacker(duel);
+        saveEventForDefender(duel);
+        log.info("Сервис логики сражения создает новое событие для героев: {} {}({}) и {} {}({})",
+                duel.getHeroes().get(0).getName(), duel.getHeroes().get(0).getLastname(), duel.getHeroes().get(0).getAppUser().getLogin(),
+                duel.getHeroes().get(1).getName(), duel.getHeroes().get(1).getLastname(), duel.getHeroes().get(1).getAppUser().getLogin());
+    }
+
+    private void saveEventForAttacker(Duel duel) {
+        String result = "";
+        if (duel.getResult().equals(Result.ATTACKER)) {
+            result = "и победили";
+        } else if (duel.getResult().equals(Result.DEFENDER)) {
+            result = "и проиграли";
+        } else {
+            result = ", и у вас ничья";
+        }
+        Event event = Event.builder()
+                .message(String.format("Вы вызвали на дуэль %s %s(%s)%s.",
+                        duel.getHeroes().get(1).getName(), duel.getHeroes().get(1).getLastname(), duel.getHeroes().get(1).getAppUser().getLogin(),
+                        result))
+                .createdAt(new Date())
+                .appUser(duel.getHeroes().get(0).getAppUser())
+                .build();
+        eventService.save(event);
+    }
+
+    private void saveEventForDefender(Duel duel) {
+        String result = "";
+        if (duel.getResult().equals(Result.DEFENDER)) {
+            result = "и вы победили";
+        } else if (duel.getResult().equals(Result.ATTACKER)) {
+            result = "и вы проиграли";
+        } else {
+            result = "у вас ничья";
+        }
+        Event event = Event.builder()
+                .message(String.format("Вас вызвал на дуэль %s %s(%s), %s.",
+                        duel.getHeroes().get(0).getName(), duel.getHeroes().get(0).getLastname(), duel.getHeroes().get(0).getAppUser().getLogin(),
+                        result))
+                .createdAt(new Date())
+                .appUser(duel.getHeroes().get(1).getAppUser())
+                .build();
+        eventService.save(event);
     }
 }

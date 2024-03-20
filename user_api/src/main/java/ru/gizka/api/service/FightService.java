@@ -31,8 +31,8 @@ public class FightService {
         return fightRepo.save(duel);
     }
 
-    public List<Duel> getAllDuelsByHeroId(Long id) {
+    public List<Duel> getAllDuelsByHeroIdSortedByDate(Long id) {
         log.info("Сервис сражений ищет сражения для героя id: {}", id);
-        return fightRepo.findAllDuelsByHeroId(id);
+        return fightRepo.findAllDuelsByHeroIdSortedByDate(id);
     }
 }

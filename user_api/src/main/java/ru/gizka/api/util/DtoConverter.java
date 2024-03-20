@@ -7,11 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.gizka.api.dto.event.EventDto;
 import ru.gizka.api.dto.fight.DuelDto;
 import ru.gizka.api.dto.hero.RequestHeroDto;
 import ru.gizka.api.dto.hero.ResponseHeroDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 import ru.gizka.api.dto.user.ResponseAppUserDto;
+import ru.gizka.api.model.event.Event;
 import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.user.AppUser;
@@ -77,5 +79,10 @@ public class DtoConverter {
                 .map(fighterBuilder::build)
                 .toList());
         return duelDto;
+    }
+
+    public EventDto getResponseDto(Event event) {
+        log.info("Конвертер переводит {} в {}", Event.class, EventDto.class);
+        return modelMapper.map(event, EventDto.class);
     }
 }

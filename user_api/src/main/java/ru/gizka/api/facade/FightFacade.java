@@ -60,7 +60,7 @@ public class FightFacade {
     public ResponseEntity<List<DuelDto>> getAllDuelsForCurrentHero(AppUser appUser) {
         log.info("Сервис сражений начинает поиск дуэлей для текущего героя пользователя: {}", appUser.getLogin());
         List<Hero> heroes = heroService.getAliveByUser(appUser);
-        List<Duel> duels = fightService.getAllDuelsByHeroId(heroes.get(0).getId());
+        List<Duel> duels = fightService.getAllDuelsByHeroIdSortedByDate(heroes.get(0).getId());
         return ResponseEntity.ok(duels.stream()
                 .map(dtoConverter::getResponseDto)
                 .toList());

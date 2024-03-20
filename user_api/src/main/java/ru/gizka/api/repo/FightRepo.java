@@ -13,6 +13,6 @@ import java.util.List;
 public interface FightRepo extends JpaRepository<Duel, Long> {
 
     @EntityGraph(attributePaths = {"heroes"}, type = EntityGraph.EntityGraphType.LOAD)
-    @Query("SELECT h.duels FROM Hero h WHERE h.id = :id ORDER BY h.createdAt DESC")
-    List<Duel> findAllDuelsByHeroId(@Param("id") Long id);
+    @Query("SELECT d FROM Duel d ORDER BY d.createdAt DESC")
+    List<Duel> findAllDuelsByHeroIdSortedByDate(@Param("id") Long id);
 }
