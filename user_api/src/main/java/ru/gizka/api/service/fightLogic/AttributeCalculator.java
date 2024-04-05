@@ -17,6 +17,7 @@ public class AttributeCalculator {
         fighter.setMaxHp(calculateMaxHp(fighter));
         fighter.setInitiative(calculateInitiative(fighter));
         fighter.setCurrentHp(calculateCurrentHp(fighter));
+        fighter.setCurrentCon(calculateCurrentCon(fighter));
     }
 
     private Integer calculateAttack(Fighter fighter){
@@ -59,5 +60,12 @@ public class AttributeCalculator {
         log.info("Калькулятор атрибутов рассчитал текущие ОЗ: {}  для бойца: {} {}({})",
                 currentHp, fighter.getName(), fighter.getLastname(), fighter.getUserLogin());
         return currentHp;
+    }
+
+    private Integer calculateCurrentCon(Fighter fighter){
+        Integer currentCon = fighter.getCon();
+        log.info("Калькулятор атрибутов рассчитал текущую выносливость: {}  для бойца: {} {}({})",
+                currentCon, fighter.getName(), fighter.getLastname(), fighter.getUserLogin());
+        return currentCon;
     }
 }

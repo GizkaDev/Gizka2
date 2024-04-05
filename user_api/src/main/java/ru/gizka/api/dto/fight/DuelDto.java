@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -14,5 +15,5 @@ public class DuelDto {
     private List<Fighter> fighters;
     private List<Turn> turns;
     private String result;
-    private String createdAt;
+    private Date createdAt;
 }

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.gizka.api.model.user.Role;
 
+import java.util.Date;
 import java.util.Set;
 
 @Data
@@ -16,6 +17,6 @@ public class ResponseAppUserDto {
 
     private Long id;
     private String login;
-    private String registeredAt;
+    private Date registeredAt;
     private Set<Role> roles;
 }

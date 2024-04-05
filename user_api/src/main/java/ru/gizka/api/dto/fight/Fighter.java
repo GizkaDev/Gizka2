@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.gizka.api.model.hero.Hero;
 
+import java.util.Date;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,7 +15,7 @@ import ru.gizka.api.model.hero.Hero;
 public class Fighter {
     private String name;
     private String lastname;
-    private String createdAt;
+    private Date createdAt;
     private String userLogin;
     private String status;
 
@@ -26,7 +28,9 @@ public class Fighter {
     private Integer physDamage;
     private Integer maxHp;
     private Integer initiative;
+
     private Integer currentHp;
+    private Integer currentCon;
 
     public Fighter(Fighter fighter){
         this.name = fighter.getName();
@@ -43,5 +47,6 @@ public class Fighter {
         this.maxHp = fighter.getMaxHp();
         this.initiative = fighter.getInitiative();
         this.currentHp = fighter.getCurrentHp();
+        this.currentCon = fighter.getCurrentCon();
     }
 }

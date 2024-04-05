@@ -1,5 +1,8 @@
 package ru.gizka.api.controller;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,13 +27,14 @@ public class FightController {
 
     @PostMapping("/hero/duel")
     public ResponseEntity<DuelDto> simulateDuel(@AuthenticationPrincipal AuthUser authUser,
-                                                @RequestParam String login) {
+                                                @RequestParam @NotBlank @Size(max = 255)
+                                                String login) {
         log.info("Контроллер сражений принял запрос POST /hero/duel для пользователя: {}", authUser.login());
         return fightFacade.simulateDuel(authUser.getUser(), login);
     }
 
     @GetMapping("/hero/duel")
-    public ResponseEntity<List<DuelDto>> getAllForCurrentHero(@AuthenticationPrincipal AuthUser authUser) {
+    public ResponseEntity<List<DuelDto>> getAllDuelForCurrentHero(@AuthenticationPrincipal AuthUser authUser) {
         log.info("Контроллер сражений принял запрос GET /hero/duel для пользователя: {}", authUser.login());
         return fightFacade.getAllDuelsForCurrentHero(authUser.getUser());
     }

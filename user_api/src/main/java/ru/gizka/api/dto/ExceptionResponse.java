@@ -8,11 +8,11 @@ import java.util.Date;
 public class ExceptionResponse {
     private String exception;
     private String descr;
-    private String date;
+    private Date date;
 
     public ExceptionResponse(String exception, String descr) {
         this.exception = exception;
         this.descr = descr;
-        date = new Date().toString();
+        date = new Date();
     }
 }

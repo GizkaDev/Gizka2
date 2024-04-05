@@ -3,6 +3,7 @@ package ru.gizka.api.facade;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.gizka.api.dto.fight.DuelDto;
@@ -15,6 +16,7 @@ import ru.gizka.api.service.HeroService;
 import ru.gizka.api.service.fightLogic.FightLogic;
 import ru.gizka.api.util.DtoConverter;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -54,15 +56,18 @@ public class FightFacade {
             throw new EntityNotFoundException("У одного из пользователей нет героя со статусом ALIVE.");
         }
         Duel duel = fightLogic.simulate(heroes1.get(0), heroes2.get(0));
-        return ResponseEntity.ok(dtoConverter.getResponseDto(duel));
+        return new ResponseEntity<>(dtoConverter.getResponseDto(duel), HttpStatus.CREATED);
     }
 
     public ResponseEntity<List<DuelDto>> getAllDuelsForCurrentHero(AppUser appUser) {
         log.info("Сервис сражений начинает поиск дуэлей для текущего героя пользователя: {}", appUser.getLogin());
         List<Hero> heroes = heroService.getAliveByUser(appUser);
-        List<Duel> duels = fightService.getAllDuelsByHeroIdSortedByDate(heroes.get(0).getId());
-        return ResponseEntity.ok(duels.stream()
-                .map(dtoConverter::getResponseDto)
-                .toList());
+        if(!heroes.isEmpty()) {
+            List<Duel> duels = fightService.getAllDuelsByHeroIdSortedByDate(heroes.get(0).getId());
+            return ResponseEntity.ok(duels.stream()
+                    .map(dtoConverter::getResponseDto)
+                    .toList());
+        }
+        return ResponseEntity.ok(Collections.emptyList());
     }
 }

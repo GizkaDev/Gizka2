@@ -19,7 +19,7 @@ public class ResponseHeroDto {
     private Integer str;
     private Integer dex;
     private Integer con;
-    private String createdAt;
+    private Date createdAt;
     private String userLogin;
     private String status;
 }

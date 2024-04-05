@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.gizka.api.model.event.Event;
+import ru.gizka.api.model.notification.Notification;
 import ru.gizka.api.model.hero.Hero;
 
 import java.util.Date;
@@ -60,6 +60,6 @@ public class AppUser {
     @OneToMany(mappedBy = "appUser",
             fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE)
-    private List<Event> events;
+    private List<Notification> notifications;
 }
 

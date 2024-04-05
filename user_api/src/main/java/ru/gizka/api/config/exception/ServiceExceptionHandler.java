@@ -12,6 +12,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import ru.gizka.api.dto.ExceptionResponse;
 
 import java.util.Arrays;
@@ -78,6 +79,13 @@ public class ServiceExceptionHandler {
 
     @ExceptionHandler
     ResponseEntity<ExceptionResponse> handleException(IllegalArgumentException e) {
+        logException(e);
+        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    ResponseEntity<ExceptionResponse> handleException(HandlerMethodValidationException e) {
         logException(e);
         ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
