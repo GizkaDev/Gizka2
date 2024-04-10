@@ -1,5 +1,6 @@
 package ru.gizka.api.controller.user;
 
+import jakarta.validation.constraints.Size;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class RaceController {
     }
 
     @GetMapping("/{name}")
-    public ResponseEntity<ResponseRaceDto> getByName(@PathVariable String name) {
+    public ResponseEntity<ResponseRaceDto> getByName(@PathVariable @Size(max = 100) String name) {
         log.info("Контроллер рас принял запрос GET /{name}");
         return ResponseEntity.ok(raceFacade.getByName(name));
     }

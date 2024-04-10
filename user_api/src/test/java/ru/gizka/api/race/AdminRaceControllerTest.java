@@ -85,6 +85,24 @@ public class AdminRaceControllerTest {
         }
 
         @Test
+        @Description(value = "Тест на создание расы с одинаковым названием")
+        void Race_create_sameName() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token);
+            RequestParentTest.insertRace(mockMvc, token, objectMapper.writeValueAsString(raceDto));
+            createRequest
+                    .content(objectMapper.writeValueAsBytes(this.raceDto))
+                    .header("Authorization", "Bearer " + token);
+            //when
+            mockMvc.perform(createRequest)
+                    //then
+                    .andExpect(
+                            status().isBadRequest());
+        }
+
+        @Test
         @Description(value = "Тест на создание расы без названия")
         void Race_create_NoName() throws Exception {
             //given
@@ -232,7 +250,6 @@ public class AdminRaceControllerTest {
         @Description(value = "Тест на создание расы c длинным именем")
         void Race_create_LongName() throws Exception {
             //given
-            Random random = new Random();
             StringBuilder name = new StringBuilder();
             for (int i = 0; i < 101; i++) {
                 name.append(Character.toString('А' + random.nextInt(33)));

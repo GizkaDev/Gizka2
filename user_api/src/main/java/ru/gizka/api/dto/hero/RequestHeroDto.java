@@ -35,5 +35,6 @@ public class RequestHeroDto {
     private Integer con;
 
 //    @NotBlank(message = "Раса не выбрана")
+//    @Size(min = 1, max = 100, message = "Название расы должно состоять минимум из одного символа")
 //    private String race;
 }

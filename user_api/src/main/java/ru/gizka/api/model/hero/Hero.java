@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.gizka.api.model.fight.Duel;
+import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.user.AppUser;
 
 import java.util.Date;
@@ -67,7 +68,7 @@ public class Hero {
     )
     private List<Duel> duels;
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "race")
+//    @ManyToOne
+//    @JoinColumn(name = "hero_race", referencedColumnName = "name")
 //    private Race race;
 }

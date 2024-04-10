@@ -20,7 +20,6 @@ public class RequestRaceDto {
     @Pattern(regexp = "^[а-яА-Я-]+$", message = "Название расы может состоять только из букв русского алфавита и тире ")
     private String name;
 
-//    @NotBlank(message = "Не указана играбельность расы")
     @NotNull(message = "Не указана играбельность расы")
     private Boolean isPlayable;
 }

@@ -8,9 +8,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.hero.Status;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "race")
@@ -37,4 +39,9 @@ public class Race {
     @Column(name = "is_playable")
     @NotNull
     private Boolean isPlayable;
+
+//    @OneToMany(mappedBy = "race",
+//            fetch = FetchType.LAZY,
+//            cascade = CascadeType.REMOVE)
+//    private List<Hero> heroes;
 }

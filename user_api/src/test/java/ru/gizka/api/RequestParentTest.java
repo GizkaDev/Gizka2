@@ -82,4 +82,13 @@ public class RequestParentTest {
                 .header("Authorization", "Bearer " + token);
         return mockMvc.perform(adminRequest);
     }
+
+    public static ResultActions insertRace(MockMvc mockMvc, String token, String raceDtoAsString) throws Exception {
+        MockHttpServletRequestBuilder raceRequest = MockMvcRequestBuilders
+                .post("/api/admin/race")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(raceDtoAsString)
+                .header("Authorization", "Bearer " + token);
+        return mockMvc.perform(raceRequest);
+    }
 }

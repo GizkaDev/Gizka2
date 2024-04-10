@@ -13,6 +13,7 @@ import org.springframework.security.authentication.InternalAuthenticationService
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import ru.gizka.api.dto.ExceptionResponse;
 
 import java.util.Arrays;
@@ -89,6 +90,13 @@ public class ServiceExceptionHandler {
         logException(e);
         ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    ResponseEntity<ExceptionResponse> handleException(NoResourceFoundException e) {
+        logException(e);
+        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     private void logException(Exception e){

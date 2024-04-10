@@ -1,15 +1,24 @@
 package ru.gizka.api.util.validator;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 import ru.gizka.api.dto.hero.RequestHeroDto;
+import ru.gizka.api.service.race.RaceService;
 
 @Component
 @Slf4j
 public class HeroValidator implements Validator {
+    private final RaceService raceService;
+
+    @Autowired
+    public HeroValidator(RaceService raceService){
+        this.raceService = raceService;
+    }
+
     @Override
     public boolean supports(Class<?> clazz) {
         return RequestAppUserDto.class.equals(clazz);
@@ -41,16 +50,5 @@ public class HeroValidator implements Validator {
     }
 
 //    private void validateRace(RequestHeroDto heroDto, Errors errors) {
-//        if (heroDto.getRace() != null) {
-//            if (!heroDto.getRace().equals(ELF.name()) &&
-//                    !heroDto.getRace().equals(HUMAN.name()) &&
-//                    !heroDto.getRace().equals(DWARF.name())) {
-//                errors.rejectValue("", "", "Недопустимая раса %s");
-//                log.error("Валидатор героев сообщает, что для создания героя использовано недопустимая раса: {}", heroDto.getRace());
-//            }
-//        } else {
-//            errors.rejectValue("", "", "Раса не выбрана");
-//            log.error("Валидатор героев сообщает, что раса не выбрана: {}", heroDto.getRace());
-//        }
 //    }
 }
