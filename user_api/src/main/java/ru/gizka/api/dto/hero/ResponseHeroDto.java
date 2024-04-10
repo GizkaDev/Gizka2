@@ -22,4 +22,5 @@ public class ResponseHeroDto {
     private Date createdAt;
     private String userLogin;
     private String status;
+//    private String race;
 }

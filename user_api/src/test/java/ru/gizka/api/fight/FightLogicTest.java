@@ -22,7 +22,6 @@ import ru.gizka.api.model.fight.Result;
 import ru.gizka.api.service.fightLogic.FightLogic;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -80,6 +79,7 @@ public class FightLogicTest extends RequestParentTest {
                 .str(10)
                 .dex(8)
                 .con(12)
+//                .race(Race.ELF.name())
                 .build();
 
         heroDto2 = RequestHeroDto.builder()
@@ -88,6 +88,7 @@ public class FightLogicTest extends RequestParentTest {
                 .str(10)
                 .dex(12)
                 .con(8)
+//                .race(Race.HUMAN.name())
                 .build();
     }
 

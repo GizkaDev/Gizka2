@@ -1,6 +1,7 @@
 package ru.gizka.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -219,6 +220,113 @@ public class AppUserControllerTest {
         void AppUser_deleteOwnExpiredToken() throws Exception {
             Thread.sleep(1000L * 60 * Integer.parseInt(suitability));
             requestWithTokenCheckForbidden(token, requestBuilder, mockMvc);
+        }
+    }
+
+    @Nested
+    @DisplayName(value = "Тесты на верификацию администратора")
+    class VerifyAdminTest {
+        private RequestAppUserDto userDto;
+        private String token;
+
+        @BeforeEach
+        void setUp() throws Exception {
+            this.userDto = RequestAppUserDto.builder()
+                    .login("Login123_.-")
+                    .password("Qwerty12345!")
+                    .build();
+
+            MockHttpServletRequestBuilder registrationRequest = MockMvcRequestBuilders
+                    .post("/api/auth/registration")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString(this.userDto));
+            mockMvc.perform(registrationRequest);
+
+            MockHttpServletRequestBuilder tokenRequest = MockMvcRequestBuilders
+                    .post("/api/auth/token")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString(this.userDto));
+            token = mockMvc.perform(tokenRequest)
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString();
+
+            requestBuilder = MockMvcRequestBuilders
+                    .put(uri + "/own")
+                    .contentType(MediaType.APPLICATION_JSON);
+        }
+
+        @Test
+        @Description(value = "Тест на верификацию администратора")
+        void AppUser_verifyAdmin_SuccessTest() throws Exception {
+            //given
+            requestBuilder
+                    .content("SECRET")
+                    .header("Authorization", "Bearer " + token);
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isOk())
+                    .andExpect(
+                            jsonPath("$.login").value(userDto.getLogin()))
+                    .andExpect(
+                            jsonPath("$.roles", Matchers.containsInAnyOrder("USER", "ADMIN")));
+        }
+
+        @Test
+        @Description(value = "Тест на верификацию администратора с неверным секретом")
+        void AppUser_verifyAdmin_WrongSecretTest() throws Exception {
+            //given
+            requestBuilder
+                    .content("NOT_SECRET")
+                    .header("Authorization", "Bearer " + token);
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isForbidden());
+        }
+
+        @Test
+        @Description(value = "Тест на верификацию администратора с пустым секретом")
+        void AppUser_verifyAdmin_BlankSecretTest() throws Exception {
+            //given
+            requestBuilder
+                    .content("     ")
+                    .header("Authorization", "Bearer " + token);
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isForbidden());
+        }
+
+        @Test
+        @Description(value = "Тест на верификацию администратора с пустым секретом")
+        void AppUser_verifyAdmin_EmptySecretTest() throws Exception {
+            //given
+            requestBuilder
+                    .content("")
+                    .header("Authorization", "Bearer " + token);
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isBadRequest());
+        }
+
+        @Test
+        @Description(value = "Тест на верификацию администратора с пустым секретом")
+        void AppUser_verifyAdmin_NoContentTest() throws Exception {
+            //given
+            requestBuilder
+                    .header("Authorization", "Bearer " + token);
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isBadRequest());
         }
     }
 }

@@ -49,6 +49,7 @@ public class HeroControllerTest {
                 .str(10)
                 .dex(10)
                 .con(10)
+//                .race(Race.HUMAN.name())
                 .build();
 
         userDto = RequestAppUserDto.builder()
@@ -119,6 +120,8 @@ public class HeroControllerTest {
                             jsonPath("$[0].userLogin").value(userDto.getLogin()))
                     .andExpect(
                             jsonPath("$[0].status").value("ALIVE"));
+//                    .andExpect(
+//                            jsonPath("$[0].race").value("HUMAN"));
         }
 
         @Test
@@ -188,6 +191,8 @@ public class HeroControllerTest {
                             jsonPath("$.userLogin").value(userDto.getLogin()))
                     .andExpect(
                             jsonPath("$.status").value("ALIVE"));
+//                    .andExpect(
+//                            jsonPath("$.race").value("HUMAN"));
         }
 
         @Test
@@ -401,5 +406,65 @@ public class HeroControllerTest {
                     .andExpect(
                             status().isBadRequest());
         }
+
+//        @Test
+//        @Description(value = "Тест на создание героя без расы")
+//        void Hero_create_NoRace() throws Exception {
+//            //given
+//            heroDto.setRace("");
+//            requestBuilder
+//                    .content(objectMapper.writeValueAsString(heroDto))
+//                    .header("Authorization", String.format("Bearer %s", token));
+//            //when
+//            mockMvc.perform(requestBuilder)
+//                    //then
+//                    .andExpect(
+//                            status().isBadRequest());
+//        }
+
+//        @Test
+//        @Description(value = "Тест на создание героя без расы")
+//        void Hero_create_BlankRace() throws Exception {
+//            //given
+//            heroDto.setRace("    ");
+//            requestBuilder
+//                    .content(objectMapper.writeValueAsString(heroDto))
+//                    .header("Authorization", String.format("Bearer %s", token));
+//            //when
+//            mockMvc.perform(requestBuilder)
+//                    //then
+//                    .andExpect(
+//                            status().isBadRequest());
+//        }
+
+//        @Test
+//        @Description(value = "Тест на создание героя без расы")
+//        void Hero_create_NullRace() throws Exception {
+//            //given
+//            heroDto.setRace(null);
+//            requestBuilder
+//                    .content(objectMapper.writeValueAsString(heroDto))
+//                    .header("Authorization", String.format("Bearer %s", token));
+//            //when
+//            mockMvc.perform(requestBuilder)
+//                    //then
+//                    .andExpect(
+//                            status().isBadRequest());
+//        }
+
+//        @Test
+//        @Description(value = "Тест на создание героя без расы")
+//        void Hero_create_WrongRace() throws Exception {
+//            //given
+//            heroDto.setRace("HORSE");
+//            requestBuilder
+//                    .content(objectMapper.writeValueAsString(heroDto))
+//                    .header("Authorization", String.format("Bearer %s", token));
+//            //when
+//            mockMvc.perform(requestBuilder)
+//                    //then
+//                    .andExpect(
+//                            status().isBadRequest());
+//        }
     }
 }

@@ -45,4 +45,9 @@ public class JwtService {
         log.info("Токен верифицирован для пользователя: {}", jwt.getClaim("username").asString());
         return jwt.getClaim("username").asString();
     }
+
+    public Boolean verifyAdmin(String secret){
+        log.info("Верификация администратора...");
+        return secret.equals(this.secret);
+    }
 }

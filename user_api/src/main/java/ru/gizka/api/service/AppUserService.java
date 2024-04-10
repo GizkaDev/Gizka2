@@ -1,10 +1,12 @@
 package ru.gizka.api.service;
 
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.gizka.api.dto.user.ResponseAppUserDto;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.model.user.Role;
@@ -48,5 +50,15 @@ public class AppUserService {
     public void delete(AppUser user) {
         log.info("Сервис пользователей удаляет пользователя: {}", user.getLogin());
         appUserRepo.deleteById(user.getId());
+    }
+
+    @Transactional
+    public AppUser addAdminRights(String login) {
+        AppUser appUser = getByLogin(login)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(String.format("Пользователь %s не найден", login)));
+        log.info(String.format("Сервис пользователей наделяет пользователя: %s правами администратора", login));
+        appUser.getRoles().add(Role.ADMIN);
+        return appUserRepo.save(appUser);
     }
 }

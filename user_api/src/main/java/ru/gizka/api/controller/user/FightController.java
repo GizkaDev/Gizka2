@@ -1,4 +1,4 @@
-package ru.gizka.api.controller;
+package ru.gizka.api.controller.user;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

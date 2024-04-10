@@ -11,11 +11,14 @@ import ru.gizka.api.dto.notification.NotificationDto;
 import ru.gizka.api.dto.fight.DuelDto;
 import ru.gizka.api.dto.hero.RequestHeroDto;
 import ru.gizka.api.dto.hero.ResponseHeroDto;
+import ru.gizka.api.dto.race.RequestRaceDto;
+import ru.gizka.api.dto.race.ResponseRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 import ru.gizka.api.dto.user.ResponseAppUserDto;
 import ru.gizka.api.model.notification.Notification;
 import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.model.hero.Hero;
+import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.service.fightLogic.FighterBuilder;
 
@@ -35,6 +38,19 @@ public class DtoConverter {
         this.objectMapper = objectMapper;
     }
 
+    public ResponseRaceDto getResponseDto(Race race) {
+        log.info("Конвертер переводит {} в {}", Race.class, ResponseRaceDto.class);
+        return modelMapper.map(race, ResponseRaceDto.class);
+    }
+
+    public Race getModel(RequestRaceDto raceDto) {
+        log.info("Конвертер переводит {} в {}", RequestRaceDto.class, Race.class);
+        return Race.builder()
+                .name(raceDto.getName())
+                .isPlayable(raceDto.getIsPlayable())
+                .build();
+    }
+
     public AppUser getModel(RequestAppUserDto userDto) {
         log.info("Конвертер переводит {} в {} для пользователя: {}", RequestAppUserDto.class, AppUser.class, userDto.getLogin());
         return AppUser.builder()
@@ -50,12 +66,14 @@ public class DtoConverter {
 
     public Hero getModel(RequestHeroDto heroDto) {
         log.info("Конвертер переводит {} в {}", RequestHeroDto.class, Hero.class);
+//        Race race = Race.valueOf(heroDto.getRace().toUpperCase());
         return Hero.builder()
                 .name(heroDto.getName())
                 .lastname(heroDto.getLastName())
                 .str(heroDto.getStr())
                 .dex(heroDto.getDex())
                 .con(heroDto.getCon())
+//                .race(race)
                 .build();
     }
 

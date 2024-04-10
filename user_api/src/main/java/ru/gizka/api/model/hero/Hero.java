@@ -66,4 +66,8 @@ public class Hero {
             inverseJoinColumns = @JoinColumn(name = "duel_id")
     )
     private List<Duel> duels;
+
+//    @Enumerated(EnumType.STRING)
+//    @Column(name = "race")
+//    private Race race;
 }

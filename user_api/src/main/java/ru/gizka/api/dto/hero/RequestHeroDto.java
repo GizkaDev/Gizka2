@@ -33,4 +33,7 @@ public class RequestHeroDto {
     @Min(value = 5, message = "Выносливость должна быть не меньше 5")
     @NotNull(message = "Выносливость должна быть не меньше 5")
     private Integer con;
+
+//    @NotBlank(message = "Раса не выбрана")
+//    private String race;
 }

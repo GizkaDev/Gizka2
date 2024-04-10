@@ -1,4 +1,4 @@
-package ru.gizka.api.controller;
+package ru.gizka.api.controller.user;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;

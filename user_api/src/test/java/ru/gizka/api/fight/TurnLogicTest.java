@@ -46,6 +46,7 @@ public class TurnLogicTest {
                 appUser1,
                 Status.ALIVE,
                 Collections.emptyList());
+//                Race.HUMAN);
         fighter1 = fighterBuilder.build(hero1);
         appUser2 = new AppUser(0L, "testLogin2", null, null, null, null, null);
         hero2 = new Hero(1234L, "TestName2", "TestLastName2",
@@ -53,6 +54,7 @@ public class TurnLogicTest {
                 appUser2,
                 Status.ALIVE,
                 Collections.emptyList());
+//                Race.HUMAN);
         fighter2 = fighterBuilder.build(hero2);
     }
 

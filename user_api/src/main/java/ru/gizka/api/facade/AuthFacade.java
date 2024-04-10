@@ -15,7 +15,7 @@ import ru.gizka.api.dto.user.ResponseAppUserDto;
 import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.service.AppUserService;
 import ru.gizka.api.service.JwtService;
-import ru.gizka.api.util.AppUserValidator;
+import ru.gizka.api.util.validator.AppUserValidator;
 import ru.gizka.api.util.DtoConverter;
 
 import java.util.List;

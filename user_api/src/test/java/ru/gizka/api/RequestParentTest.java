@@ -73,4 +73,13 @@ public class RequestParentTest {
                 .header("Authorization", String.format("Bearer %s", token));
         return mockMvc.perform(eventRequest);
     }
+
+    public static ResultActions setAdminRights(MockMvc mockMvc, String token) throws Exception {
+        MockHttpServletRequestBuilder adminRequest = MockMvcRequestBuilders
+                .put("/api/user/own")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("SECRET")
+                .header("Authorization", "Bearer " + token);
+        return mockMvc.perform(adminRequest);
+    }
 }

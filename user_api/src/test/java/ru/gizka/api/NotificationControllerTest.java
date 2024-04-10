@@ -64,6 +64,7 @@ public class NotificationControllerTest extends RequestParentTest {
                 .str(10)
                 .dex(8)
                 .con(12)
+//                .race(Race.ELF.name())
                 .build();
 
         heroDto2 = RequestHeroDto.builder()
@@ -72,6 +73,7 @@ public class NotificationControllerTest extends RequestParentTest {
                 .str(10)
                 .dex(12)
                 .con(8)
+//                .race(Race.HUMAN.name())
                 .build();
     }
 

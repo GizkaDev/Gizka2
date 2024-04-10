@@ -12,7 +12,7 @@ import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.service.HeroService;
 import ru.gizka.api.util.DtoConverter;
-import ru.gizka.api.util.HeroValidator;
+import ru.gizka.api.util.validator.HeroValidator;
 
 import java.util.List;
 

@@ -32,6 +32,7 @@ public class FighterBuilderTest {
                 appUser,
                 Status.ALIVE,
                 Collections.emptyList());
+//                Race.HUMAN);
     }
 
     @Test

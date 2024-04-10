@@ -1,14 +1,11 @@
-package ru.gizka.api.controller;
+package ru.gizka.api.controller.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.gizka.api.dto.user.ResponseAppUserDto;
 import ru.gizka.api.facade.AppUserFacade;
 import ru.gizka.api.model.user.AuthUser;
@@ -36,5 +33,12 @@ public class AppUserController {
         log.info("Контроллер пользователей принял запрос DELETE /own для пользователя: {}", authUser.login());
         appUserFacade.deleteByLogin(authUser.login());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/own")
+    public ResponseEntity<ResponseAppUserDto> verifyAdmin(@AuthenticationPrincipal AuthUser authUser,
+                                                          @RequestBody String secret){
+        log.info("Контроллер пользователей принял запрос PUT /own для пользователя: {}", authUser.login());
+        return ResponseEntity.ok(appUserFacade.verifyAdmin(authUser.login(), secret));
     }
 }
