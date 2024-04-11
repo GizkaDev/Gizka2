@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.model.fight.Duel;
+import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.hero.Status;
@@ -27,13 +28,14 @@ public class HeroService {
     }
 
     @Transactional
-    public Hero create(Hero hero, AppUser appUser) {
+    public Hero create(Hero hero, AppUser appUser, Race race) {
         List<Hero> heroes = heroRepo.findAllByLoginAndAlive(appUser.getLogin());
         if (heroes.isEmpty()) {
             log.info("Сервис героев создает нового героя: {} для пользователя: {}", hero, appUser.getLogin());
             List<Duel> duels = new ArrayList<>();
             hero.setDuels(duels);
             hero.setAppUser(appUser);
+            hero.setRace(race);
             hero.setStatus(Status.ALIVE);
             hero.setCreatedAt(new Date());
         } else {

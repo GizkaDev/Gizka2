@@ -68,7 +68,7 @@ public class Hero {
     )
     private List<Duel> duels;
 
-//    @ManyToOne
-//    @JoinColumn(name = "hero_race", referencedColumnName = "name")
-//    private Race race;
+    @ManyToOne
+    @JoinColumn(name = "hero_race", referencedColumnName = "name")
+    private Race race;
 }

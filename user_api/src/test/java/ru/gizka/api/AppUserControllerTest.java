@@ -20,6 +20,7 @@ import ru.gizka.api.dto.user.RequestAppUserDto;
 
 import java.util.Random;
 
+import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ru.gizka.api.RequestParentTest.*;
 
@@ -90,37 +91,77 @@ public class AppUserControllerTest {
         @Test
         @Description(value = "Тест на получение пользователя токеном null")
         void AppUser_getOwnNullToken() throws Exception {
-            requestWithTokenCheckForbidden(null, requestBuilder, mockMvc);
+            //given
+            requestBuilder.header("Authorization", "Bearer " + null);
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isForbidden())
+                    .andExpect(
+                            header().string("Reason", "The token was expected to have 3 parts, but got 0."));
         }
 
         @Test
         @Description(value = "Тест на получение пользователя токеном пустым")
         void AppUser_getOwnNoToken() throws Exception {
-            requestWithTokenCheckForbidden("", requestBuilder, mockMvc);
+            //given
+            requestBuilder.header("Authorization", "Bearer " + "");
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isForbidden())
+                    .andExpect(
+                            header().string("Reason", "Фильтр перехватил пустой токен"));
         }
 
         @Test
         @Description(value = "Тест на получение пользователя токеном с пробелами")
         void AppUser_getOwnBlankToken() throws Exception {
-            requestWithTokenCheckForbidden("     ", requestBuilder, mockMvc);
+            //given
+            requestBuilder.header("Authorization", "Bearer " + "      ");
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isForbidden())
+                    .andExpect(
+                            header().string("Reason", "Фильтр перехватил пустой токен"));
         }
 
         @Test
         @Description(value = "Тест на получение пользователя токеном неверным")
         void AppUser_getOwnWrongToken() throws Exception {
+            //given
             StringBuilder token = new StringBuilder();
             Random random = new Random();
             for (int i = 0; i < 213; i++) {
                 token.append(Character.toString('A' + random.nextInt(26)));
             }
-            requestWithTokenCheckForbidden(token.toString(), requestBuilder, mockMvc);
+            requestBuilder.header("Authorization", "Bearer " + token);
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isForbidden())
+                    .andExpect(
+                            header().string("Reason", "The token was expected to have 3 parts, but got 0."));
         }
 
         @Test
         @Description(value = "Тест на получение пользователя токеном просроченным")
         void AppUser_getOwnExpiredToken() throws Exception {
+            //given
             Thread.sleep(1000L * 60 * Integer.parseInt(suitability));
-            requestWithTokenCheckForbidden(token, requestBuilder, mockMvc);
+            requestBuilder.header("Authorization", "Bearer " + token);
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isForbidden())
+                    .andExpect(
+                            header().string("Reason", startsWith("The Token has expired on")));
         }
     }
 
@@ -183,25 +224,55 @@ public class AppUserControllerTest {
             MockHttpServletRequestBuilder getRequest = MockMvcRequestBuilders
                     .get(uri + "/own")
                     .contentType(MediaType.APPLICATION_JSON);
-            requestWithTokenCheckForbidden(token, getRequest, mockMvc);
+
+            mockMvc.perform(requestBuilder)
+                    .andExpect(
+                            status().isForbidden())
+                    .andExpect(
+                            header().string("Reason", startsWith("Пользователь не найден:")));
         }
 
         @Test
         @Description(value = "Тест на удаление пользователя токеном null")
         void AppUser_deleteOwnNullToken() throws Exception {
-            requestWithTokenCheckForbidden(null, requestBuilder, mockMvc);
+            //given
+            requestBuilder.header("Authorization", "Bearer " + null);
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isForbidden())
+                    .andExpect(
+                            header().string("Reason", "The token was expected to have 3 parts, but got 0."));
         }
+
 
         @Test
         @Description(value = "Тест на удаление пользователя токеном пустым")
         void AppUser_deleteOwnNoToken() throws Exception {
-            requestWithTokenCheckForbidden("", requestBuilder, mockMvc);
+            //given
+            requestBuilder.header("Authorization", "Bearer " + "");
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isForbidden())
+                    .andExpect(
+                            header().string("Reason", "Фильтр перехватил пустой токен"));
         }
 
         @Test
         @Description(value = "Тест на удаление пользователя токеном с пробелами")
         void AppUser_deleteOwnBlankToken() throws Exception {
-            requestWithTokenCheckForbidden("     ", requestBuilder, mockMvc);
+            //given
+            requestBuilder.header("Authorization", "Bearer " + "      ");
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isForbidden())
+                    .andExpect(
+                            header().string("Reason", "Фильтр перехватил пустой токен"));
         }
 
         @Test
@@ -212,14 +283,28 @@ public class AppUserControllerTest {
             for (int i = 0; i < 213; i++) {
                 token.append(Character.toString('A' + random.nextInt(26)));
             }
-            requestWithTokenCheckForbidden(token.toString(), requestBuilder, mockMvc);
+            requestBuilder.header("Authorization", "Bearer " + token);
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isForbidden())
+                    .andExpect(
+                            header().string("Reason", "The token was expected to have 3 parts, but got 0."));
         }
 
         @Test
         @Description(value = "Тест на удаление пользователя токеном просроченным")
         void AppUser_deleteOwnExpiredToken() throws Exception {
             Thread.sleep(1000L * 60 * Integer.parseInt(suitability));
-            requestWithTokenCheckForbidden(token, requestBuilder, mockMvc);
+            requestBuilder.header("Authorization", "Bearer " + token);
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isForbidden())
+                    .andExpect(
+                            header().string("Reason", startsWith("The Token has expired on")));
         }
     }
 
@@ -285,7 +370,9 @@ public class AppUserControllerTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isForbidden());
+                            status().isForbidden())
+                    .andExpect(
+                            jsonPath("$.descr").value("Верификация не пройдена"));
         }
 
         @Test
@@ -299,7 +386,9 @@ public class AppUserControllerTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isForbidden());
+                            status().isForbidden())
+                    .andExpect(
+                            jsonPath("$.descr").value("Верификация не пройдена"));
         }
 
         @Test
@@ -313,7 +402,9 @@ public class AppUserControllerTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(startsWith("Required request body is missing:")));
         }
 
         @Test
@@ -326,7 +417,9 @@ public class AppUserControllerTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(startsWith("Required request body is missing:")));
         }
     }
 }

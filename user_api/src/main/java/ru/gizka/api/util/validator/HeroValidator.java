@@ -7,17 +7,14 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 import ru.gizka.api.dto.hero.RequestHeroDto;
+import ru.gizka.api.model.race.Race;
 import ru.gizka.api.service.race.RaceService;
+
+import java.util.Optional;
 
 @Component
 @Slf4j
 public class HeroValidator implements Validator {
-    private final RaceService raceService;
-
-    @Autowired
-    public HeroValidator(RaceService raceService){
-        this.raceService = raceService;
-    }
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -29,7 +26,6 @@ public class HeroValidator implements Validator {
         RequestHeroDto heroDto = (RequestHeroDto) target;
         log.info("Валидатор героев проверяет нового героя: {}", heroDto);
         validateCreate(heroDto, errors);
-//        validateRace(heroDto, errors);
     }
 
     private void validateCreate(RequestHeroDto heroDto, Errors errors) {
@@ -48,7 +44,4 @@ public class HeroValidator implements Validator {
             }
         }
     }
-
-//    private void validateRace(RequestHeroDto heroDto, Errors errors) {
-//    }
 }

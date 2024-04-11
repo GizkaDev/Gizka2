@@ -20,6 +20,7 @@ import ru.gizka.api.dto.user.RequestAppUserDto;
 
 import java.util.Random;
 
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -99,7 +100,9 @@ public class AdminRaceControllerTest {
             mockMvc.perform(createRequest)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Название расы уже существует.*")));
         }
 
         @Test
@@ -119,7 +122,9 @@ public class AdminRaceControllerTest {
             mockMvc.perform(createRequest)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Название расы должно состоять минимум из одного символа.*")));
         }
 
         @Test
@@ -140,7 +145,9 @@ public class AdminRaceControllerTest {
             mockMvc.perform(createRequest)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Название расы должно состоять минимум из одного символа.*")));
         }
 
         @Test
@@ -161,7 +168,11 @@ public class AdminRaceControllerTest {
             mockMvc.perform(createRequest)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Название расы должно состоять минимум из одного символа.*")))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Название расы может состоять только из букв русского алфавита и тире.*")));
         }
 
         @Test
@@ -182,7 +193,11 @@ public class AdminRaceControllerTest {
             mockMvc.perform(createRequest)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Название расы должно состоять минимум из одного символа.*")))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Название расы может состоять только из букв русского алфавита и тире.*")));
         }
 
         @Test
@@ -202,7 +217,9 @@ public class AdminRaceControllerTest {
             mockMvc.perform(createRequest)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Не указана играбельность расы.*")));
         }
 
         @Test
@@ -223,7 +240,9 @@ public class AdminRaceControllerTest {
             mockMvc.perform(createRequest)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Не указана играбельность расы.*")));
         }
 
         @Test
@@ -269,7 +288,9 @@ public class AdminRaceControllerTest {
             mockMvc.perform(createRequest)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Название расы должно состоять минимум из одного символа.*")));
         }
 
         @Test
@@ -291,7 +312,9 @@ public class AdminRaceControllerTest {
             mockMvc.perform(createRequest)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Название расы может состоять только из букв русского алфавита и тире.*")));
         }
     }
 }

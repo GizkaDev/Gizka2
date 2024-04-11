@@ -20,6 +20,8 @@ import ru.gizka.api.dto.user.RequestAppUserDto;
 
 import java.util.Random;
 
+import static org.hamcrest.Matchers.matchesPattern;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -82,7 +84,9 @@ public class AuthControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Логин занят.*")));
         }
 
         @Test
@@ -97,7 +101,9 @@ public class AuthControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Логин должен состоять минимум из 4 символов.*")));
         }
 
         @Test
@@ -112,7 +118,9 @@ public class AuthControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Логин должен состоять минимум из 4 символов.*")));
         }
 
         @Test
@@ -132,7 +140,9 @@ public class AuthControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Логин должен состоять минимум из 4 символов.*")));
         }
 
         @Test
@@ -147,7 +157,9 @@ public class AuthControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Логин может состоять только из букв латинского алфавита, цифр и специальных символов.*")));
         }
 
         @Test
@@ -162,7 +174,9 @@ public class AuthControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Логин должен состоять минимум из 4 символов.*")));
         }
 
         @Test
@@ -177,7 +191,9 @@ public class AuthControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Пароль должен состоять минимум из 8 символов.*")));
         }
 
         @Test
@@ -197,7 +213,9 @@ public class AuthControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Пароль должен состоять минимум из 8 символов.*")));
         }
 
         @Test
@@ -212,7 +230,9 @@ public class AuthControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Пароль должен состоять из букв латинского алфавита в верхнем и нижнем регистре, цифр, а так же из специальных символов.*")));
         }
 
         @Test
@@ -227,7 +247,9 @@ public class AuthControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Пароль должен состоять из букв латинского алфавита в верхнем и нижнем регистре, цифр, а так же из специальных символов.*")));
         }
 
         @Test
@@ -242,7 +264,9 @@ public class AuthControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Пароль должен состоять из букв латинского алфавита в верхнем и нижнем регистре, цифр, а так же из специальных символов.*")));
         }
 
         @Test
@@ -257,7 +281,9 @@ public class AuthControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Пароль должен состоять из букв латинского алфавита в верхнем и нижнем регистре, цифр, а так же из специальных символов.*")));
         }
 
         @Test
@@ -272,7 +298,9 @@ public class AuthControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.exception").value("jakarta.validation.ValidationException"));
+                            jsonPath("$.exception").value("jakarta.validation.ValidationException"))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Пароль должен состоять из букв латинского алфавита в верхнем и нижнем регистре, цифр, а так же из специальных символов.*")));
         }
 
         @Test
@@ -352,7 +380,9 @@ public class AuthControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.exception").value("org.springframework.http.converter.HttpMessageNotReadableException"));
+                            jsonPath("$.exception").value("org.springframework.http.converter.HttpMessageNotReadableException"))
+                    .andExpect(
+                            jsonPath("$.descr").value(startsWith("Required request body is missing:")));
         }
 
         @Test

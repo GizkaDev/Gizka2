@@ -2,7 +2,10 @@ package ru.gizka.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,14 +16,14 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import ru.gizka.api.dto.user.RequestAppUserDto;
 import ru.gizka.api.dto.hero.RequestHeroDto;
+import ru.gizka.api.dto.race.RequestRaceDto;
+import ru.gizka.api.dto.user.RequestAppUserDto;
 
 import java.util.Random;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.gizka.api.RequestParentTest.requestWithTokenCheckForbidden;
+import static org.hamcrest.Matchers.matchesPattern;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @Transactional
@@ -29,6 +32,7 @@ public class HeroControllerTest {
     private String uri = "/api/user/hero";
     private RequestAppUserDto userDto;
     private RequestHeroDto heroDto;
+    private RequestRaceDto raceDto;
     private String token;
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
@@ -43,13 +47,17 @@ public class HeroControllerTest {
 
     @BeforeEach
     void setUp() throws Exception {
+        raceDto = RequestRaceDto.builder()
+                .name("Человек")
+                .isPlayable(true)
+                .build();
         heroDto = RequestHeroDto.builder()
                 .name("NameЯ")
                 .lastName("LastnameБ")
                 .str(10)
                 .dex(10)
                 .con(10)
-//                .race(Race.HUMAN.name())
+                .race(raceDto.getName())
                 .build();
 
         userDto = RequestAppUserDto.builder()
@@ -84,6 +92,9 @@ public class HeroControllerTest {
 
         @BeforeEach
         void setUp() throws Exception {
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             requestBuilder
                     .content(objectMapper.writeValueAsString(heroDto))
                     .header("Authorization", String.format("Bearer %s", token));
@@ -119,9 +130,9 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$[0].userLogin").value(userDto.getLogin()))
                     .andExpect(
-                            jsonPath("$[0].status").value("ALIVE"));
-//                    .andExpect(
-//                            jsonPath("$[0].race").value("HUMAN"));
+                            jsonPath("$[0].status").value("ALIVE"))
+                    .andExpect(
+                            jsonPath("$[0].race").value(raceDto.getName()));
         }
 
         @Test
@@ -141,7 +152,9 @@ public class HeroControllerTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isForbidden());
+                            status().isForbidden())
+                    .andExpect(
+                            header().string("Reason", "The token was expected to have 3 parts, but got 0."));
         }
 
         @Test
@@ -167,6 +180,9 @@ public class HeroControllerTest {
         @Description(value = "Простое создание героя, в том числе проверка на создание героя, если у пользователя до этого нет героя со статусом ALIVE")
         void Hero_create_Success() throws Exception {
             //given
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             requestBuilder
                     .content(objectMapper.writeValueAsString(heroDto))
                     .header("Authorization", String.format("Bearer %s", token));
@@ -190,15 +206,18 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$.userLogin").value(userDto.getLogin()))
                     .andExpect(
-                            jsonPath("$.status").value("ALIVE"));
-//                    .andExpect(
-//                            jsonPath("$.race").value("HUMAN"));
+                            jsonPath("$.status").value("ALIVE"))
+                    .andExpect(
+                            jsonPath("$.race").value(raceDto.getName()));
         }
 
         @Test
         @Description(value = "Тест на создание героя со слишком маленькими характеристиками")
         void Hero_create_lackOfCharacteristicPoints() throws Exception {
             //given
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             heroDto.setStr(9);
 
             requestBuilder
@@ -208,13 +227,18 @@ public class HeroControllerTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Использовано слишком мало очков.*")));
         }
 
         @Test
         @Description(value = "Тест на создание героя со слишком большими характеристиками")
         void Hero_create_excessOfCharacteristicPoints() throws Exception {
             //given
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             heroDto.setStr(11);
             requestBuilder
                     .content(objectMapper.writeValueAsString(heroDto))
@@ -223,7 +247,9 @@ public class HeroControllerTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Использовано слишком много очков.*")));
         }
 
         @Test
@@ -236,7 +262,12 @@ public class HeroControllerTest {
                 wrongToken.append(Character.toString('A' + random.nextInt(26)));
             }
             requestBuilder.content(objectMapper.writeValueAsString(heroDto));
-            requestWithTokenCheckForbidden(wrongToken.toString(), requestBuilder, mockMvc);
+            requestBuilder.header("Authorization", "Bearer " + wrongToken);
+            mockMvc.perform(requestBuilder)
+                    .andExpect(
+                            status().isForbidden())
+                    .andExpect(
+                            header().string("Reason", "The token was expected to have 3 parts, but got 0."));
         }
 
         @Test
@@ -246,13 +277,21 @@ public class HeroControllerTest {
             requestBuilder
                     .content(objectMapper.writeValueAsString(heroDto));
             //when
-            requestWithTokenCheckForbidden(null, requestBuilder, mockMvc);
+            requestBuilder.header("Authorization", "Bearer " + null);
+            mockMvc.perform(requestBuilder)
+                    .andExpect(
+                            status().isForbidden())
+                    .andExpect(
+                            header().string("Reason", "The token was expected to have 3 parts, but got 0."));
         }
 
         @Test
         @Description(value = "Создание героя с недопустимыми знаками в имени")
         void Hero_create_WrongName() throws Exception {
             //given
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             heroDto.setName("%6732.?");
             requestBuilder
                     .content(objectMapper.writeValueAsString(heroDto))
@@ -261,13 +300,18 @@ public class HeroControllerTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Имя героя может состоять только из букв русского или латинского алфавита.*")));
         }
 
         @Test
         @Description(value = "Создание героя с недопустимыми знаками в фамилии")
         void Hero_create_WrongLastname() throws Exception {
             //given
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             heroDto.setLastName("%6732.?");
             requestBuilder
                     .content(objectMapper.writeValueAsString(heroDto))
@@ -276,13 +320,18 @@ public class HeroControllerTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Фамилия героя может состоять только из букв русского или латинского алфавита.*")));
         }
 
         @Test
         @Description(value = "Создание героя с пустыми именем и фамилией")
         void Hero_create_EmptyLastname() throws Exception {
             //given
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             heroDto.setLastName("");
             heroDto.setLastName("");
             requestBuilder
@@ -292,13 +341,20 @@ public class HeroControllerTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Фамилия героя должна состоять минимум из одного символа.*")))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Фамилия героя может состоять только из букв русского или латинского алфавита.*")));
         }
 
         @Test
         @Description(value = "Создание героя с пробелами вместо имени и фамилии")
         void Hero_create_BlankLastname() throws Exception {
             //given
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             heroDto.setLastName("     ");
             heroDto.setName("     ");
             requestBuilder
@@ -308,13 +364,24 @@ public class HeroControllerTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Фамилия героя должна состоять минимум из одного символа.*")))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Имя героя может состоять только из букв русского или латинского алфавита.*")))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Фамилия героя может состоять только из букв русского или латинского алфавита.*")))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Имя героя должно состоять минимум из одного символа.*")));
         }
 
         @Test
         @Description(value = "Тест на создание героя с длинным именем")
         void Hero_create_LongName() throws Exception {
             //given
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             Random random = new Random();
             StringBuilder name = new StringBuilder();
             for (int i = 0; i < 51; i++) {
@@ -328,13 +395,18 @@ public class HeroControllerTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Имя героя должно состоять минимум из одного символа.*")));
         }
 
         @Test
         @Description(value = "Тест на создание героя с длинной фамилией")
         void Hero_create_LongLastname() throws Exception {
             //given
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             Random random = new Random();
             StringBuilder lastname = new StringBuilder();
             for (int i = 0; i < 101; i++) {
@@ -348,13 +420,18 @@ public class HeroControllerTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Фамилия героя должна состоять минимум из одного символа.*")));
         }
 
         @Test
         @Description(value = "Тест на создание героя с невалидными характеристиками")
         void Hero_create_LowCharacteristics() throws Exception {
             //given
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             heroDto.setStr(4);
             heroDto.setDex(4);
             heroDto.setCon(4);
@@ -365,13 +442,22 @@ public class HeroControllerTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Ловкость должна быть не меньше 5.*")))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Выносливость должна быть не меньше 5.*")))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Сила должна быть не меньше 5.*")));
         }
 
         @Test
         @Description(value = "Тест на создание героя с пустыми характеристиками")
         void Hero_create_NullCharacteristics() throws Exception {
             //given
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             heroDto.setStr(null);
             heroDto.setDex(null);
             heroDto.setCon(null);
@@ -382,13 +468,22 @@ public class HeroControllerTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Ловкость должна быть не меньше 5.*")))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Выносливость должна быть не меньше 5.*")))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Сила должна быть не меньше 5.*")));
         }
 
         @Test
         @Description(value = "Создание еще одного героя со статусом ALIVE")
         void Hero_create_secondAliveHero() throws Exception {
             //given
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestBuilder twinkHeroCreationRequest = MockMvcRequestBuilders
                     .post("/api/user/hero")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -404,67 +499,111 @@ public class HeroControllerTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isBadRequest());
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*У пользователя: Login123_.- есть герой: NameЯ LastnameБ со статусом ALIVE.*")));
         }
 
-//        @Test
-//        @Description(value = "Тест на создание героя без расы")
-//        void Hero_create_NoRace() throws Exception {
-//            //given
-//            heroDto.setRace("");
-//            requestBuilder
-//                    .content(objectMapper.writeValueAsString(heroDto))
-//                    .header("Authorization", String.format("Bearer %s", token));
-//            //when
-//            mockMvc.perform(requestBuilder)
-//                    //then
-//                    .andExpect(
-//                            status().isBadRequest());
-//        }
+        @Test
+        @Description(value = "Тест на создание героя без расы empty")
+        void Hero_create_NoRace() throws Exception {
+            //given
+            heroDto.setRace("");
+            requestBuilder
+                    .content(objectMapper.writeValueAsString(heroDto))
+                    .header("Authorization", String.format("Bearer %s", token));
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Название расы должно состоять минимум из одного символа.*")))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Раса не выбрана.*")))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Использована несуществующая раса.*")));
 
-//        @Test
-//        @Description(value = "Тест на создание героя без расы")
-//        void Hero_create_BlankRace() throws Exception {
-//            //given
-//            heroDto.setRace("    ");
-//            requestBuilder
-//                    .content(objectMapper.writeValueAsString(heroDto))
-//                    .header("Authorization", String.format("Bearer %s", token));
-//            //when
-//            mockMvc.perform(requestBuilder)
-//                    //then
-//                    .andExpect(
-//                            status().isBadRequest());
-//        }
 
-//        @Test
-//        @Description(value = "Тест на создание героя без расы")
-//        void Hero_create_NullRace() throws Exception {
-//            //given
-//            heroDto.setRace(null);
-//            requestBuilder
-//                    .content(objectMapper.writeValueAsString(heroDto))
-//                    .header("Authorization", String.format("Bearer %s", token));
-//            //when
-//            mockMvc.perform(requestBuilder)
-//                    //then
-//                    .andExpect(
-//                            status().isBadRequest());
-//        }
+        }
 
-//        @Test
-//        @Description(value = "Тест на создание героя без расы")
-//        void Hero_create_WrongRace() throws Exception {
-//            //given
-//            heroDto.setRace("HORSE");
-//            requestBuilder
-//                    .content(objectMapper.writeValueAsString(heroDto))
-//                    .header("Authorization", String.format("Bearer %s", token));
-//            //when
-//            mockMvc.perform(requestBuilder)
-//                    //then
-//                    .andExpect(
-//                            status().isBadRequest());
-//        }
+        @Test
+        @Description(value = "Тест на создание героя без расы blank")
+        void Hero_create_BlankRace() throws Exception {
+            //given
+            heroDto.setRace("    ");
+            requestBuilder
+                    .content(objectMapper.writeValueAsString(heroDto))
+                    .header("Authorization", String.format("Bearer %s", token));
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Раса не выбрана.*")))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Использована несуществующая раса.*")));
+        }
+
+        @Test
+        @Description(value = "Тест на создание героя без расы null")
+        void Hero_create_NullRace() throws Exception {
+            //given
+            heroDto.setRace(null);
+            requestBuilder
+                    .content(objectMapper.writeValueAsString(heroDto))
+                    .header("Authorization", String.format("Bearer %s", token));
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Раса не выбрана.*")))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Использована несуществующая раса.*")));
+        }
+
+        @Test
+        @Description(value = "Тест на создание героя с несуществующей расой")
+        void Hero_create_WrongRace() throws Exception {
+            //given
+            heroDto.setRace("Лошадь");
+            requestBuilder
+                    .content(objectMapper.writeValueAsString(heroDto))
+                    .header("Authorization", String.format("Bearer %s", token));
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Использована несуществующая раса.*")));
+        }
+
+        @Test
+        @Description(value = "Тест на создание героя с неиграбельной расой")
+        void Hero_create_NoPlayableRace() throws Exception {
+            //given
+            RequestRaceDto noPlayable = RequestRaceDto.builder()
+                    .name("Скелет")
+                    .isPlayable(false)
+                    .build();
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(noPlayable));
+            heroDto.setRace(noPlayable.getName());
+            requestBuilder
+                    .content(objectMapper.writeValueAsString(heroDto))
+                    .header("Authorization", String.format("Bearer %s", token));
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Использована неиграбельная раса.*")));
+        }
     }
 }

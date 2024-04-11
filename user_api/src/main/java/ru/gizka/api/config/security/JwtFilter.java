@@ -43,6 +43,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             if (jwt.isEmpty() || jwt.isBlank()) {
                 log.error("Фильтр перехватил пустой токен");
+                response.setHeader("Reason", "Фильтр перехватил пустой токен");
             } else {
                 try {
                     String username = jwtService.validateToken(jwt);
@@ -50,6 +51,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     log.info("Извлечен логин из токена: {}", username);
                     if (optionalUser.isEmpty()) {
                         log.error("Пользователь не найден: {}", username);
+                        response.setHeader("Reason", String.format("Пользователь не найден: %s", username));
                         filterChain.doFilter(request, response);
                         return;
                     }
@@ -66,6 +68,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     }
                 } catch (JWTVerificationException e) {
                     log.error(String.format("Исключение: %s\nСообщение: %s", e.getClass(), e.getMessage()));
+                    response.setHeader("Reason", e.getMessage());
                     e.printStackTrace();
                 }
             }

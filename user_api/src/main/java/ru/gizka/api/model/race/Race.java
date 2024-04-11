@@ -27,7 +27,7 @@ public class Race {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "login", unique = true)
+    @Column(name = "name", unique = true)
     @Size(min = 4, max = 255)
     @NotBlank
     private String name;
@@ -40,8 +40,8 @@ public class Race {
     @NotNull
     private Boolean isPlayable;
 
-//    @OneToMany(mappedBy = "race",
-//            fetch = FetchType.LAZY,
-//            cascade = CascadeType.REMOVE)
-//    private List<Hero> heroes;
+    @OneToMany(mappedBy = "race",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE)
+    private List<Hero> heroes;
 }

@@ -17,6 +17,7 @@ import ru.gizka.api.RequestParentTest;
 import ru.gizka.api.dto.fight.DuelDto;
 import ru.gizka.api.dto.fight.Fighter;
 import ru.gizka.api.dto.hero.RequestHeroDto;
+import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 import ru.gizka.api.model.fight.Result;
 import ru.gizka.api.service.fightLogic.FightLogic;
@@ -41,6 +42,7 @@ public class FightLogicTest extends RequestParentTest {
     private MockHttpServletRequestBuilder requestBuilder;
     private String uri = "/api/user/hero/duel";
     private String token;
+    private RequestRaceDto raceDto;;
 
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
@@ -63,6 +65,11 @@ public class FightLogicTest extends RequestParentTest {
         fighter2 = new Fighter();
         fighter2.setCon(9);
 
+        raceDto = RequestRaceDto.builder()
+                .name("Человек")
+                .isPlayable(true)
+                .build();
+
         userDto = RequestAppUserDto.builder()
                 .login("Biba")
                 .password("Qwerty12345!")
@@ -79,7 +86,7 @@ public class FightLogicTest extends RequestParentTest {
                 .str(10)
                 .dex(8)
                 .con(12)
-//                .race(Race.ELF.name())
+                .race(raceDto.getName())
                 .build();
 
         heroDto2 = RequestHeroDto.builder()
@@ -88,7 +95,7 @@ public class FightLogicTest extends RequestParentTest {
                 .str(10)
                 .dex(12)
                 .con(8)
-//                .race(Race.HUMAN.name())
+                .race(raceDto.getName())
                 .build();
     }
 
@@ -113,6 +120,8 @@ public class FightLogicTest extends RequestParentTest {
         RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto2));
         String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
         String token2 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto2));
+        RequestParentTest.setAdminRights(mockMvc, token1);
+        RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
         RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
         RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto2), token2);
 
@@ -146,6 +155,8 @@ public class FightLogicTest extends RequestParentTest {
         RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto2));
         String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
         String token2 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto2));
+        RequestParentTest.setAdminRights(mockMvc, token1);
+        RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
         RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
         RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto2), token2);
 

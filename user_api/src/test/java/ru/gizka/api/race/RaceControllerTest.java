@@ -21,6 +21,7 @@ import ru.gizka.api.dto.user.RequestAppUserDto;
 import java.util.Random;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -97,7 +98,9 @@ public class RaceControllerTest {
             mockMvc.perform(getRequest)
                     //then
                     .andExpect(
-                            status().isNotFound());
+                            status().isNotFound())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Раса не найдена:.*")));
         }
 
         @Test
@@ -114,7 +117,9 @@ public class RaceControllerTest {
             mockMvc.perform(getRequest)
                     //then
                     .andExpect(
-                            status().isNotFound());
+                            status().isNotFound())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Раса не найдена:.*")));
         }
 
         @Test
@@ -131,7 +136,9 @@ public class RaceControllerTest {
             mockMvc.perform(getRequest)
                     //then
                     .andExpect(
-                            status().isNotFound());
+                            status().isNotFound())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*No static resource.*")));
         }
 
         @Test
@@ -148,7 +155,9 @@ public class RaceControllerTest {
             mockMvc.perform(getRequest)
                     //then
                     .andExpect(
-                            status().isNotFound());
+                            status().isNotFound())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Раса не найдена:.*")));
         }
 
         @Test

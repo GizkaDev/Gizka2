@@ -11,6 +11,7 @@ import ru.gizka.api.dto.fight.Fighter;
 import ru.gizka.api.dto.fight.Turn;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.hero.Status;
+import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.service.fightLogic.AttributeCalculator;
 import ru.gizka.api.service.fightLogic.FighterBuilder;
@@ -35,26 +36,28 @@ public class TurnLogicTest {
     private Hero hero2;
     private AppUser appUser1;
     private AppUser appUser2;
+    private Race race;
 
     @BeforeEach
     void setUp() {
         this.turnLogic = new TurnLogic(new Random());
         this.fighterBuilder = new FighterBuilder(new ModelMapper(), new AttributeCalculator());
         appUser1 = new AppUser(0L, "testLogin", null, null, null, null, null);
+        race = new Race(0L, "Человек", null, true, null);
         hero1 = new Hero(1234L, "TestName", "TestLastName",
                 9, 10, 11, new Date(),
                 appUser1,
                 Status.ALIVE,
-                Collections.emptyList());
-//                Race.HUMAN);
+                Collections.emptyList(),
+                race);
         fighter1 = fighterBuilder.build(hero1);
         appUser2 = new AppUser(0L, "testLogin2", null, null, null, null, null);
         hero2 = new Hero(1234L, "TestName2", "TestLastName2",
                 14, 5, 11, new Date(),
                 appUser2,
                 Status.ALIVE,
-                Collections.emptyList());
-//                Race.HUMAN);
+                Collections.emptyList(),
+                race);
         fighter2 = fighterBuilder.build(hero2);
     }
 

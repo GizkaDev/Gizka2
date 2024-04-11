@@ -66,14 +66,12 @@ public class DtoConverter {
 
     public Hero getModel(RequestHeroDto heroDto) {
         log.info("Конвертер переводит {} в {}", RequestHeroDto.class, Hero.class);
-//        Race race = Race.valueOf(heroDto.getRace().toUpperCase());
         return Hero.builder()
                 .name(heroDto.getName())
                 .lastname(heroDto.getLastName())
                 .str(heroDto.getStr())
                 .dex(heroDto.getDex())
                 .con(heroDto.getCon())
-//                .race(race)
                 .build();
     }
 
@@ -81,6 +79,7 @@ public class DtoConverter {
         log.info("Конвертер переводит {} в {}", Hero.class, ResponseHeroDto.class);
         ResponseHeroDto heroDto = modelMapper.map(hero, ResponseHeroDto.class);
         heroDto.setUserLogin(hero.getAppUser().getLogin());
+        heroDto.setRace(hero.getRace().getName());
         return heroDto;
     }
 

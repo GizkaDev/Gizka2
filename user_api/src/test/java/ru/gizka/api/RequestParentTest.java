@@ -10,16 +10,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class RequestParentTest {
-    public static void requestWithTokenCheckForbidden(String token, MockHttpServletRequestBuilder requestBuilder, MockMvc mockMvc) throws Exception {
-        //given
-        requestBuilder.header("Authorization", "Bearer " + token);
-        //when
-        mockMvc.perform(requestBuilder)
-                //then
-                .andExpect(
-                        status().isForbidden());
-    }
-
     public static void insertUser(MockMvc mockMvc, String userDtoAsString) throws Exception {
         RequestBuilder userRequest =
                 MockMvcRequestBuilders

@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.dto.notification.NotificationDto;
 import ru.gizka.api.dto.hero.RequestHeroDto;
+import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 
 import java.util.Date;
@@ -38,6 +39,7 @@ public class NotificationControllerTest extends RequestParentTest {
     private RequestAppUserDto userDto2;
     private RequestHeroDto heroDto;
     private RequestHeroDto heroDto2;
+    private RequestRaceDto raceDto;
 
     @Autowired
     private NotificationControllerTest(MockMvc mockMvc,
@@ -48,6 +50,10 @@ public class NotificationControllerTest extends RequestParentTest {
 
     @BeforeEach
     void setUp() {
+        raceDto = RequestRaceDto.builder()
+                .name("Человек")
+                .isPlayable(true)
+                .build();
         userDto = RequestAppUserDto.builder()
                 .login("Biba")
                 .password("Qwerty12345!")
@@ -64,7 +70,7 @@ public class NotificationControllerTest extends RequestParentTest {
                 .str(10)
                 .dex(8)
                 .con(12)
-//                .race(Race.ELF.name())
+                .race("Человек")
                 .build();
 
         heroDto2 = RequestHeroDto.builder()
@@ -73,13 +79,13 @@ public class NotificationControllerTest extends RequestParentTest {
                 .str(10)
                 .dex(12)
                 .con(8)
-//                .race(Race.HUMAN.name())
+                .race("Человек")
                 .build();
     }
 
     @Nested
     @DisplayName(value = "Тесты на получение оповещений")
-    class GetAllSortedByDateTest{
+    class GetAllSortedByDateTest {
 
         @Test
         @Description(value = "Тест на получение оповещений в сортированном виде")
@@ -89,6 +95,8 @@ public class NotificationControllerTest extends RequestParentTest {
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto2));
             String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             String token2 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto2));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto2), token2);
 

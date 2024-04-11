@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.dto.fight.DuelDto;
 import ru.gizka.api.dto.hero.RequestHeroDto;
+import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 
 import java.util.Date;
@@ -39,6 +40,7 @@ public class FightControllerTest extends RequestParentTest {
     private RequestAppUserDto userDto2;
     private RequestHeroDto heroDto;
     private RequestHeroDto heroDto2;
+    private RequestRaceDto raceDto;
 
     @Autowired
     private FightControllerTest(MockMvc mockMvc,
@@ -49,6 +51,11 @@ public class FightControllerTest extends RequestParentTest {
 
     @BeforeEach
     void setUp() throws Exception {
+        raceDto = RequestRaceDto.builder()
+                .name("Человек")
+                .isPlayable(true)
+                .build();
+
         userDto = RequestAppUserDto.builder()
                 .login("Biba")
                 .password("Qwerty12345!")
@@ -65,7 +72,7 @@ public class FightControllerTest extends RequestParentTest {
                 .str(10)
                 .dex(8)
                 .con(12)
-//                .race(Race.ELF.name())
+                .race("Человек")
                 .build();
 
         heroDto2 = RequestHeroDto.builder()
@@ -74,7 +81,7 @@ public class FightControllerTest extends RequestParentTest {
                 .str(10)
                 .dex(12)
                 .con(8)
-//                .race(Race.DWARF.name())
+                .race("Человек")
                 .build();
     }
 
@@ -90,6 +97,8 @@ public class FightControllerTest extends RequestParentTest {
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto2));
             String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             String token2 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto2));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto2), token2);
 
@@ -129,7 +138,9 @@ public class FightControllerTest extends RequestParentTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isNotFound());
+                            status().isNotFound())
+                    .andExpect(
+                            jsonPath("$.descr").value("У одного из пользователей нет героя со статусом ALIVE."));
         }
 
         @Test
@@ -151,7 +162,9 @@ public class FightControllerTest extends RequestParentTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isNotFound());
+                            status().isNotFound())
+                    .andExpect(
+                            jsonPath("$.descr").value("Пользователь не найден"));
         }
 
         @Test
@@ -173,8 +186,9 @@ public class FightControllerTest extends RequestParentTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isNotFound()
-                    );
+                            status().isNotFound())
+                    .andExpect(
+                            jsonPath("$.descr").value("Пользователь не найден"));
         }
 
         @Test
@@ -196,8 +210,7 @@ public class FightControllerTest extends RequestParentTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isBadRequest()
-                    );
+                            status().isBadRequest());
         }
 
         @Test
@@ -248,8 +261,7 @@ public class FightControllerTest extends RequestParentTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isBadRequest()
-                    );
+                            status().isBadRequest());
         }
 
         @Test
@@ -271,8 +283,9 @@ public class FightControllerTest extends RequestParentTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isBadRequest()
-                    );
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value("Нельзя выбрать своего героя в качестве соперника"));
         }
 
         @Test
@@ -295,8 +308,9 @@ public class FightControllerTest extends RequestParentTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isNotFound()
-                    );
+                            status().isNotFound())
+                    .andExpect(
+                            jsonPath("$.descr").value("У одного из пользователей нет героя со статусом ALIVE."));
         }
 
         @Test
@@ -307,6 +321,8 @@ public class FightControllerTest extends RequestParentTest {
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto2));
             String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             String token2 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto2));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto2), token2);
 
@@ -396,8 +412,11 @@ public class FightControllerTest extends RequestParentTest {
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto2));
             String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             String token2 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto2));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto2), token2);
+            RequestParentTest.setAdminRights(mockMvc, token1);
 
             token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.insertDuel(mockMvc, userDto2.getLogin(), token1);
