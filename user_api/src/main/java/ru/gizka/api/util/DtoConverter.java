@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.gizka.api.dto.creature.RequestCreatureDto;
+import ru.gizka.api.dto.creature.ResponseCreatureDto;
 import ru.gizka.api.dto.notification.NotificationDto;
 import ru.gizka.api.dto.fight.DuelDto;
 import ru.gizka.api.dto.hero.RequestHeroDto;
@@ -15,6 +17,7 @@ import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.race.ResponseRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 import ru.gizka.api.dto.user.ResponseAppUserDto;
+import ru.gizka.api.model.creature.Creature;
 import ru.gizka.api.model.notification.Notification;
 import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.model.hero.Hero;
@@ -36,6 +39,23 @@ public class DtoConverter {
         this.modelMapper = modelMapper;
         this.fighterBuilder = fighterBuilder;
         this.objectMapper = objectMapper;
+    }
+
+    public ResponseCreatureDto getResponseDto(Creature creature){
+        log.info("Конвертер переводит {} в {}", Creature.class, RequestCreatureDto.class);
+        ResponseCreatureDto creatureDto = modelMapper.map(creature, ResponseCreatureDto.class);
+        creatureDto.setRace(creature.getRace().getName());
+        return creatureDto;
+    }
+
+    public Creature getModel(RequestCreatureDto creatureDto){
+        log.info("Конвертер переводит {} в {}", RequestCreatureDto.class, Creature.class);
+        return Creature.builder()
+                .name(creatureDto.getName())
+                .str(creatureDto.getStr())
+                .dex(creatureDto.getDex())
+                .con(creatureDto.getCon())
+                .build();
     }
 
     public ResponseRaceDto getResponseDto(Race race) {

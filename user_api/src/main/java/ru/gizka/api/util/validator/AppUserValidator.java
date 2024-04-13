@@ -37,7 +37,7 @@ public class AppUserValidator implements Validator {
             log.info("Валидатор пользователей сообщает, что логин занят: {}", userDto.getLogin());
         }
 
-        if(userDto.getLogin().equals("null")){
+        if(userDto.getLogin() == null || userDto.getLogin().equals("null")){
             errors.rejectValue("login", "", "Недопустимый логин");
             log.info("Валидатор пользователей сообщает, что логин недопустим: {}", userDto.getLogin());
         }

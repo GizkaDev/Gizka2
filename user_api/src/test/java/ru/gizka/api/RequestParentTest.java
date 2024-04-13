@@ -81,4 +81,13 @@ public class RequestParentTest {
                 .header("Authorization", "Bearer " + token);
         return mockMvc.perform(raceRequest);
     }
+
+    public static ResultActions insertCreature(MockMvc mockMvc, String token, String creatureDtoAsString) throws Exception {
+        MockHttpServletRequestBuilder creatureRequest = MockMvcRequestBuilders
+                .post("/api/admin/creature")
+                .contentType(jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
+                .content(creatureDtoAsString)
+                .header("Authorization", "Bearer " + token);
+        return mockMvc.perform(creatureRequest);
+    }
 }

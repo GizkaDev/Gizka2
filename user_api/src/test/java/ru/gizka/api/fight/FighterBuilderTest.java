@@ -29,7 +29,7 @@ public class FighterBuilderTest {
     @BeforeEach
     void setUp() {
         appUser = new AppUser(0L, "testLogin", null, null, null, null, null);
-        race = new Race(0L, "Человек", null, true, null);
+        race = new Race(0L, "Человек", null, true, null, null);
         hero = new Hero(1234L, "TestName", "TestLastName",
                 9, 10, 11, new Date(),
                 appUser,

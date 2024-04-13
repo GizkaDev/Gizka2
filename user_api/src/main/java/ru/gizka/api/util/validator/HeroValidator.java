@@ -18,7 +18,7 @@ public class HeroValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return RequestAppUserDto.class.equals(clazz);
+        return RequestHeroDto.class.equals(clazz);
     }
 
     @Override

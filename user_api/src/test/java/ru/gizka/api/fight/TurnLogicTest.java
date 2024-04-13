@@ -43,7 +43,7 @@ public class TurnLogicTest {
         this.turnLogic = new TurnLogic(new Random());
         this.fighterBuilder = new FighterBuilder(new ModelMapper(), new AttributeCalculator());
         appUser1 = new AppUser(0L, "testLogin", null, null, null, null, null);
-        race = new Race(0L, "Человек", null, true, null);
+        race = new Race(0L, "Человек", null, true, null, null);
         hero1 = new Hero(1234L, "TestName", "TestLastName",
                 9, 10, 11, new Date(),
                 appUser1,

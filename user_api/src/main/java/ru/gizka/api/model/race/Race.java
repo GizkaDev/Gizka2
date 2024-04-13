@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.gizka.api.model.creature.Creature;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.hero.Status;
 
@@ -44,4 +45,9 @@ public class Race {
             fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE)
     private List<Hero> heroes;
+
+    @OneToMany(mappedBy = "race",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE)
+    private List<Creature> creatures;
 }
