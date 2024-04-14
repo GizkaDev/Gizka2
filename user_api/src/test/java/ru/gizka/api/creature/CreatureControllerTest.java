@@ -1,7 +1,6 @@
-package ru.gizka.api.race;
+package ru.gizka.api.creature;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.ws.rs.core.MediaType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -10,11 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Description;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.RequestParentTest;
+import ru.gizka.api.dto.creature.RequestCreatureDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 
@@ -28,71 +29,81 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
-public class RaceControllerTest {
-    private String uri = "/api/race";
+public class CreatureControllerTest {
+    private String uri = "/api/creature";
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
     private final Random random;
 
     @Autowired
-    private RaceControllerTest(MockMvc mockMvc) {
+    private CreatureControllerTest(MockMvc mockMvc){
         this.mockMvc = mockMvc;
         this.objectMapper = new ObjectMapper();
         this.random = new Random();
     }
 
     @Nested
-    @DisplayName(value = "Тесты на получение расы по названию")
+    @DisplayName(value = "Тесты на получение моба по названию")
     class GetByNameTest {
         private RequestAppUserDto userDto;
+        private RequestCreatureDto creatureDto;
         private RequestRaceDto raceDto;
         private MockHttpServletRequestBuilder getRequest;
 
         @BeforeEach
-        void setUp() {
+        void setUp(){
             userDto = RequestAppUserDto.builder()
                     .login("Biba")
                     .password("Qwerty12345!")
                     .build();
 
             raceDto = RequestRaceDto.builder()
-                    .name("Человек")
+                    .name("Монстр")
                     .isPlayable(true)
+                    .build();
+
+            creatureDto = RequestCreatureDto.builder()
+                    .name("Злобоглаз")
+                    .str(4)
+                    .dex(10)
+                    .con(7)
+                    .race(raceDto.getName())
                     .build();
         }
 
         @Test
-        @Description(value = "Тест на получение расы")
-        void Race_getByName_SuccessTest() throws Exception {
+        @Description(value = "Тест на получение моба")
+        void Creature_getByName_SuccessTest() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
             RequestParentTest.insertRace(mockMvc, token, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(creatureDto));
             getRequest = MockMvcRequestBuilders
-                    .get(uri + "/" + raceDto.getName())
+                    .get(uri + "/" + creatureDto.getName())
                     .contentType(MediaType.APPLICATION_JSON)
                     .header("Authorization", "Bearer " + token);
             //when
             mockMvc.perform(getRequest)
-                    //then
+            //then
                     .andExpect(
                             status().isOk())
                     .andExpect(
-                            jsonPath("$.name").value(raceDto.getName()))
+                            jsonPath("$.name").value(creatureDto.getName()))
                     .andExpect(
-                            jsonPath("$.isPlayable").value(raceDto.getIsPlayable()));
+                            jsonPath("$.race").value(creatureDto.getRace()));
         }
 
         @Test
-        @Description(value = "Тест на получение несуществующей расы")
+        @Description(value = "Тест на получение несуществующего моба")
         void Race_getByName_NotExist() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             getRequest = MockMvcRequestBuilders
-                    .get(uri + "/" + "Эльф")
-                    .contentType(MediaType.APPLICATION_JSON)
+                    .get(uri + "/" + "Водяной элементаль")
+                    .contentType(jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
                     .header("Authorization", "Bearer " + token);
             //when
             mockMvc.perform(getRequest)
@@ -100,18 +111,18 @@ public class RaceControllerTest {
                     .andExpect(
                             status().isNotFound())
                     .andExpect(
-                            jsonPath("$.descr").value(matchesPattern(".*Раса не найдена:.*")));
+                            jsonPath("$.descr").value(matchesPattern(".*Моб не найден:.*")));
         }
 
         @Test
-        @Description(value = "Тест на получение расы null")
+        @Description(value = "Тест на получение моба null")
         void Race_getByName_NullName() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             getRequest = MockMvcRequestBuilders
                     .get(uri + "/" + null)
-                    .contentType(MediaType.APPLICATION_JSON)
+                    .contentType(jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
                     .header("Authorization", "Bearer " + token);
             //when
             mockMvc.perform(getRequest)
@@ -119,18 +130,18 @@ public class RaceControllerTest {
                     .andExpect(
                             status().isNotFound())
                     .andExpect(
-                            jsonPath("$.descr").value(matchesPattern(".*Раса не найдена:.*")));
+                            jsonPath("$.descr").value(matchesPattern(".*Моб не найден:.*")));
         }
 
         @Test
-        @Description(value = "Тест на получение расы empty")
+        @Description(value = "Тест на получение моба empty")
         void Race_getByName_EmptyName() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             getRequest = MockMvcRequestBuilders
                     .get(uri + "/" + "")
-                    .contentType(MediaType.APPLICATION_JSON)
+                    .contentType(jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
                     .header("Authorization", "Bearer " + token);
             //when
             mockMvc.perform(getRequest)
@@ -142,14 +153,14 @@ public class RaceControllerTest {
         }
 
         @Test
-        @Description(value = "Тест на получение расы blank")
+        @Description(value = "Тест на получение моба blank")
         void Race_getByName_BlankName() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             getRequest = MockMvcRequestBuilders
                     .get(uri + "/" + "     ")
-                    .contentType(MediaType.APPLICATION_JSON)
+                    .contentType(jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
                     .header("Authorization", "Bearer " + token);
             //when
             mockMvc.perform(getRequest)
@@ -157,11 +168,11 @@ public class RaceControllerTest {
                     .andExpect(
                             status().isNotFound())
                     .andExpect(
-                            jsonPath("$.descr").value(matchesPattern(".*Раса не найдена:.*")));
+                            jsonPath("$.descr").value(matchesPattern(".*Моб не найден:.*")));
         }
 
         @Test
-        @Description(value = "Тест на получение расы c длинным именем")
+        @Description(value = "Тест на получение моба c длинным именем")
         void Race_getByName_LongName() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -172,7 +183,7 @@ public class RaceControllerTest {
             }
             getRequest = MockMvcRequestBuilders
                     .get(uri + "/" + name)
-                    .contentType(MediaType.APPLICATION_JSON)
+                    .contentType(jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
                     .header("Authorization", "Bearer " + token);
             //when
             mockMvc.perform(getRequest)
@@ -183,14 +194,15 @@ public class RaceControllerTest {
     }
 
     @Nested
-    @DisplayName(value = "Тесты на получение всех рас")
+    @DisplayName(value = "Тесты на получение всех мобов")
     class GetAllTest {
         private RequestAppUserDto userDto;
-        private RequestRaceDto raceDto1;
-        private RequestRaceDto raceDto2;
-        private RequestRaceDto raceDto3;
-        private RequestRaceDto raceDto4;
-        private RequestRaceDto raceDto5;
+        private RequestRaceDto raceDto;
+        private RequestCreatureDto creatureDto1;
+        private RequestCreatureDto creatureDto2;
+        private RequestCreatureDto creatureDto3;
+        private RequestCreatureDto creatureDto4;
+        private RequestCreatureDto creatureDto5;
         private MockHttpServletRequestBuilder getRequest;
 
         @BeforeEach
@@ -200,51 +212,72 @@ public class RaceControllerTest {
                     .password("Qwerty12345!")
                     .build();
 
-            raceDto1 = RequestRaceDto.builder()
-                    .name("Человек")
-                    .isPlayable(true)
-                    .build();
-
-            raceDto2 = RequestRaceDto.builder()
-                    .name("Эльф")
-                    .isPlayable(true)
-                    .build();
-
-            raceDto3 = RequestRaceDto.builder()
-                    .name("Гном")
-                    .isPlayable(true)
-                    .build();
-
-            raceDto4 = RequestRaceDto.builder()
-                    .name("Тролль")
+            raceDto = RequestRaceDto.builder()
+                    .name("Дракон")
                     .isPlayable(false)
                     .build();
 
-            raceDto5 = RequestRaceDto.builder()
-                    .name("Скелет")
-                    .isPlayable(false)
+            creatureDto1 = RequestCreatureDto.builder()
+                    .name("Черный дракон")
+                    .str(30)
+                    .dex(20)
+                    .con(10)
+                    .race(raceDto.getName())
+                    .build();
+
+            creatureDto2 = RequestCreatureDto.builder()
+                    .name("Зеленый дракон")
+                    .str(20)
+                    .dex(10)
+                    .con(30)
+                    .race(raceDto.getName())
+                    .build();
+
+            creatureDto3 = RequestCreatureDto.builder()
+                    .name("Красный дракон")
+                    .str(10)
+                    .dex(30)
+                    .con(20)
+                    .race(raceDto.getName())
+                    .build();
+
+            creatureDto4 = RequestCreatureDto.builder()
+                    .name("Синий дракон")
+                    .str(15)
+                    .dex(25)
+                    .con(20)
+                    .race(raceDto.getName())
+                    .build();
+
+            creatureDto5 = RequestCreatureDto.builder()
+                    .name("Ржавый дракон")
+                    .str(10)
+                    .dex(25)
+                    .con(25)
+                    .race(raceDto.getName())
                     .build();
         }
 
         @Test
-        @Description(value = "Тест на получение всех рас")
-        void Race_getAll_SuccessTest() throws Exception {
+        @Description(value = "Тест на получение всех мобов")
+        void Creature_getAll_SuccessTest() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
-            RequestParentTest.insertRace(mockMvc, token, objectMapper.writeValueAsString(raceDto1));
-            RequestParentTest.insertRace(mockMvc, token, objectMapper.writeValueAsString(raceDto2));
-            RequestParentTest.insertRace(mockMvc, token, objectMapper.writeValueAsString(raceDto3));
-            RequestParentTest.insertRace(mockMvc, token, objectMapper.writeValueAsString(raceDto4));
-            RequestParentTest.insertRace(mockMvc, token, objectMapper.writeValueAsString(raceDto5));
+            RequestParentTest.insertRace(mockMvc, token, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(creatureDto1));
+            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(creatureDto2));
+            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(creatureDto3));
+            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(creatureDto4));
+            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(creatureDto5));
             getRequest = MockMvcRequestBuilders
-                    .get(uri + "/all")
+                    .get(uri+ "/all")
                     .contentType(MediaType.APPLICATION_JSON)
                     .header("Authorization", "Bearer " + token);
             //when
             mockMvc.perform(getRequest)
-                    //then
+            //then
                     .andExpect(
                             status().isOk())
                     .andExpect(
@@ -253,13 +286,13 @@ public class RaceControllerTest {
 
         @Test
         @Description(value = "Тест на получение всех рас, если нет рас")
-        void Race_getAll_NoRacesTest() throws Exception {
+        void Race_getAll_NoCreaturesTest() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             getRequest = MockMvcRequestBuilders
                     .get(uri + "/all")
-                    .contentType(MediaType.APPLICATION_JSON)
+                    .contentType(jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
                     .header("Authorization", "Bearer " + token);
             //when
             mockMvc.perform(getRequest)

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.gizka.api.dto.race.ResponseRaceDto;
-import ru.gizka.api.facade.race.RaceFacade;
+import ru.gizka.api.facade.RaceFacade;
 
 import java.util.List;
 

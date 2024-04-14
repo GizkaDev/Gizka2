@@ -1,4 +1,4 @@
-package ru.gizka.api.facade.race;
+package ru.gizka.api.facade;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;

@@ -1,5 +1,6 @@
 package ru.gizka.api.facade;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import ru.gizka.api.dto.creature.RequestCreatureDto;
 import ru.gizka.api.dto.creature.ResponseCreatureDto;
-import ru.gizka.api.dto.hero.RequestHeroDto;
 import ru.gizka.api.model.creature.Creature;
 import ru.gizka.api.model.race.Race;
 import ru.gizka.api.service.CreatureService;
@@ -44,6 +44,21 @@ public class CreatureFacade {
         checkValues(creatureDto, bindingResult, mbRace);
         Creature creature = creatureService.create(dtoConverter.getModel(creatureDto), mbRace.get());
         return dtoConverter.getResponseDto(creature);
+    }
+
+    public ResponseCreatureDto getByName(String name) {
+        log.info("Сервис мобов начинает поиск моба: {}", name);
+        Creature creature = creatureService.getByName(name)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(String.format("Моб не найден: %s", name)));
+        return dtoConverter.getResponseDto(creature);
+    }
+
+    public List<ResponseCreatureDto> getAll() {
+        log.info("Сервис мобов начинает поиск мобов");
+        return creatureService.getAll().stream()
+                .map(dtoConverter::getResponseDto)
+                .toList();
     }
 
     private void checkValues(RequestCreatureDto creatureDto,

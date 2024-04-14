@@ -145,6 +145,27 @@ public class AdminCreatureControllerTest {
         }
 
         @Test
+        @Description(value = "Тест на создание моба c названием 'null'")
+        void Creature_create_nullName() throws Exception {
+            //given
+            creatureDto.setName("null");
+
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token);
+            createRequest
+                    .content(objectMapper.writeValueAsBytes(creatureDto))
+                    .header("Authorization", "Bearer " + token);
+            //when
+            mockMvc.perform(createRequest)
+                    //then
+                    .andExpect(
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Недопустимое название.*")));
+        }
+
+        @Test
         @Description(value = "Тест на создание моба без названия null")
         void Creature_create_NoName() throws Exception {
             //given
