@@ -35,7 +35,7 @@ public class FighterBuilderTest {
                 appUser,
                 Status.ALIVE,
                 Collections.emptyList(),
-                race);
+                race, null, null, null, null, null, null, null, null, null, null);
 
     }
 

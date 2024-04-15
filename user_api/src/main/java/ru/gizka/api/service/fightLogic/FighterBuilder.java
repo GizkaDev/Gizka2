@@ -23,8 +23,16 @@ public class FighterBuilder {
     public Fighter build(Hero hero){
         log.info("Сервис сборки бойцов готовит бойца: {} {}({})",
                 hero.getName(), hero.getLastname(), hero.getAppUser().getLogin());
-        Fighter fighter = modelMapper.map(hero, Fighter.class);
-        fighter.setUserLogin(hero.getAppUser().getLogin());
+        Fighter fighter = Fighter.builder()
+                .name(hero.getName())
+                .lastname(hero.getLastname())
+                .createdAt(hero.getCreatedAt())
+                .userLogin(hero.getAppUser().getLogin())
+                .status(hero.getStatus().name())
+                .str(hero.getStr())
+                .dex(hero.getDex())
+                .con(hero.getCon())
+                .build();
         attributeCalculator.calculate(fighter);
         return fighter;
     }

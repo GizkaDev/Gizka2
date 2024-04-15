@@ -132,7 +132,27 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$[0].status").value("ALIVE"))
                     .andExpect(
-                            jsonPath("$[0].race").value(raceDto.getName()));
+                            jsonPath("$[0].race").value(raceDto.getName()))
+                    .andExpect(
+                            jsonPath("$[0].minInit").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].maxInit").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].minAttack").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].maxAttack").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].minEvasion").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].maxEvasion").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].minPhysDamage").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].maxPhysDamage").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].maxHp").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].currentHp").isNumber());
         }
 
         @Test
@@ -208,7 +228,27 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$.status").value("ALIVE"))
                     .andExpect(
-                            jsonPath("$.race").value(raceDto.getName()));
+                            jsonPath("$.race").value(raceDto.getName()))
+                    .andExpect(
+                            jsonPath("$.minInit").isNumber())
+                    .andExpect(
+                            jsonPath("$.maxInit").isNumber())
+                    .andExpect(
+                            jsonPath("$.minAttack").isNumber())
+                    .andExpect(
+                            jsonPath("$.maxAttack").isNumber())
+                    .andExpect(
+                            jsonPath("$.minEvasion").isNumber())
+                    .andExpect(
+                            jsonPath("$.maxEvasion").isNumber())
+                    .andExpect(
+                            jsonPath("$.minPhysDamage").isNumber())
+                    .andExpect(
+                            jsonPath("$.maxPhysDamage").isNumber())
+                    .andExpect(
+                            jsonPath("$.maxHp").isNumber())
+                    .andExpect(
+                            jsonPath("$.currentHp").isNumber());
         }
 
         @Test

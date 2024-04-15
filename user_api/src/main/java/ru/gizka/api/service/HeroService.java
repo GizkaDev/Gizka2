@@ -11,6 +11,7 @@ import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.hero.Status;
 import ru.gizka.api.repo.HeroRepo;
+import ru.gizka.api.service.fightLogic.AttributeCalculator;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,10 +22,13 @@ import java.util.List;
 @Slf4j
 public class HeroService {
     private final HeroRepo heroRepo;
+    private final AttributeCalculator attributeCalculator;
 
     @Autowired
-    public HeroService(HeroRepo heroRepo) {
+    public HeroService(HeroRepo heroRepo,
+                       AttributeCalculator attributeCalculator) {
         this.heroRepo = heroRepo;
+        this.attributeCalculator = attributeCalculator;
     }
 
     @Transactional
@@ -38,6 +42,7 @@ public class HeroService {
             hero.setRace(race);
             hero.setStatus(Status.ALIVE);
             hero.setCreatedAt(new Date());
+            attributeCalculator.calculateForNew(hero);
         } else {
             log.error("Сервис героев прервал создание героя для пользователя: {} , т.к. у пользователя есть герой: {} со статусом ALIVE",
                     appUser.getLogin(), String.format("%s %s", heroes.get(0).getName(), heroes.get(0).getLastname()));

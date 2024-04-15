@@ -1,5 +1,6 @@
 package ru.gizka.api.dto.hero;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,4 +24,14 @@ public class ResponseHeroDto {
     private String userLogin;
     private String status;
     private String race;
+    private Integer minInit;
+    private Integer maxInit;
+    private Integer minAttack;
+    private Integer maxAttack;
+    private Integer minEvasion;
+    private Integer maxEvasion;
+    private Integer minPhysDamage;
+    private Integer maxPhysDamage;
+    private Integer maxHp;
+    private Integer currentHp;
 }

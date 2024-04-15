@@ -71,4 +71,34 @@ public class Hero {
     @ManyToOne
     @JoinColumn(name = "hero_race", referencedColumnName = "name")
     private Race race;
+
+    @Column(name = "min_init")
+    private Integer minInit;
+
+    @Column(name = "max_init")
+    private Integer maxInit;
+
+    @Column(name = "min_attack")
+    private Integer minAttack;
+
+    @Column(name = "max_attack")
+    private Integer maxAttack;
+
+    @Column(name = "min_evasion")
+    private Integer minEvasion;
+
+    @Column(name = "max_evasion")
+    private Integer maxEvasion;
+
+    @Column(name = "min_phys_damage")
+    private Integer minPhysDamage;
+
+    @Column(name = "max_phys_damage")
+    private Integer maxPhysDamage;
+
+    @Column(name = "max_hp")
+    private Integer maxHp;
+
+    @Column(name = "current_hp")
+    private Integer currentHp;
 }
