@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
-public class FightControllerTest extends RequestParentTest {
+public class DuelControllerTest extends RequestParentTest {
     private String uri = "/api/user/hero/duel";
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
@@ -43,8 +43,8 @@ public class FightControllerTest extends RequestParentTest {
     private RequestRaceDto raceDto;
 
     @Autowired
-    private FightControllerTest(MockMvc mockMvc,
-                                ObjectMapper objectMapper) {
+    private DuelControllerTest(MockMvc mockMvc,
+                               ObjectMapper objectMapper) {
         this.mockMvc = mockMvc;
         this.objectMapper = objectMapper;
     }
@@ -354,7 +354,31 @@ public class FightControllerTest extends RequestParentTest {
                     .andExpect(
                             jsonPath("$[0].userLogin").value(userDto.getLogin()))
                     .andExpect(
-                            jsonPath("$[0].status").value("ALIVE"));
+                            jsonPath("$[0].status").value("ALIVE"))
+                    .andExpect(
+                            jsonPath("$[0].race").value(heroDto.getRace()))
+                    .andExpect(
+                            jsonPath("$[0].minInit").value("0"))
+                    .andExpect(
+                            jsonPath("$[0].maxInit").value(heroDto.getDex()))
+                    .andExpect(
+                            jsonPath("$[0].minAttack").value("0"))
+                    .andExpect(
+                            jsonPath("$[0].maxAttack").value(heroDto.getDex()))
+                    .andExpect(
+                            jsonPath("$[0].minEvasion").value("0"))
+                    .andExpect(
+                            jsonPath("$[0].maxEvasion").value(heroDto.getDex()))
+                    .andExpect(
+                            jsonPath("$[0].minPhysDamage").value("0"))
+                    .andExpect(
+                            jsonPath("$[0].maxPhysDamage").value(heroDto.getStr()))
+                    .andExpect(
+                            jsonPath("$[0].maxHp").value(heroDto.getCon() * 3))
+                    .andExpect(
+                            jsonPath("$[0].currentHp").value(heroDto.getCon() * 3))
+                    .andExpect(
+                            jsonPath("$[0].currentCon").value(heroDto.getCon()));
 
             //when
             RequestParentTest.getCurrentHero(mockMvc, token2)
@@ -376,7 +400,31 @@ public class FightControllerTest extends RequestParentTest {
                     .andExpect(
                             jsonPath("$[0].userLogin").value(userDto2.getLogin()))
                     .andExpect(
-                            jsonPath("$[0].status").value("ALIVE"));
+                            jsonPath("$[0].status").value("ALIVE"))
+                    .andExpect(
+                            jsonPath("$[0].race").value(heroDto2.getRace()))
+                    .andExpect(
+                            jsonPath("$[0].minInit").value("0"))
+                    .andExpect(
+                            jsonPath("$[0].maxInit").value(heroDto2.getDex()))
+                    .andExpect(
+                            jsonPath("$[0].minAttack").value("0"))
+                    .andExpect(
+                            jsonPath("$[0].maxAttack").value(heroDto2.getDex()))
+                    .andExpect(
+                            jsonPath("$[0].minEvasion").value("0"))
+                    .andExpect(
+                            jsonPath("$[0].maxEvasion").value(heroDto2.getDex()))
+                    .andExpect(
+                            jsonPath("$[0].minPhysDamage").value("0"))
+                    .andExpect(
+                            jsonPath("$[0].maxPhysDamage").value(heroDto2.getStr()))
+                    .andExpect(
+                            jsonPath("$[0].maxHp").value(heroDto2.getCon() * 3))
+                    .andExpect(
+                            jsonPath("$[0].currentHp").value(heroDto2.getCon() * 3))
+                    .andExpect(
+                            jsonPath("$[0].currentCon").value(heroDto2.getCon()));
         }
     }
 

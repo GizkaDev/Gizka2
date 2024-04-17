@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.gizka.api.model.fight.Duel;
+import ru.gizka.api.model.fight.Fight;
 import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.user.AppUser;
 
@@ -101,4 +102,12 @@ public class Hero {
 
     @Column(name = "current_hp")
     private Integer currentHp;
+
+    @Column(name = "current_con")
+    private Integer currentCon;
+
+    @OneToMany(mappedBy = "hero",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE)
+    private List<Fight> fights;
 }

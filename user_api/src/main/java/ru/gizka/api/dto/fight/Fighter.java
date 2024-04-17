@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.gizka.api.model.creature.Creature;
 import ru.gizka.api.model.hero.Hero;
 
 import java.util.Date;
@@ -14,38 +15,87 @@ import java.util.Date;
 @Builder
 public class Fighter {
     private String name;
-    private String lastname;
     private Date createdAt;
-    private String userLogin;
-    private String status;
+    private String race;
 
     private Integer str;
     private Integer dex;
     private Integer con;
 
-    private Integer attack;
-    private Integer evasion;
-    private Integer physDamage;
+    private Integer minInit;
+    private Integer maxInit;
+    private Integer minAttack;
+    private Integer maxAttack;
+    private Integer minEvasion;
+    private Integer maxEvasion;
+    private Integer minPhysDamage;
+    private Integer maxPhysDamage;
     private Integer maxHp;
-    private Integer initiative;
-
     private Integer currentHp;
     private Integer currentCon;
 
-    public Fighter(Fighter fighter){
+    public Fighter(Creature creature) {
+        this.name = creature.getName();
+        this.createdAt = creature.getCreatedAt();
+        this.race = creature.getRace().getName();
+
+        this.str = creature.getStr();
+        this.dex = creature.getDex();
+        this.con = creature.getCon();
+
+        this.minInit = creature.getMinInit();
+        this.maxInit = creature.getMaxInit();
+        this.minAttack = creature.getMinAttack();
+        this.maxAttack = creature.getMaxAttack();
+        this.minEvasion = creature.getMinEvasion();
+        this.maxEvasion = creature.getMaxEvasion();
+        this.minPhysDamage = creature.getMinPhysDamage();
+        this.maxPhysDamage = creature.getMaxPhysDamage();
+        this.maxHp = creature.getMaxHp();
+        this.currentHp = creature.getCurrentHp();
+        this.currentCon = creature.getCurrentCon();
+    }
+
+    public Fighter(Hero hero) {
+        this.name = String.format("%s %s(%s)", hero.getName(), hero.getLastname(), hero.getAppUser().getLogin());
+        this.createdAt = hero.getCreatedAt();
+        this.race = hero.getRace().getName();
+
+        this.str = hero.getStr();
+        this.dex = hero.getDex();
+        this.con = hero.getCon();
+
+        this.minInit = hero.getMinInit();
+        this.maxInit = hero.getMaxInit();
+        this.minAttack = hero.getMinAttack();
+        this.maxAttack = hero.getMaxAttack();
+        this.minEvasion = hero.getMinEvasion();
+        this.maxEvasion = hero.getMaxEvasion();
+        this.minPhysDamage = hero.getMinPhysDamage();
+        this.maxPhysDamage = hero.getMaxPhysDamage();
+        this.maxHp = hero.getMaxHp();
+        this.currentHp = hero.getCurrentHp();
+        this.currentCon = hero.getCurrentCon();
+    }
+
+    public Fighter(Fighter fighter) {
         this.name = fighter.getName();
-        this.lastname = fighter.getLastname();
         this.createdAt = fighter.getCreatedAt();
-        this.userLogin = fighter.getUserLogin();
-        this.status = fighter.getStatus();
+        this.race = fighter.getRace();
+
         this.str = fighter.getStr();
         this.dex = fighter.getDex();
         this.con = fighter.getCon();
-        this.attack = fighter.getAttack();
-        this.evasion = fighter.getEvasion();
-        this.physDamage = fighter.getPhysDamage();
+
+        this.minInit = fighter.getMinInit();
+        this.maxInit = fighter.getMaxInit();
+        this.minAttack = fighter.getMinAttack();
+        this.maxAttack = fighter.getMaxAttack();
+        this.minEvasion = fighter.getMinEvasion();
+        this.maxEvasion = fighter.getMaxEvasion();
+        this.minPhysDamage = fighter.getMinPhysDamage();
+        this.maxPhysDamage = fighter.getMaxPhysDamage();
         this.maxHp = fighter.getMaxHp();
-        this.initiative = fighter.getInitiative();
         this.currentHp = fighter.getCurrentHp();
         this.currentCon = fighter.getCurrentCon();
     }

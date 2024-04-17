@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.gizka.api.dto.creature.ResponseCreatureDto;
+import ru.gizka.api.dto.hero.ResponseHeroDto;
 
 import java.util.Date;
 import java.util.List;
@@ -12,9 +14,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DuelDto {
+public class FightDto {
     private Long id;
-    private List<Fighter> heroFighters;
+    private ResponseHeroDto heroFighter;
+    private ResponseCreatureDto creatureFighter;
     private List<Turn> turns;
     private String result;
     private Date createdAt;

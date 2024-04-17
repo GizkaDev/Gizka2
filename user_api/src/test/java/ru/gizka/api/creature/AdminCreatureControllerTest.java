@@ -100,7 +100,29 @@ public class AdminCreatureControllerTest {
                     .andExpect(
                             jsonPath("$.con").value(creatureDto.getCon()))
                     .andExpect(
-                            jsonPath("$.race").value(creatureDto.getRace()));
+                            jsonPath("$.race").value(creatureDto.getRace()))
+                    .andExpect(
+                            jsonPath("$.minInit").value("0"))
+                    .andExpect(
+                            jsonPath("$.maxInit").value(creatureDto.getDex()))
+                    .andExpect(
+                            jsonPath("$.minAttack").value("0"))
+                    .andExpect(
+                            jsonPath("$.maxAttack").value(creatureDto.getDex()))
+                    .andExpect(
+                            jsonPath("$.minEvasion").value("0"))
+                    .andExpect(
+                            jsonPath("$.maxEvasion").value(creatureDto.getDex()))
+                    .andExpect(
+                            jsonPath("$.minPhysDamage").value("0"))
+                    .andExpect(
+                            jsonPath("$.maxPhysDamage").value(creatureDto.getStr()))
+                    .andExpect(
+                            jsonPath("$.maxHp").value(creatureDto.getCon() * 3))
+                    .andExpect(
+                            jsonPath("$.currentHp").value(creatureDto.getCon() * 3))
+                    .andExpect(
+                            jsonPath("$.currentCon").value(creatureDto.getCon()));
         }
 
         @Test

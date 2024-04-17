@@ -17,37 +17,44 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AttributeCalcTest {
-    private Fighter fighter;
+    private Fighter heroFighter;
     private Hero hero;
     private AppUser appUser;
     private Race race;
 
     private final AttributeCalculator attributeCalculator = new AttributeCalculator();
 
-    @BeforeEach
-    void setUp() {
-        fighter = new Fighter();
-    }
 
     @Test
     @Description(value = "Тест на расчет атрибутов героя")
     public void testCalculateAttributes() {
         // given
-        fighter.setStr(9);
-        fighter.setDex(10);
-        fighter.setCon(11);
+        appUser = new AppUser(0L, "testLogin", null, null, null, null, null);
+        race = new Race(0L, "Человек", null, true, null, null);
+        hero = new Hero(1234L, "TestName", "TestLastName",
+                9, 10, 11, new Date(),
+                appUser,
+                Status.ALIVE,
+                Collections.emptyList(),
+                race, null, null, null, null, null, null, null, null, null, null, null, null);
+        attributeCalculator.calculateForNew(hero);
 
         // when
-        attributeCalculator.calculate(fighter);
+        attributeCalculator.calculateForNew(hero);
 
         // then
-        assertEquals(10, fighter.getAttack());
-        assertEquals(10, fighter.getEvasion());
-        assertEquals(9, fighter.getPhysDamage());
-        assertEquals(11 * 3, fighter.getMaxHp());
-        assertEquals(10, fighter.getInitiative());
-        assertEquals(11 * 3, fighter.getCurrentHp());
-        assertEquals(11, fighter.getCurrentCon());
+        assertEquals(10, hero.getMaxAttack());
+        assertEquals(10, hero.getMaxEvasion());
+        assertEquals(9, hero.getMaxPhysDamage());
+        assertEquals(11 * 3, hero.getMaxHp());
+        assertEquals(10, hero.getMaxInit());
+        assertEquals(11 * 3, hero.getCurrentHp());
+        assertEquals(11, hero.getCurrentCon());
+        assertEquals(0, hero.getMinAttack());
+        assertEquals(0, hero.getMinEvasion());
+        assertEquals(0, hero.getMinPhysDamage());
+        assertEquals(0, hero.getMinInit());
+        assertEquals(11, hero.getCurrentCon());
     }
 
     @Test
@@ -61,10 +68,7 @@ public class AttributeCalcTest {
                 appUser,
                 Status.ALIVE,
                 Collections.emptyList(),
-                race, null, null, null, null, null, null, null, null, null, null);
-        fighter.setStr(9);
-        fighter.setDex(10);
-        fighter.setCon(11);
+                race, null, null, null, null, null, null, null, null, null, null, null, null);
 
         // when
         attributeCalculator.calculateForNew(hero);
@@ -80,5 +84,6 @@ public class AttributeCalcTest {
         assertEquals(hero.getStr(), (int) hero.getMaxPhysDamage());
         assertEquals(hero.getCon() * 3, (int) hero.getMaxHp());
         assertEquals(hero.getCon() * 3, (int) hero.getCurrentHp());
+        assertEquals(hero.getCon(), hero.getCurrentCon());
     }
 }

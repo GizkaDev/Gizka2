@@ -5,26 +5,31 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.gizka.api.model.creature.Creature;
 import ru.gizka.api.model.hero.Hero;
 
 import java.util.Date;
-import java.util.List;
 
 @Entity
-@Table(name = "duel")
+@Table(name = "fight")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Duel {
+public class Fight {
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany(mappedBy = "duels")
-    private List<Hero> heroes;
+    @ManyToOne
+    @JoinColumn(name = "hero_fight", referencedColumnName = "id")
+    private Hero hero;
+
+    @ManyToOne
+    @JoinColumn(name = "creature_fight", referencedColumnName = "name")
+    private Creature creature;
 
     @Column(name = "turns")
     @Lob

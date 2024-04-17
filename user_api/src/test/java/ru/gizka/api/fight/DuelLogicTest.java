@@ -20,9 +20,16 @@ import ru.gizka.api.dto.hero.RequestHeroDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 import ru.gizka.api.model.fight.Result;
+import ru.gizka.api.model.hero.Hero;
+import ru.gizka.api.model.hero.Status;
+import ru.gizka.api.model.race.Race;
+import ru.gizka.api.model.user.AppUser;
+import ru.gizka.api.service.fightLogic.AttributeCalculator;
 import ru.gizka.api.service.fightLogic.FightLogic;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,10 +38,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
-public class FightLogicTest extends RequestParentTest {
-    private FightLogic fightLogic;
-    private Fighter fighter1;
-    private Fighter fighter2;
+public class DuelLogicTest extends RequestParentTest {
+    private FightLogic duelLogic;
+    private Fighter heroFighter1;
+    private Fighter heroFighter2;
     private RequestAppUserDto userDto;
     private RequestAppUserDto userDto2;
     private RequestHeroDto heroDto;
@@ -46,24 +53,25 @@ public class FightLogicTest extends RequestParentTest {
 
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
+    private final AttributeCalculator attributeCalculator;
 
     @Autowired
-    private FightLogicTest(MockMvc mockMvc,
-                           ObjectMapper objectMapper) {
+    private DuelLogicTest(MockMvc mockMvc,
+                          ObjectMapper objectMapper) {
         this.mockMvc = mockMvc;
         this.objectMapper = objectMapper;
+        this.attributeCalculator = new AttributeCalculator();
     }
 
     @BeforeEach
     void setUp() {
-        fightLogic = new FightLogic(null, null, null,
-                null, null, null);
+        duelLogic = new FightLogic(null, null);
 
-        fighter1 = new Fighter();
-        fighter1.setCon(15);
+        heroFighter1 = new Fighter();
+        heroFighter1.setCon(15);
 
-        fighter2 = new Fighter();
-        fighter2.setCon(9);
+        heroFighter2 = new Fighter();
+        heroFighter2.setCon(9);
 
         raceDto = RequestRaceDto.builder()
                 .name("Человек")
@@ -103,13 +111,33 @@ public class FightLogicTest extends RequestParentTest {
     @Description(value = "Тест на определение количества раундов")
     void testGetMaxTurns() throws Exception {
         //given
-        Class<?> clazz = fightLogic.getClass();
+        AppUser appUser = new AppUser(0L, "testLogin", null, null, null, null, null);
+        Race race = new Race(0L, "Человек", null, true, null, null);
+        Hero hero1 = new Hero(1234L, "TestName", "TestLastName",
+                9, 10, 15, new Date(),
+                appUser,
+                Status.ALIVE,
+                Collections.emptyList(),
+                race, null, null, null, null, null, null, null, null, null, null, null, null);
+        attributeCalculator.calculateForNew(hero1);
+        heroFighter1 = new Fighter(hero1);
+        AppUser appUser2 = new AppUser(0L, "testLogin", null, null, null, null, null);
+        Race race2 = new Race(0L, "Ящер", null, true, null, null);
+        Hero hero2 = new Hero(1234L, "TestName", "TestLastName",
+                9, 10, 9, new Date(),
+                appUser2,
+                Status.ALIVE,
+                Collections.emptyList(),
+                race2, null, null, null, null, null, null, null, null, null, null, null, null);
+        attributeCalculator.calculateForNew(hero2);
+        heroFighter2 = new Fighter(hero2);
+        Class<?> clazz = duelLogic.getClass();
         Method method = clazz.getDeclaredMethod("getMaxTurns", Fighter.class, Fighter.class);
         method.setAccessible(true);
         //when
-        Integer result = (int) method.invoke(fightLogic, fighter1, fighter2);
+        Integer result = (int) method.invoke(duelLogic, heroFighter1, heroFighter2);
         //then
-        assertEquals(Math.max(fighter1.getCon(), fighter2.getCon()), result);
+        assertEquals(Math.max(heroFighter1.getCon(), heroFighter2.getCon()), result);
     }
 
     @Test
@@ -179,7 +207,7 @@ public class FightLogicTest extends RequestParentTest {
             Result duelResult;
             if (lastTurnAttacker.getCurrentHp() > 0 && lastTurnDefender.getCurrentHp() > 0) {
                 duelResult = Result.DRAW;
-            } else if (lastTurnAttacker.getUserLogin().equals(userDto.getLogin())) {
+            } else if (lastTurnAttacker.getName().equals(String.format("%s %s(%s)", heroDto.getName(), heroDto.getLastName(), userDto.getLogin()))) {
                 duelResult = Result.ATTACKER;
             } else {
                 duelResult = Result.DEFENDER;

@@ -152,7 +152,9 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$[0].maxHp").isNumber())
                     .andExpect(
-                            jsonPath("$[0].currentHp").isNumber());
+                            jsonPath("$[0].currentHp").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].currentCon").isNumber());
         }
 
         @Test
@@ -248,7 +250,9 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$.maxHp").isNumber())
                     .andExpect(
-                            jsonPath("$.currentHp").isNumber());
+                            jsonPath("$.currentHp").isNumber())
+                    .andExpect(
+                            jsonPath("$.currentCon").isNumber());
         }
 
         @Test

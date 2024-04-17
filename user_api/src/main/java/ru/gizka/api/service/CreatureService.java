@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.model.creature.Creature;
 import ru.gizka.api.model.race.Race;
 import ru.gizka.api.repo.CreatureRepo;
+import ru.gizka.api.service.fightLogic.AttributeCalculator;
 
 import java.util.Date;
 import java.util.List;
@@ -17,10 +18,13 @@ import java.util.Optional;
 @Slf4j
 public class CreatureService {
     private final CreatureRepo creatureRepo;
+    private final AttributeCalculator attributeCalculator;
 
     @Autowired
-    public CreatureService(CreatureRepo creatureRepo) {
+    public CreatureService(CreatureRepo creatureRepo,
+                           AttributeCalculator attributeCalculator) {
         this.creatureRepo = creatureRepo;
+        this.attributeCalculator = attributeCalculator;
     }
 
     @Transactional
@@ -28,6 +32,7 @@ public class CreatureService {
         log.info("Сервис мобов создает нового моба: {}", creature);
         creature.setRace(race);
         creature.setCreatedAt(new Date());
+        attributeCalculator.calculateForNew(creature);
         return creatureRepo.save(creature);
     }
 

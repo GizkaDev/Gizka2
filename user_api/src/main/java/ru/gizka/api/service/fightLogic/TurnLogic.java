@@ -5,25 +5,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gizka.api.dto.fight.Fighter;
 import ru.gizka.api.dto.fight.Turn;
-
-import java.util.Random;
+import ru.gizka.api.service.RandomRoller;
 
 @Service
 @Slf4j
 public class TurnLogic {
 
-    private final Random random;
+    private final RandomRoller randomRoller;
 
     @Autowired
-    public TurnLogic(Random random) {
-        this.random = random;
+    public TurnLogic(RandomRoller randomRoller) {
+        this.randomRoller = randomRoller;
     }
 
     public Turn simulate(Integer turnNum, Fighter fighter1, Fighter fighter2) {
-        log.info("Сервис логики хода рассчитывает ход: {} для героев: {} {}({}) и {} {}({})",
-                turnNum,
-                fighter1.getName(), fighter1.getLastname(), fighter1.getUserLogin(),
-                fighter2.getName(), fighter2.getLastname(), fighter2.getUserLogin());
+        log.info("Сервис логики хода рассчитывает ход: {} для бойцов: {} и {}",
+                turnNum, fighter1.getName(), fighter2.getName());
         Turn turn = determineAttacker(fighter1, fighter2);
         turn.setTurnNum(turnNum);
         determineHit(turn);
@@ -41,8 +38,7 @@ public class TurnLogic {
         }
         turn.getAttacker().setCurrentCon(attackerCurrentCon);
 
-        log.info("Сервис логики хода рассчитал текущую выносливость: {} для героя: {} {}({})",
-                attackerCurrentCon, turn.getAttacker().getName(), turn.getAttacker().getLastname(), turn.getAttacker().getUserLogin());
+        log.info("Сервис логики хода рассчитал текущую выносливость: {} для бойца: {}", attackerCurrentCon, turn.getAttacker().getName());
 
         if (turn.getDefender().getCurrentCon() > 0) {
             defenderCurrentCon = turn.getDefender().getCurrentCon() - 1;
@@ -51,43 +47,39 @@ public class TurnLogic {
         }
         turn.getDefender().setCurrentCon(defenderCurrentCon);
 
-        log.info("Сервис логики хода рассчитал текущую выносливость: {} для героя: {} {}({})",
-                defenderCurrentCon, turn.getDefender().getName(), turn.getDefender().getLastname(), turn.getDefender().getUserLogin());
+        log.info("Сервис логики хода рассчитал текущую выносливость: {} для бойца: {}", defenderCurrentCon, turn.getDefender().getName());
     }
 
     private void determineHit(Turn turn) {
-        Integer attack = random.nextInt(0, turn.getAttacker().getAttack() + 1);
-        log.info("Сервис логики хода: атакующий герой: {} {}({}) выбросил атаку: {} из: 0-{}",
-                turn.getAttacker().getName(), turn.getAttacker().getLastname(), turn.getAttacker().getUserLogin(), attack, turn.getAttacker().getAttack());
+        Integer attack = randomRoller.rollAttack(turn.getAttacker().getMinAttack(), turn.getAttacker().getMaxAttack());
+        log.info("Сервис логики хода: атакующий боец: {} выбросил атаку: {} из: {}-{}",
+                turn.getAttacker().getName(), attack, turn.getAttacker().getMinAttack(), turn.getAttacker().getMaxAttack());
 
-        Integer evasion = random.nextInt(0, turn.getDefender().getEvasion() + 1);
-        log.info("Сервис логики хода: защищающийся герой: {} {}({}) выбросил уклонение: {} из: 0-{}",
-                turn.getDefender().getName(), turn.getDefender().getLastname(), turn.getDefender().getUserLogin(), evasion, turn.getDefender().getEvasion());
+        Integer evasion = randomRoller.rollEvasion(turn.getDefender().getMinEvasion(), turn.getDefender().getMaxEvasion());
+        log.info("Сервис логики хода: защищающийся боец: {} выбросил уклонение: {} из: {}-{}",
+                turn.getDefender().getName(), evasion, turn.getDefender().getMinEvasion(), turn.getDefender().getMaxEvasion());
 
         turn.setAttack(attack);
         turn.setEvasion(evasion);
 
         if (attack > evasion) {
-            log.info("Сервис логики хода: атакующий герой: {} {}({}) попал",
-                    turn.getAttacker().getName(), turn.getAttacker().getLastname(), turn.getAttacker().getUserLogin());
+            log.info("Сервис логики хода: атакующий боец: {} попал", turn.getAttacker().getName());
 
-            Integer physDamage = random.nextInt(1, turn.getAttacker().getPhysDamage() + 1);
-            log.info("Сервис логики хода: атакующий герой: {} {}({}) наносит урон: {} из: 1-{}",
-                    turn.getAttacker().getName(), turn.getAttacker().getLastname(), turn.getAttacker().getUserLogin(), physDamage, turn.getAttacker().getPhysDamage());
+            Integer physDamage = randomRoller.rollPhysDamage(turn.getAttacker().getMinPhysDamage(), turn.getAttacker().getMaxPhysDamage());
+            log.info("Сервис логики хода: атакующий боец: {} наносит урон: {} из: {}-{}",
+                    turn.getAttacker().getName(), physDamage, turn.getAttacker().getMinPhysDamage(), turn.getAttacker().getMaxPhysDamage());
 
             Integer defenderRemainingHp = turn.getDefender().getCurrentHp() - physDamage;
             turn.getDefender().setCurrentHp(defenderRemainingHp);
-            log.info("Сервис логики хода: защищающийся герой: {} {}({}) сохраняет здоровье: {}/{}",
-                    turn.getDefender().getName(), turn.getDefender().getLastname(), turn.getDefender().getUserLogin(),
-                    turn.getDefender().getCurrentHp(), turn.getDefender().getMaxHp());
+            log.info("Сервис логики хода: защищающийся боец: {} сохраняет здоровье: {}/{}",
+                    turn.getDefender().getName(), turn.getDefender().getCurrentHp(), turn.getDefender().getMaxHp());
 
             turn.setPhysDamage(physDamage);
             turn.setCurrentHp(defenderRemainingHp);
             return;
         }
 
-        log.info("Сервис логики хода: атакующий герой: {} {}({}) промахнулся",
-                turn.getAttacker().getName(), turn.getAttacker().getLastname(), turn.getAttacker().getUserLogin());
+        log.info("Сервис логики хода: атакующий боец: {} промахнулся", turn.getAttacker().getName());
         turn.setPhysDamage(0);
         turn.setCurrentHp(turn.getDefender().getCurrentHp());
     }
@@ -101,14 +93,14 @@ public class TurnLogic {
         Integer defenderInit;
         if (fighter1.getCurrentCon() > 0 && fighter2.getCurrentCon() > 0) {
             do {
-                init1 = random.nextInt(0, fighter1.getInitiative() + 1);
-                init2 = random.nextInt(0, fighter2.getInitiative() + 1);
+                init1 = randomRoller.rollInitiative(fighter1.getMinInit(), fighter1.getMaxInit());
+                init2 = randomRoller.rollInitiative(fighter2.getMinInit(), fighter2.getMaxInit());
             }
             while (init1.equals(init2));
-            log.info("Сервис логики хода: герой: {} {}({}) выбросил инициативу: {} из: 0-{}",
-                    fighter1.getName(), fighter1.getLastname(), fighter1.getUserLogin(), init1, fighter1.getInitiative());
-            log.info("Сервис логики хода: герой: {} {}({}) выбросил инициативу: {} из: 0-{}",
-                    fighter2.getName(), fighter2.getLastname(), fighter2.getUserLogin(), init2, fighter2.getInitiative());
+            log.info("Сервис логики хода: боец: {} выбросил инициативу: {} из: {}-{}",
+                    fighter1.getName(), init1, fighter1.getMinInit(), fighter1.getMaxInit());
+            log.info("Сервис логики хода: боец: {} выбросил инициативу: {} из: {}-{}",
+                    fighter2.getName(), init2, fighter2.getMinInit(), fighter2.getMaxInit());
 
             if (init1 > init2) {
                 attacker = fighter1;
@@ -126,14 +118,11 @@ public class TurnLogic {
             defender = fighter2.getCurrentCon() == 0 ? fighter2 : fighter1;
             attackerInit = 0;
             defenderInit = 0;
-            log.info("Сервис логики хода: герой: {} {}({}) имеет текущую выносливость 0",
-                    defender.getName(), defender.getLastname(), defender.getUserLogin());
+            log.info("Сервис логики хода: боец: {} имеет запас сил 0", defender.getName());
         }
 
-        log.info("Сервис логики хода: герой: {} {}({}) атакует",
-                attacker.getName(), attacker.getLastname(), attacker.getUserLogin());
-        log.info("Сервис логики хода: герой: {} {}({}) защищается",
-                defender.getName(), defender.getLastname(), defender.getUserLogin());
+        log.info("Сервис логики хода: боец: {} атакует", attacker.getName());
+        log.info("Сервис логики хода: боец: {} защищается", defender.getName());
 
         Turn turn = new Turn();
         turn.setAttacker(attacker);
@@ -141,6 +130,11 @@ public class TurnLogic {
         turn.setDefender(defender);
         turn.setDefenderInit(defenderInit);
 
-        return turn;
+        return Turn.builder()
+                .attacker(attacker)
+                .defender(defender)
+                .attackerInit(attackerInit)
+                .defenderInit(defenderInit)
+                .build();
     }
 }

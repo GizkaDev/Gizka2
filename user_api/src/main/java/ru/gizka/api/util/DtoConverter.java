@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.gizka.api.dto.creature.RequestCreatureDto;
 import ru.gizka.api.dto.creature.ResponseCreatureDto;
+import ru.gizka.api.dto.fight.FightDto;
 import ru.gizka.api.dto.fight.Fighter;
 import ru.gizka.api.dto.fight.Turn;
 import ru.gizka.api.dto.notification.NotificationDto;
@@ -20,35 +21,31 @@ import ru.gizka.api.dto.race.ResponseRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 import ru.gizka.api.dto.user.ResponseAppUserDto;
 import ru.gizka.api.model.creature.Creature;
+import ru.gizka.api.model.fight.Fight;
 import ru.gizka.api.model.notification.Notification;
 import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.user.AppUser;
-import ru.gizka.api.service.fightLogic.FighterBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
 @Slf4j
 public class DtoConverter {
     private final ModelMapper modelMapper;
-    private final FighterBuilder fighterBuilder;
     private final ObjectMapper objectMapper;
 
     @Autowired
     public DtoConverter(ModelMapper modelMapper,
-                        FighterBuilder fighterBuilder,
                         ObjectMapper objectMapper) {
         this.modelMapper = modelMapper;
-        this.fighterBuilder = fighterBuilder;
         this.objectMapper = objectMapper;
     }
 
     public ResponseCreatureDto getResponseDto(Creature creature) {
         log.info("Конвертер переводит {} в {}", Creature.class, RequestCreatureDto.class);
-        return ResponseCreatureDto.builder()
+        return ru.gizka.api.dto.creature.ResponseCreatureDto.builder()
                 .id(creature.getId())
                 .name(creature.getName())
                 .str(creature.getStr())
@@ -56,6 +53,17 @@ public class DtoConverter {
                 .con(creature.getCon())
                 .createdAt(creature.getCreatedAt())
                 .race(creature.getRace().getName())
+                .minInit(creature.getMinInit())
+                .maxInit(creature.getMaxInit())
+                .minAttack(creature.getMinAttack())
+                .maxAttack(creature.getMaxAttack())
+                .minEvasion(creature.getMinEvasion())
+                .maxEvasion(creature.getMaxEvasion())
+                .minPhysDamage(creature.getMinPhysDamage())
+                .maxPhysDamage(creature.getMaxPhysDamage())
+                .maxHp(creature.getMaxHp())
+                .currentHp(creature.getCurrentHp())
+                .currentCon(creature.getCurrentCon())
                 .build();
     }
 
@@ -139,6 +147,7 @@ public class DtoConverter {
                 .maxPhysDamage(hero.getMaxPhysDamage())
                 .maxHp(hero.getMaxHp())
                 .currentHp(hero.getCurrentHp())
+                .currentCon(hero.getCurrentCon())
                 .build();
     }
 
@@ -151,15 +160,36 @@ public class DtoConverter {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        List<Fighter> fighters = duel.getHeroes().stream()
-                .map(fighterBuilder::build)
+        List<Fighter> heroFighters = duel.getHeroes().stream()
+                .map(Fighter::new)
                 .toList();
         return DuelDto.builder()
                 .id(duel.getId())
-                .fighters(fighters)
+                .heroFighters(heroFighters)
                 .turns(turns)
                 .result(duel.getResult().name())
                 .createdAt(duel.getCreatedAt())
+                .build();
+    }
+
+    public FightDto getResponseDto(Fight fight) {
+        log.info("Конвертер переводит {} в {}", Fight.class, FightDto.class);
+        List<Turn> turns;
+        try {
+            turns = objectMapper.readValue(fight.getTurns(), new TypeReference<>() {
+            });
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        ResponseHeroDto responseHeroDto = getResponseDto(fight.getHero());
+        ResponseCreatureDto responseCreatureDto = getResponseDto(fight.getCreature());
+        return FightDto.builder()
+                .id(fight.getId())
+                .heroFighter(responseHeroDto)
+                .creatureFighter(responseCreatureDto)
+                .turns(turns)
+                .result(fight.getResult().name())
+                .createdAt(fight.getCreatedAt())
                 .build();
     }
 

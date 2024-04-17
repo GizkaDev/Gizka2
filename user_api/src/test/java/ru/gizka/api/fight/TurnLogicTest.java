@@ -2,7 +2,6 @@ package ru.gizka.api.fight;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Description;
@@ -13,8 +12,8 @@ import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.hero.Status;
 import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.user.AppUser;
+import ru.gizka.api.service.RandomRoller;
 import ru.gizka.api.service.fightLogic.AttributeCalculator;
-import ru.gizka.api.service.fightLogic.FighterBuilder;
 import ru.gizka.api.service.fightLogic.TurnLogic;
 
 import java.lang.reflect.Method;
@@ -29,19 +28,19 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
 public class TurnLogicTest {
     private TurnLogic turnLogic;
-    private Fighter fighter1;
-    private Fighter fighter2;
-    private FighterBuilder fighterBuilder;
+    private AttributeCalculator attributeCalculator;
     private Hero hero1;
     private Hero hero2;
     private AppUser appUser1;
     private AppUser appUser2;
+    private Fighter heroFighter1;
+    private Fighter heroFighter2;
     private Race race;
 
     @BeforeEach
     void setUp() {
-        this.turnLogic = new TurnLogic(new Random());
-        this.fighterBuilder = new FighterBuilder(new ModelMapper(), new AttributeCalculator());
+        this.turnLogic = new TurnLogic(new RandomRoller(new Random()));
+        this.attributeCalculator = new AttributeCalculator();
         appUser1 = new AppUser(0L, "testLogin", null, null, null, null, null);
         race = new Race(0L, "Человек", null, true, null, null);
         hero1 = new Hero(1234L, "TestName", "TestLastName",
@@ -49,16 +48,18 @@ public class TurnLogicTest {
                 appUser1,
                 Status.ALIVE,
                 Collections.emptyList(),
-                race, null, null, null, null, null, null, null, null, null, null);
-        fighter1 = fighterBuilder.build(hero1);
+                race, null, null, null, null, null, null, null, null, null, null, null, null);
         appUser2 = new AppUser(0L, "testLogin2", null, null, null, null, null);
         hero2 = new Hero(1234L, "TestName2", "TestLastName2",
                 14, 5, 11, new Date(),
                 appUser2,
                 Status.ALIVE,
                 Collections.emptyList(),
-                race, null, null, null, null, null, null, null, null, null, null);
-        fighter2 = fighterBuilder.build(hero2);
+                race, null, null, null, null, null, null, null, null, null, null, null, null);
+        attributeCalculator.calculateForNew(hero1);
+        attributeCalculator.calculateForNew(hero2);
+        heroFighter1 = new Fighter(hero1);
+        heroFighter2 = new Fighter(hero2);
     }
 
     @Test
@@ -72,8 +73,8 @@ public class TurnLogicTest {
         int fighter2A = 0;
         //when
         for (int i = 0; i < 1000; i++) {
-            Turn turn = (Turn) method.invoke(turnLogic, fighter1, fighter2);
-            if (turn.getAttacker().equals(fighter1)) {
+            Turn turn = (Turn) method.invoke(turnLogic, heroFighter1, heroFighter2);
+            if (turn.getAttacker().equals(heroFighter1)) {
                 fighter1A++;
             } else {
                 fighter2A++;
@@ -86,7 +87,7 @@ public class TurnLogicTest {
     @Description(value = "Тест на определение атакующего при 0 текущей выносливости у одного из бойцов")
     void testDetermineAttackerWhenCurrentCon0() throws Exception {
         //given
-        fighter1.setCurrentCon(0);
+        heroFighter1.setCurrentCon(0);
         Class<?> clazz = turnLogic.getClass();
         Method method = clazz.getDeclaredMethod("determineAttacker", Fighter.class, Fighter.class);
         method.setAccessible(true);
@@ -94,8 +95,8 @@ public class TurnLogicTest {
         int fighter2A = 0;
         //when
         for (int i = 0; i < 1000; i++) {
-            Turn turn = (Turn) method.invoke(turnLogic, fighter1, fighter2);
-            if (turn.getAttacker().equals(fighter1)) {
+            Turn turn = (Turn) method.invoke(turnLogic, heroFighter1, heroFighter2);
+            if (turn.getAttacker().equals(heroFighter1)) {
                 fighter1A++;
             } else {
                 fighter2A++;
@@ -114,7 +115,7 @@ public class TurnLogicTest {
         method.setAccessible(true);
         //when
         for (int i = 0; i < 1000; i++) {
-            Turn turn = (Turn) method.invoke(turnLogic, fighter1, fighter2);
+            Turn turn = (Turn) method.invoke(turnLogic, heroFighter1, heroFighter2);
             //then
             assertTrue(turn.getAttackerInit() >= 0);
             assertTrue(turn.getAttackerInit() <= turn.getAttacker().getDex());
@@ -133,8 +134,8 @@ public class TurnLogicTest {
         Method method = clazz.getDeclaredMethod("determineHit", Turn.class);
         method.setAccessible(true);
         Turn turn = new Turn();
-        turn.setAttacker(fighter1);
-        turn.setDefender(fighter2);
+        turn.setAttacker(heroFighter1);
+        turn.setDefender(heroFighter2);
         //when
         for (int i = 0; i < 1000; i++) {
             Integer hpBeforeTurn = turn.getDefender().getCurrentHp();
@@ -144,7 +145,7 @@ public class TurnLogicTest {
             assertTrue(turn.getEvasion() >= 0);
             assertTrue(turn.getEvasion() <= turn.getDefender().getDex());
             if (turn.getAttack() > turn.getEvasion()) {
-                assertTrue(turn.getPhysDamage() >= 1);
+                assertTrue(turn.getPhysDamage() >= 0);
                 assertTrue(turn.getPhysDamage() <= turn.getAttacker().getStr());
                 assertEquals(turn.getCurrentHp(), turn.getDefender().getCurrentHp());
                 assertEquals(turn.getCurrentHp() + turn.getPhysDamage(), hpBeforeTurn);
@@ -163,8 +164,8 @@ public class TurnLogicTest {
         Method method = clazz.getDeclaredMethod("determineCurrentCon", Turn.class);
         method.setAccessible(true);
         Turn turn = new Turn();
-        turn.setAttacker(fighter1);
-        turn.setDefender(fighter2);
+        turn.setAttacker(heroFighter1);
+        turn.setDefender(heroFighter2);
         //when
         for (int i = 0; i < 50; i++) {
             int currentConBefore1 = turn.getAttacker().getCurrentCon();
@@ -188,7 +189,7 @@ public class TurnLogicTest {
     void testTurnSimulationWellFormed() throws Exception {
         //when
         for (int i = 1; i < 10; i++) {
-            Turn turn = turnLogic.simulate(i, fighter1, fighter2);
+            Turn turn = turnLogic.simulate(i, heroFighter1, heroFighter2);
             assertEquals(i, turn.getTurnNum());
             assertNotNull(turn.getAttacker());
             assertNotNull(turn.getDefender());

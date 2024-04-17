@@ -1,12 +1,14 @@
 package ru.gizka.api.dto.fight;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Turn {
     private Integer turnNum;
 
