@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import ru.gizka.api.dto.creature.RequestCreatureDto;
 import ru.gizka.api.dto.notification.NotificationDto;
 import ru.gizka.api.dto.hero.RequestHeroDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
@@ -40,6 +41,8 @@ public class NotificationControllerTest extends RequestParentTest {
     private RequestHeroDto heroDto;
     private RequestHeroDto heroDto2;
     private RequestRaceDto raceDto;
+    private RequestCreatureDto weakCreatureDto;
+    private RequestCreatureDto strongCreatureDto;
 
     @Autowired
     private NotificationControllerTest(MockMvc mockMvc,
@@ -80,6 +83,22 @@ public class NotificationControllerTest extends RequestParentTest {
                 .dex(12)
                 .con(8)
                 .race("Человек")
+                .build();
+
+        weakCreatureDto = RequestCreatureDto.builder()
+                .name("Разбойник")
+                .str(5)
+                .dex(5)
+                .con(5)
+                .race(raceDto.getName())
+                .build();
+
+        strongCreatureDto = RequestCreatureDto.builder()
+                .name("Примарх")
+                .str(1000)
+                .dex(1000)
+                .con(1000)
+                .race(raceDto.getName())
                 .build();
     }
 
@@ -159,6 +178,56 @@ public class NotificationControllerTest extends RequestParentTest {
                 Date createdAt2E2 = events2.get(i + 1).getCreatedAt();
                 assertTrue(createdAt1E2.after(createdAt2E1) || createdAt1E2.equals(createdAt2E2));
             }
+        }
+
+        @Test
+        @Description(value = "Тест на получение оповещений о сражении при победе")
+        void Event_WinFightNotification() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(weakCreatureDto));
+            RequestParentTest.insertFight(mockMvc, weakCreatureDto.getName(), token1);
+            MockHttpServletRequestBuilder eventRequest1 = MockMvcRequestBuilders
+                    .get(uri)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token1));
+            //when
+            mockMvc.perform(eventRequest1)
+                    //then
+                    .andExpect(
+                            status().isOk())
+                   .andExpect(
+                           jsonPath("$[0].message").value("Вы встретились в бою с Разбойник и победили."));
+        }
+
+        @Test
+        @Description(value = "Тест на получение оповещений о сражении при поражении")
+        void Event_LostFightNotification() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(strongCreatureDto));
+            RequestParentTest.insertFight(mockMvc, strongCreatureDto.getName(), token1);
+            MockHttpServletRequestBuilder eventRequest1 = MockMvcRequestBuilders
+                    .get(uri)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token1));
+            //when
+            mockMvc.perform(eventRequest1)
+                    //then
+                    .andExpect(
+                            status().isOk())
+                    .andExpect(
+                            jsonPath("$[0].message").value("Ваш герой Gizka Green погиб"))
+                    .andExpect(
+                            jsonPath("$[1].message").value("Вы встретились в бою с Примарх и проиграли."));
         }
     }
 }

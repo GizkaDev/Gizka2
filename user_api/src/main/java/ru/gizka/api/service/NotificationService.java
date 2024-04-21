@@ -8,6 +8,7 @@ import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.model.fight.Fight;
 import ru.gizka.api.model.fight.Result;
 import ru.gizka.api.model.notification.Notification;
+import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.repo.NotificationRepo;
 
 import java.util.Date;
@@ -25,31 +26,33 @@ public class NotificationService {
     }
 
     public List<Notification> getAllByLoginSortedByDate(String login) {
-        log.info("Сервис событий ищет события для пользователя: {}", login);
+        log.info("Сервис оповещений ищет события для пользователя: {}", login);
         return notificationRepo.findByAppUserLoginOrderByCreatedAtDesc(login);
     }
 
-    public Notification save(Notification notification) {
-        log.info("Сервис событий сохраняет событие: [{}] для пользователя: {}", notification.getMessage(), notification.getAppUser().getLogin());
+    public Notification save(Notification notification, AppUser appUser) {
+        log.info("Сервис оповещений сохраняет оповещение: [{}] для пользователя: {}", notification.getMessage(), appUser.getLogin());
+        notification.setAppUser(appUser);
+        notification.setCreatedAt(new Date());
         return notificationRepo.save(notification);
     }
 
-    public void saveNotification(Fight fight) {
-        saveNotificationForUser(fight);
-        log.info("Сервис событий создает новое оповещение для героя: {} {}({})",
+    public void saveNotification(Fight fight, AppUser appUser) {
+        saveNotificationForUser(fight, appUser);
+        log.info("Сервис оповещений создает новое оповещение для героя: {} {}({})",
                 fight.getHero().getName(), fight.getHero().getLastname(), fight.getHero().getAppUser().getLogin());
     }
 
     public void saveNotification(Duel duel) {
         saveNotificationForAttacker(duel);
         saveNotificationForDefender(duel);
-        log.info("Сервис событий создает новое оповещение для героев: {} {}({}) и {} {}({})",
+        log.info("Сервис оповещений создает новое оповещение для героев: {} {}({}) и {} {}({})",
                 duel.getHeroes().get(0).getName(), duel.getHeroes().get(0).getLastname(), duel.getHeroes().get(0).getAppUser().getLogin(),
                 duel.getHeroes().get(1).getName(), duel.getHeroes().get(1).getLastname(), duel.getHeroes().get(1).getAppUser().getLogin());
     }
 
 
-    private void saveNotificationForUser(Fight fight) {
+    private void saveNotificationForUser(Fight fight, AppUser appUser) {
         String result = "";
         if (fight.getResult().equals(Result.ATTACKER)) {
             result = "и победили";
@@ -61,10 +64,8 @@ public class NotificationService {
         Notification notification = Notification.builder()
                 .message(String.format("Вы встретились в бою с %s %s.",
                         fight.getCreature().getName(), result))
-                .createdAt(new Date())
-                .appUser(fight.getHero().getAppUser())
                 .build();
-        save(notification);
+        save(notification, appUser);
     }
 
     private void saveNotificationForAttacker(Duel duel) {
@@ -80,10 +81,8 @@ public class NotificationService {
                 .message(String.format("Вы вызвали на дуэль %s %s(%s)%s.",
                         duel.getHeroes().get(1).getName(), duel.getHeroes().get(1).getLastname(), duel.getHeroes().get(1).getAppUser().getLogin(),
                         result))
-                .createdAt(new Date())
-                .appUser(duel.getHeroes().get(0).getAppUser())
                 .build();
-        save(notification);
+        save(notification, duel.getHeroes().get(0).getAppUser());
     }
 
     private void saveNotificationForDefender(Duel duel) {
@@ -99,9 +98,7 @@ public class NotificationService {
                 .message(String.format("Вас вызвал на дуэль %s %s(%s), %s.",
                         duel.getHeroes().get(0).getName(), duel.getHeroes().get(0).getLastname(), duel.getHeroes().get(0).getAppUser().getLogin(),
                         result))
-                .createdAt(new Date())
-                .appUser(duel.getHeroes().get(1).getAppUser())
                 .build();
-       save(notification);
+       save(notification, duel.getHeroes().get(1).getAppUser());
     }
 }

@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gizka.api.dto.fight.Fighter;
 import ru.gizka.api.dto.fight.Turn;
-import ru.gizka.api.service.RandomRoller;
+import ru.gizka.api.util.RandomRoller;
 
 @Service
 @Slf4j

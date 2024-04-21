@@ -12,7 +12,7 @@ import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.hero.Status;
 import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.user.AppUser;
-import ru.gizka.api.service.RandomRoller;
+import ru.gizka.api.util.RandomRoller;
 import ru.gizka.api.service.fightLogic.AttributeCalculator;
 import ru.gizka.api.service.fightLogic.TurnLogic;
 

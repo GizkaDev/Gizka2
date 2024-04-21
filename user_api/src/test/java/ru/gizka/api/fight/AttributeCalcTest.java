@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Description;
 import ru.gizka.api.dto.fight.Fighter;
+import ru.gizka.api.model.creature.Creature;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.hero.Status;
 import ru.gizka.api.model.race.Race;
@@ -21,6 +22,7 @@ public class AttributeCalcTest {
     private Hero hero;
     private AppUser appUser;
     private Race race;
+    private Creature creature;
 
     private final AttributeCalculator attributeCalculator = new AttributeCalculator();
 
@@ -37,7 +39,6 @@ public class AttributeCalcTest {
                 Status.ALIVE,
                 Collections.emptyList(),
                 race, null, null, null, null, null, null, null, null, null, null, null, null);
-        attributeCalculator.calculateForNew(hero);
 
         // when
         attributeCalculator.calculateForNew(hero);
@@ -85,5 +86,31 @@ public class AttributeCalcTest {
         assertEquals(hero.getCon() * 3, (int) hero.getMaxHp());
         assertEquals(hero.getCon() * 3, (int) hero.getCurrentHp());
         assertEquals(hero.getCon(), hero.getCurrentCon());
+    }
+
+    @Test
+    @Description(value = "Тест на расчет мин. и макс. атрибутов героя")
+    public void testCreatureCalculateMinMaxAttributes() {
+        // given
+        race = new Race(0L, "Человек", null, true, null, null);
+        creature = new Creature(1234L, "TestName",
+                9, 10, 11, new Date(),
+                race, null, null, null, null, null, null, null, null, null, null, null, null);
+
+        // when
+        attributeCalculator.calculateForNew(creature);
+
+        // then
+        assertEquals(0, (int) creature.getMinInit());
+        assertEquals(0, (int) creature.getMinAttack());
+        assertEquals(0, (int) creature.getMinEvasion());
+        assertEquals(0, (int) creature.getMinPhysDamage());
+        assertEquals(creature.getDex(), (int) creature.getMaxInit());
+        assertEquals(creature.getDex(), (int) creature.getMaxAttack());
+        assertEquals(creature.getDex(), (int) creature.getMaxEvasion());
+        assertEquals(creature.getStr(), (int) creature.getMaxPhysDamage());
+        assertEquals(creature.getCon() * 3, (int) creature.getMaxHp());
+        assertEquals(creature.getCon() * 3, (int) creature.getCurrentHp());
+        assertEquals(creature.getCon(), creature.getCurrentCon());
     }
 }

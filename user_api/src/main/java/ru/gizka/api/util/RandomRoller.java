@@ -1,4 +1,4 @@
-package ru.gizka.api.service;
+package ru.gizka.api.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

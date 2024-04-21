@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import ru.gizka.api.dto.creature.RequestCreatureDto;
 import ru.gizka.api.dto.fight.DuelDto;
 import ru.gizka.api.dto.hero.RequestHeroDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
@@ -113,8 +114,7 @@ public class DuelControllerTest extends RequestParentTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isCreated()
-                    );
+                            status().isCreated());
         }
 
         @Test
@@ -125,6 +125,8 @@ public class DuelControllerTest extends RequestParentTest {
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto2));
             String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             String token2 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto2));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto2), token2);
 
             token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -149,6 +151,8 @@ public class DuelControllerTest extends RequestParentTest {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
 
             token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -173,6 +177,8 @@ public class DuelControllerTest extends RequestParentTest {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
 
             token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -197,6 +203,8 @@ public class DuelControllerTest extends RequestParentTest {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
 
             token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -219,6 +227,8 @@ public class DuelControllerTest extends RequestParentTest {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
 
             token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -242,6 +252,8 @@ public class DuelControllerTest extends RequestParentTest {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
 
             token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -270,6 +282,8 @@ public class DuelControllerTest extends RequestParentTest {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
 
             token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -295,6 +309,8 @@ public class DuelControllerTest extends RequestParentTest {
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto2));
             String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
 
             token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -425,6 +441,84 @@ public class DuelControllerTest extends RequestParentTest {
                             jsonPath("$[0].currentHp").value(heroDto2.getCon() * 3))
                     .andExpect(
                             jsonPath("$[0].currentCon").value(heroDto2.getCon()));
+        }
+
+        @Test
+        @Description(value = "Тест на симулирование дуэли, если у атакующего герой не ALIVE")
+        void Duel_isNotAlive() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto2));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token2 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto2));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto2), token2);
+            RequestParentTest.insertCreature(mockMvc, token1,
+                    objectMapper.writeValueAsString(RequestCreatureDto.builder()
+                            .name("Титан")
+                            .str(1000)
+                            .dex(1000)
+                            .con(1000)
+                            .race(raceDto.getName())
+                            .build()));
+
+            token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+
+            RequestParentTest.insertFight(mockMvc, "Титан", token);
+
+            requestBuilder = MockMvcRequestBuilders
+                    .post(String.format("%s?login=%s", uri, userDto2.getLogin()))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token));
+
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isNotFound())
+                    .andExpect(
+                            jsonPath("$.descr").value("У одного из пользователей нет героя со статусом ALIVE."));
+        }
+
+        @Test
+        @Description(value = "Тест на симулирование дуэли, если у защищающегося герой не ALIVE")
+        void Duel_OpponentIsNotAlive() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto2));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token2 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto2));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto2), token2);
+            RequestParentTest.insertCreature(mockMvc, token1,
+                    objectMapper.writeValueAsString(RequestCreatureDto.builder()
+                            .name("Титан")
+                            .str(1000)
+                            .dex(1000)
+                            .con(1000)
+                            .race(raceDto.getName())
+                            .build()));
+
+            token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+
+            RequestParentTest.insertFight(mockMvc, "Титан", token2);
+
+            requestBuilder = MockMvcRequestBuilders
+                    .post(String.format("%s?login=%s", uri, userDto2.getLogin()))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token));
+
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isNotFound())
+                    .andExpect(
+                            jsonPath("$.descr").value("У одного из пользователей нет героя со статусом ALIVE."));
         }
     }
 

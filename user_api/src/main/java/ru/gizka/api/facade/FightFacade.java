@@ -10,6 +10,8 @@ import ru.gizka.api.dto.fight.FightDto;
 import ru.gizka.api.model.creature.Creature;
 import ru.gizka.api.model.fight.Fight;
 import ru.gizka.api.model.hero.Hero;
+import ru.gizka.api.model.hero.Status;
+import ru.gizka.api.model.notification.Notification;
 import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.service.CreatureService;
 import ru.gizka.api.service.FightService;
@@ -56,7 +58,18 @@ public class FightFacade {
                         new EntityNotFoundException("Моб с таким названием не найден"));
         Fight fight = fightLogic.simulate(heroes.get(0), creature);
         fightService.save(fight);
-        notificationService.saveNotification(fight);
+        notificationService.saveNotification(fight, appUser);
+
+        Hero afterFightHero = fight.getHero();
+        if (afterFightHero.getCurrentHp() <= 0) {
+            afterFightHero.setStatus(Status.DEAD);
+            afterFightHero.setCurrentHp(1);
+            notificationService.save(Notification.builder()
+                    .message(String.format("Ваш герой %s %s погиб", afterFightHero.getName(), afterFightHero.getLastname()))
+                    .build(), afterFightHero.getAppUser());
+        }
+
+        heroService.save(fight.getHero());
         return new ResponseEntity<>(dtoConverter.getResponseDto(fight), HttpStatus.CREATED);
     }
 }

@@ -42,6 +42,11 @@ public class FightLogic {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+        if (turns.get(turns.size() - 1).getAttacker().getName().equals(fighter1.getName())) {
+            hero.setCurrentHp(turns.get(turns.size() - 1).getAttacker().getCurrentHp());
+        } else {
+            hero.setCurrentHp(turns.get(turns.size() - 1).getDefender().getCurrentHp());
+        }
         return Fight.builder()
                 .hero(hero)
                 .creature(creature)
@@ -118,7 +123,7 @@ public class FightLogic {
             log.info("Сервис логики сражений определил итог: {} {}", result.getDescription(), lastTurnAttacker.getName());
         } else {
             result = Result.DEFENDER;
-            log.info("Сервис логики сражений определил итог: {} {}", result.getDescription(), lastTurnDefender.getName());
+            log.info("Сервис логики сражений определил итог: {} {}", result.getDescription(), lastTurnAttacker.getName());
         }
         return result;
     }

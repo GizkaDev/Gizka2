@@ -90,4 +90,20 @@ public class RequestParentTest {
                 .header("Authorization", "Bearer " + token);
         return mockMvc.perform(creatureRequest);
     }
+
+    public static ResultActions getCreature(MockMvc mockMvc, String token, String name) throws Exception {
+        RequestBuilder getCurrentHeroRequest = MockMvcRequestBuilders
+                .get(String.format("/api/creature/%s", name))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", String.format("Bearer %s", token));
+        return mockMvc.perform(getCurrentHeroRequest);
+    }
+
+    public static void insertFight(MockMvc mockMvc, String name, String token) throws Exception {
+        RequestBuilder fightRequest = MockMvcRequestBuilders
+                .post(String.format("%s?name=%s", "/api/user/hero/fight", name))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", String.format("Bearer %s", token));
+        mockMvc.perform(fightRequest);
+    }
 }
