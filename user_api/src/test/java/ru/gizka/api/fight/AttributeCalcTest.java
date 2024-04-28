@@ -1,6 +1,5 @@
 package ru.gizka.api.fight;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Description;
 import ru.gizka.api.dto.fight.Fighter;
@@ -15,7 +14,6 @@ import java.util.Collections;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AttributeCalcTest {
     private Fighter heroFighter;
@@ -34,7 +32,7 @@ public class AttributeCalcTest {
         appUser = new AppUser(0L, "testLogin", null, null, null, null, null);
         race = new Race(0L, "Человек", null, true, null, null);
         hero = new Hero(1234L, "TestName", "TestLastName",
-                9, 10, 11, new Date(),
+                9, 10, 11, 10, new Date(),
                 appUser,
                 Status.ALIVE,
                 Collections.emptyList(),
@@ -65,7 +63,7 @@ public class AttributeCalcTest {
         appUser = new AppUser(0L, "testLogin", null, null, null, null, null);
         race = new Race(0L, "Человек", null, true, null, null);
         hero = new Hero(1234L, "TestName", "TestLastName",
-                9, 10, 11, new Date(),
+                9, 10, 11, 10, new Date(),
                 appUser,
                 Status.ALIVE,
                 Collections.emptyList(),

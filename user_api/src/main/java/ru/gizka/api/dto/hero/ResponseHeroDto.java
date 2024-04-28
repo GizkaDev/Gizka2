@@ -26,6 +26,7 @@ public class ResponseHeroDto {
     private Integer str;
     private Integer dex;
     private Integer con;
+    private Integer wis;
 
     private Integer minInit;
     private Integer maxInit;

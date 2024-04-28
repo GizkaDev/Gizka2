@@ -73,6 +73,7 @@ public class DuelControllerTest extends RequestParentTest {
                 .str(10)
                 .dex(8)
                 .con(12)
+                .wis(10)
                 .race("Человек")
                 .build();
 
@@ -82,6 +83,7 @@ public class DuelControllerTest extends RequestParentTest {
                 .str(10)
                 .dex(12)
                 .con(8)
+                .wis(10)
                 .race("Человек")
                 .build();
     }
@@ -366,6 +368,8 @@ public class DuelControllerTest extends RequestParentTest {
                     .andExpect(
                             jsonPath("$[0].con").value(heroDto.getCon()))
                     .andExpect(
+                            jsonPath("$[0].wis").value(heroDto.getWis()))
+                    .andExpect(
                             jsonPath("$[0].createdAt").value(Matchers.not(Matchers.empty())))
                     .andExpect(
                             jsonPath("$[0].userLogin").value(userDto.getLogin()))
@@ -411,6 +415,8 @@ public class DuelControllerTest extends RequestParentTest {
                             jsonPath("$[0].dex").value(heroDto2.getDex()))
                     .andExpect(
                             jsonPath("$[0].con").value(heroDto2.getCon()))
+                    .andExpect(
+                            jsonPath("$[0].wis").value(heroDto2.getWis()))
                     .andExpect(
                             jsonPath("$[0].createdAt").value(Matchers.not(Matchers.empty())))
                     .andExpect(

@@ -57,6 +57,7 @@ public class HeroControllerTest {
                 .str(10)
                 .dex(10)
                 .con(10)
+                .wis(10)
                 .race(raceDto.getName())
                 .build();
 
@@ -125,6 +126,8 @@ public class HeroControllerTest {
                             jsonPath("$[0].dex").value(heroDto.getDex()))
                     .andExpect(
                             jsonPath("$[0].con").value(heroDto.getCon()))
+                    .andExpect(
+                            jsonPath("$[0].wis").value(heroDto.getWis()))
                     .andExpect(
                             jsonPath("$[0].createdAt").value(Matchers.not(Matchers.empty())))
                     .andExpect(
@@ -223,6 +226,8 @@ public class HeroControllerTest {
                             jsonPath("$.dex").value(heroDto.getDex()))
                     .andExpect(
                             jsonPath("$.con").value(heroDto.getCon()))
+                    .andExpect(
+                            jsonPath("$.wis").value(heroDto.getWis()))
                     .andExpect(
                             jsonPath("$.createdAt").value(Matchers.not(Matchers.empty())))
                     .andExpect(
@@ -479,6 +484,7 @@ public class HeroControllerTest {
             heroDto.setStr(4);
             heroDto.setDex(4);
             heroDto.setCon(4);
+            heroDto.setWis(4);
             requestBuilder
                     .content(objectMapper.writeValueAsString(heroDto))
                     .header("Authorization", String.format("Bearer %s", token));
@@ -492,7 +498,9 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$.descr").value(matchesPattern(".*Выносливость должна быть не меньше 5.*")))
                     .andExpect(
-                            jsonPath("$.descr").value(matchesPattern(".*Сила должна быть не меньше 5.*")));
+                            jsonPath("$.descr").value(matchesPattern(".*Сила должна быть не меньше 5.*")))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Мудрость должна быть не меньше 5.*")));
         }
 
         @Test
@@ -505,6 +513,7 @@ public class HeroControllerTest {
             heroDto.setStr(null);
             heroDto.setDex(null);
             heroDto.setCon(null);
+            heroDto.setWis(null);
             requestBuilder
                     .content(objectMapper.writeValueAsString(heroDto))
                     .header("Authorization", String.format("Bearer %s", token));
@@ -518,7 +527,9 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$.descr").value(matchesPattern(".*Выносливость должна быть не меньше 5.*")))
                     .andExpect(
-                            jsonPath("$.descr").value(matchesPattern(".*Сила должна быть не меньше 5.*")));
+                            jsonPath("$.descr").value(matchesPattern(".*Сила должна быть не меньше 5.*")))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Мудрость должна быть не меньше 5.*")));
         }
 
         @Test

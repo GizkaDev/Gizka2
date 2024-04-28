@@ -94,6 +94,7 @@ public class DuelLogicTest extends RequestParentTest {
                 .str(10)
                 .dex(8)
                 .con(12)
+                .wis(10)
                 .race(raceDto.getName())
                 .build();
 
@@ -103,6 +104,7 @@ public class DuelLogicTest extends RequestParentTest {
                 .str(10)
                 .dex(12)
                 .con(8)
+                .wis(10)
                 .race(raceDto.getName())
                 .build();
     }
@@ -114,7 +116,7 @@ public class DuelLogicTest extends RequestParentTest {
         AppUser appUser = new AppUser(0L, "testLogin", null, null, null, null, null);
         Race race = new Race(0L, "Человек", null, true, null, null);
         Hero hero1 = new Hero(1234L, "TestName", "TestLastName",
-                9, 10, 15, new Date(),
+                9, 10, 15, 10, new Date(),
                 appUser,
                 Status.ALIVE,
                 Collections.emptyList(),
@@ -124,7 +126,7 @@ public class DuelLogicTest extends RequestParentTest {
         AppUser appUser2 = new AppUser(0L, "testLogin", null, null, null, null, null);
         Race race2 = new Race(0L, "Ящер", null, true, null, null);
         Hero hero2 = new Hero(1234L, "TestName", "TestLastName",
-                9, 10, 9, new Date(),
+                9, 10, 9, 10, new Date(),
                 appUser2,
                 Status.ALIVE,
                 Collections.emptyList(),

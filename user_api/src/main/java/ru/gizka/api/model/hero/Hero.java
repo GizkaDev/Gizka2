@@ -1,7 +1,9 @@
 package ru.gizka.api.model.hero;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -48,6 +50,10 @@ public class Hero {
     @Column(name = "con")
     @Positive
     private Integer con;
+
+    @Column(name = "wis")
+    @Positive
+    private Integer wis;
 
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)

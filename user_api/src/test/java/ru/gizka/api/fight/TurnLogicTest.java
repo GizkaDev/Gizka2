@@ -44,14 +44,14 @@ public class TurnLogicTest {
         appUser1 = new AppUser(0L, "testLogin", null, null, null, null, null);
         race = new Race(0L, "Человек", null, true, null, null);
         hero1 = new Hero(1234L, "TestName", "TestLastName",
-                9, 10, 11, new Date(),
+                9, 10, 11,10, new Date(),
                 appUser1,
                 Status.ALIVE,
                 Collections.emptyList(),
                 race, null, null, null, null, null, null, null, null, null, null, null, null);
         appUser2 = new AppUser(0L, "testLogin2", null, null, null, null, null);
         hero2 = new Hero(1234L, "TestName2", "TestLastName2",
-                14, 5, 11, new Date(),
+                14, 5, 11, 10,new Date(),
                 appUser2,
                 Status.ALIVE,
                 Collections.emptyList(),

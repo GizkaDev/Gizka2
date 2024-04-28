@@ -73,6 +73,7 @@ public class NotificationControllerTest extends RequestParentTest {
                 .str(10)
                 .dex(8)
                 .con(12)
+                .wis(10)
                 .race("Человек")
                 .build();
 
@@ -82,6 +83,7 @@ public class NotificationControllerTest extends RequestParentTest {
                 .str(10)
                 .dex(12)
                 .con(8)
+                .wis(10)
                 .race("Человек")
                 .build();
 

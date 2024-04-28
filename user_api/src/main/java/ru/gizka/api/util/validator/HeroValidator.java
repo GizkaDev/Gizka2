@@ -29,16 +29,17 @@ public class HeroValidator implements Validator {
     }
 
     private void validateCreate(RequestHeroDto heroDto, Errors errors) {
-        if (heroDto.getStr() == null || heroDto.getDex() == null || heroDto.getCon() == null) {
+        if (heroDto.getStr() == null || heroDto.getDex() == null || heroDto.getCon() == null ||
+        heroDto.getWis() == null) {
             errors.rejectValue("", "", "Использовано слишком мало очков");
             log.error("Валидатор героев сообщает, что одно из значений характеристик null: {}", heroDto);
         } else {
-            if ((heroDto.getStr() + heroDto.getDex() + heroDto.getCon()) > 30) {
+            if ((heroDto.getStr() + heroDto.getDex() + heroDto.getCon() + heroDto.getWis()) > 40) {
                 errors.rejectValue("", "", "Использовано слишком много очков");
                 log.error("Валидатор героев сообщает, что для создания героя использовано слишком много очков: {}", heroDto);
             }
 
-            if ((heroDto.getStr() + heroDto.getDex() + heroDto.getCon()) < 30) {
+            if ((heroDto.getStr() + heroDto.getDex() + heroDto.getCon() + heroDto.getWis()) < 40) {
                 errors.rejectValue("", "", "Использовано слишком мало очков");
                 log.error("Валидатор героев сообщает, что для создания героя использовано слишком мало очков: {}", heroDto);
             }

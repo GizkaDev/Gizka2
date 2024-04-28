@@ -63,6 +63,7 @@ public class FightControllerTest {
                 .str(10)
                 .dex(8)
                 .con(12)
+                .wis(10)
                 .race("Человек")
                 .build();
 
@@ -281,6 +282,8 @@ public class FightControllerTest {
                             jsonPath("$[0].dex").value(heroDto.getDex()))
                     .andExpect(
                             jsonPath("$[0].con").value(heroDto.getCon()))
+                    .andExpect(
+                            jsonPath("$[0].wis").value(heroDto.getWis()))
                     .andExpect(
                             jsonPath("$[0].createdAt").value(Matchers.not(Matchers.empty())))
                     .andExpect(

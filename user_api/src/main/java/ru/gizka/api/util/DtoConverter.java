@@ -121,6 +121,7 @@ public class DtoConverter {
                 .str(heroDto.getStr())
                 .dex(heroDto.getDex())
                 .con(heroDto.getCon())
+                .wis(heroDto.getWis())
                 .build();
     }
 
@@ -133,6 +134,7 @@ public class DtoConverter {
                 .str(hero.getStr())
                 .dex(hero.getDex())
                 .con(hero.getCon())
+                .wis(hero.getWis())
                 .createdAt(hero.getCreatedAt())
                 .userLogin(hero.getAppUser().getLogin())
                 .status(hero.getStatus().name())
