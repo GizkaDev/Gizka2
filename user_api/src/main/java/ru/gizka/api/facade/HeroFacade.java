@@ -1,5 +1,6 @@
 package ru.gizka.api.facade;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.service.HeroService;
+import ru.gizka.api.service.actionLogic.HeroActionLogic;
 import ru.gizka.api.service.race.RaceService;
 import ru.gizka.api.util.DtoConverter;
 import ru.gizka.api.util.validator.HeroValidator;
@@ -26,16 +28,19 @@ public class HeroFacade {
     private final DtoConverter dtoConverter;
     private final HeroValidator heroValidator;
     private final RaceService raceService;
+    private final HeroActionLogic heroActionLogic;
 
     @Autowired
     public HeroFacade(HeroService heroService,
                       DtoConverter dtoConverter,
                       HeroValidator heroValidator,
-                      RaceService raceService) {
+                      RaceService raceService,
+                      HeroActionLogic heroActionLogic) {
         this.heroService = heroService;
         this.dtoConverter = dtoConverter;
         this.heroValidator = heroValidator;
         this.raceService = raceService;
+        this.heroActionLogic = heroActionLogic;
     }
 
     public ResponseHeroDto create(AppUser appUser, RequestHeroDto heroDto, BindingResult bindingResult) {
@@ -52,6 +57,17 @@ public class HeroFacade {
         return heroes.stream()
                 .map(dtoConverter::getResponseDto)
                 .toList();
+    }
+
+    public ResponseHeroDto treat(AppUser appUser){
+        log.info("Сервис героев начинает поиск текущего героя для пользователя: {}", appUser.getLogin());
+        List<Hero> heroes = heroService.getAliveByUser(appUser);
+        if (heroes.isEmpty()) {
+            throw new EntityNotFoundException("У пользователя нет героя со статусом ALIVE.");
+        }
+        Hero hero = heroActionLogic.treat(heroes.get(0));
+        heroService.save(hero);
+        return dtoConverter.getResponseDto(hero);
     }
 
     private void checkValues(RequestHeroDto heroDto,
