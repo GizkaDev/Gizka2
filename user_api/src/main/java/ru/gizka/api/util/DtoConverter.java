@@ -139,6 +139,7 @@ public class DtoConverter {
                 .userLogin(hero.getAppUser().getLogin())
                 .status(hero.getStatus().name())
                 .race(hero.getRace().getName())
+                .treatAt(hero.getTreatAt())
                 .minInit(hero.getMinInit())
                 .maxInit(hero.getMaxInit())
                 .minAttack(hero.getMinAttack())

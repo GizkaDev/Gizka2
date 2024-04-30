@@ -4,26 +4,32 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import ru.gizka.api.dto.hero.RequestHeroDto;
 import ru.gizka.api.dto.hero.ResponseHeroDto;
+import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.user.AppUser;
-import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.service.HeroService;
 import ru.gizka.api.service.actionLogic.HeroActionLogic;
 import ru.gizka.api.service.race.RaceService;
 import ru.gizka.api.util.DtoConverter;
 import ru.gizka.api.util.validator.HeroValidator;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
 public class HeroFacade {
+
+    @Value("${treat.period.seconds}")
+    private String period;
     private final HeroService heroService;
     private final DtoConverter dtoConverter;
     private final HeroValidator heroValidator;
@@ -59,15 +65,18 @@ public class HeroFacade {
                 .toList();
     }
 
-    public ResponseHeroDto treat(AppUser appUser){
+    public ResponseHeroDto treat(AppUser appUser) {
         log.info("Сервис героев начинает поиск текущего героя для пользователя: {}", appUser.getLogin());
         List<Hero> heroes = heroService.getAliveByUser(appUser);
         if (heroes.isEmpty()) {
             throw new EntityNotFoundException("У пользователя нет героя со статусом ALIVE.");
         }
-        Hero hero = heroActionLogic.treat(heroes.get(0));
-        heroService.save(hero);
-        return dtoConverter.getResponseDto(hero);
+        if (heroes.get(0).getTreatAt() == null || new Date().getTime() - heroes.get(0).getTreatAt().getTime() >= TimeUnit.SECONDS.toMillis(Integer.parseInt(period))) {
+            Hero hero = heroActionLogic.treat(heroes.get(0));
+            heroService.save(hero);
+            return dtoConverter.getResponseDto(hero);
+        }
+        throw new IllegalStateException(String.format("Перевязывать раны можно только раз в сутки. Время последнего применения %s", heroes.get(0).getTreatAt()));
     }
 
     private void checkValues(RequestHeroDto heroDto,

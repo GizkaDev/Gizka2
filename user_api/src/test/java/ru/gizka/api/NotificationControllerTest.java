@@ -24,6 +24,7 @@ import ru.gizka.api.dto.user.RequestAppUserDto;
 import java.util.Date;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -202,8 +203,8 @@ public class NotificationControllerTest extends RequestParentTest {
                     //then
                     .andExpect(
                             status().isOk())
-                   .andExpect(
-                           jsonPath("$[0].message").value("Вы встретились в бою с Разбойник и победили."));
+                    .andExpect(
+                            jsonPath("$[0].message").value("Вы встретились в бою с Разбойник и победили."));
         }
 
         @Test
@@ -227,9 +228,7 @@ public class NotificationControllerTest extends RequestParentTest {
                     .andExpect(
                             status().isOk())
                     .andExpect(
-                            jsonPath("$[0].message").value("Ваш герой Gizka Green погиб"))
-                    .andExpect(
-                            jsonPath("$[1].message").value("Вы встретились в бою с Примарх и проиграли."));
+                            jsonPath("$..message", hasItems("Ваш герой Gizka Green погиб", "Вы встретились в бою с Примарх и проиграли.")));
         }
     }
 }

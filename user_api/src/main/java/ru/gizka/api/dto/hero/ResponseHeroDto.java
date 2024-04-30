@@ -1,13 +1,11 @@
 package ru.gizka.api.dto.hero;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.gizka.api.model.hero.Hero;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -22,6 +20,7 @@ public class ResponseHeroDto {
     private String userLogin;
     private String status;
     private String race;
+    private Date treatAt;
 
     private Integer str;
     private Integer dex;

@@ -106,4 +106,12 @@ public class RequestParentTest {
                 .header("Authorization", String.format("Bearer %s", token));
         mockMvc.perform(fightRequest);
     }
+
+    public static ResultActions treat(MockMvc mockMvc, String token) throws Exception {
+        RequestBuilder getTreatRequest = MockMvcRequestBuilders
+                .put("/api/user/hero")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", String.format("Bearer %s", token));
+        return mockMvc.perform(getTreatRequest);
+    }
 }

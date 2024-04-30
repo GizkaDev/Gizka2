@@ -843,5 +843,70 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$.descr").value("У пользователя нет героя со статусом ALIVE."));
         }
+
+        @Test
+        @Description(value = "Тест на лечение, если лечение уже было")
+        void Hero_treat_Repeat() throws Exception {
+            //given
+            creatureDto = RequestCreatureDto.builder()
+                    .name("Ниндзя")
+                    .str(29)
+                    .con(1)
+                    .dex(100)
+                    .race(raceDto.getName())
+                    .build();
+
+            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(creatureDto));
+            RequestParentTest.insertFight(mockMvc, "Ниндзя", token);
+            String stringResponse = RequestParentTest.getCurrentHero(mockMvc, token).andReturn().getResponse().getContentAsString();
+            ResponseHeroDto[] responseHero = objectMapper.readValue(stringResponse, ResponseHeroDto[].class);
+            RequestParentTest.treat(mockMvc, token);
+
+            RequestBuilder getTreatRequest = MockMvcRequestBuilders
+                    .put(uri)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token));
+
+            mockMvc.perform(getTreatRequest)
+                    .andExpect(
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr", Matchers.containsString("Перевязывать раны можно только раз в сутки. Время последнего применения")));
+        }
+
+        @Test
+        @Description(value = "Тест на лечение, если лечение уже было после истечения срока")
+        void Hero_treat_RepeatAfterTimer() throws Exception {
+            //given
+            creatureDto = RequestCreatureDto.builder()
+                    .name("Ниндзя")
+                    .str(29)
+                    .con(1)
+                    .dex(100)
+                    .race(raceDto.getName())
+                    .build();
+
+            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(creatureDto));
+            RequestParentTest.insertFight(mockMvc, "Ниндзя", token);
+            String stringResponse = RequestParentTest.getCurrentHero(mockMvc, token).andReturn().getResponse().getContentAsString();
+            ResponseHeroDto[] responseHero = objectMapper.readValue(stringResponse, ResponseHeroDto[].class);
+            RequestParentTest.treat(mockMvc, token);
+
+            RequestBuilder getTreatRequest = MockMvcRequestBuilders
+                    .put(uri)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token));
+
+            Thread.sleep(20 * 1000);
+
+            //when
+            ResponseHeroDto afterHeal = objectMapper.readValue(mockMvc.perform(getTreatRequest)
+                    //then
+                    .andExpect(
+                            status().isOk())
+                    .andReturn().getResponse().getContentAsString(), ResponseHeroDto.class);
+            assertTrue(afterHeal.getCurrentHp() >= responseHero[0].getCurrentHp());
+            assertTrue(afterHeal.getCurrentHp() <= afterHeal.getMaxHp());
+        }
     }
 }

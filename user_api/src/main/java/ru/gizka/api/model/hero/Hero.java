@@ -116,4 +116,8 @@ public class Hero {
             fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE)
     private List<Fight> fights;
+
+    @Column(name = "treat_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date treatAt;
 }

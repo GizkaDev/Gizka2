@@ -36,7 +36,7 @@ public class AttributeCalcTest {
                 appUser,
                 Status.ALIVE,
                 Collections.emptyList(),
-                race, null, null, null, null, null, null, null, null, null, null, null, null);
+                race, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         // when
         attributeCalculator.calculateForNew(hero);
@@ -67,7 +67,7 @@ public class AttributeCalcTest {
                 appUser,
                 Status.ALIVE,
                 Collections.emptyList(),
-                race, null, null, null, null, null, null, null, null, null, null, null, null);
+                race, null,null, null, null, null, null, null, null, null, null, null, null, null);
 
         // when
         attributeCalculator.calculateForNew(hero);
