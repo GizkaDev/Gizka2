@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.gizka.api.model.hero.Hero;
+import ru.gizka.api.model.notification.Notification;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,4 +22,6 @@ public interface HeroRepo extends JpaRepository<Hero, Long> {
 
     @Query("SELECT COUNT(h) > 0 FROM Hero h WHERE h.id = :heroId AND h.appUser.login = :userLogin")
     boolean isOwner(@Param("heroId") Long heroId, @Param("userLogin") String userLogin);
+
+    Optional<Hero> findTopByAppUserLoginOrderByCreatedAtDesc(String userLogin);
 }
