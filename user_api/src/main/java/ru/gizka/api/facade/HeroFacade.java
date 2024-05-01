@@ -15,6 +15,8 @@ import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.service.HeroService;
 import ru.gizka.api.service.actionLogic.HeroActionLogic;
+import ru.gizka.api.service.notification.NotificationBuilder;
+import ru.gizka.api.service.notification.NotificationService;
 import ru.gizka.api.service.race.RaceService;
 import ru.gizka.api.util.DtoConverter;
 import ru.gizka.api.util.validator.HeroValidator;
@@ -35,18 +37,24 @@ public class HeroFacade {
     private final HeroValidator heroValidator;
     private final RaceService raceService;
     private final HeroActionLogic heroActionLogic;
+    private final NotificationService notificationService;
+    private final NotificationBuilder notificationBuilder;
 
     @Autowired
     public HeroFacade(HeroService heroService,
                       DtoConverter dtoConverter,
                       HeroValidator heroValidator,
                       RaceService raceService,
-                      HeroActionLogic heroActionLogic) {
+                      HeroActionLogic heroActionLogic,
+                      NotificationService notificationService,
+                      NotificationBuilder notificationBuilder) {
         this.heroService = heroService;
         this.dtoConverter = dtoConverter;
         this.heroValidator = heroValidator;
         this.raceService = raceService;
         this.heroActionLogic = heroActionLogic;
+        this.notificationService = notificationService;
+        this.notificationBuilder = notificationBuilder;
     }
 
     public ResponseHeroDto create(AppUser appUser, RequestHeroDto heroDto, BindingResult bindingResult) {
@@ -54,6 +62,7 @@ public class HeroFacade {
         Optional<Race> mbRace = raceService.getByName(heroDto.getRace());
         checkValues(heroDto, bindingResult, mbRace);
         Hero hero = heroService.create(dtoConverter.getModel(heroDto), appUser, mbRace.get());
+        notificationService.save(notificationBuilder.buildForNewHero(hero), appUser);
         return dtoConverter.getResponseDto(hero);
     }
 
@@ -72,7 +81,9 @@ public class HeroFacade {
             throw new EntityNotFoundException("У пользователя нет героя со статусом ALIVE.");
         }
         if (heroes.get(0).getTreatAt() == null || new Date().getTime() - heroes.get(0).getTreatAt().getTime() >= TimeUnit.SECONDS.toMillis(Integer.parseInt(period))) {
+            int hpBeforeHeal = heroes.get(0).getCurrentHp();
             Hero hero = heroActionLogic.treat(heroes.get(0));
+            notificationService.save(notificationBuilder.buildForTreat(hero, hpBeforeHeal), appUser);
             heroService.save(hero);
             return dtoConverter.getResponseDto(hero);
         }

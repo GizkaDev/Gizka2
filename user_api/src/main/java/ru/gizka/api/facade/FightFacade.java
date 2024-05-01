@@ -16,7 +16,8 @@ import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.service.CreatureService;
 import ru.gizka.api.service.FightService;
 import ru.gizka.api.service.HeroService;
-import ru.gizka.api.service.NotificationService;
+import ru.gizka.api.service.notification.NotificationBuilder;
+import ru.gizka.api.service.notification.NotificationService;
 import ru.gizka.api.service.fightLogic.FightLogic;
 import ru.gizka.api.util.DtoConverter;
 
@@ -31,6 +32,7 @@ public class FightFacade {
     private final DtoConverter dtoConverter;
     private final FightService fightService;
     private final NotificationService notificationService;
+    private final NotificationBuilder notificationBuilder;
 
     @Autowired
     public FightFacade(FightLogic fightLogic,
@@ -38,13 +40,15 @@ public class FightFacade {
                        CreatureService creatureService,
                        DtoConverter dtoConverter,
                        FightService fightService,
-                       NotificationService notificationService) {
+                       NotificationService notificationService,
+                       NotificationBuilder notificationBuilder) {
         this.fightLogic = fightLogic;
         this.heroService = heroService;
         this.creatureService = creatureService;
         this.dtoConverter = dtoConverter;
         this.fightService = fightService;
         this.notificationService = notificationService;
+        this.notificationBuilder = notificationBuilder;
     }
 
     public ResponseEntity<FightDto> simulate(AppUser appUser, String name) {
@@ -58,15 +62,14 @@ public class FightFacade {
                         new EntityNotFoundException("Моб с таким названием не найден"));
         Fight fight = fightLogic.simulate(heroes.get(0), creature);
         fightService.save(fight);
-        notificationService.saveNotification(fight, appUser);
+        Notification notification = notificationBuilder.buildForFight(fight);
+        notificationService.save(notification, appUser);
 
         Hero afterFightHero = fight.getHero();
         if (afterFightHero.getCurrentHp() <= 0) {
             afterFightHero.setStatus(Status.DEAD);
             afterFightHero.setCurrentHp(1);
-            notificationService.save(Notification.builder()
-                    .message(String.format("Ваш герой %s %s погиб", afterFightHero.getName(), afterFightHero.getLastname()))
-                    .build(), afterFightHero.getAppUser());
+            notificationService.save(notificationBuilder.buildForDeath(afterFightHero), afterFightHero.getAppUser());
         }
 
         heroService.save(fight.getHero());

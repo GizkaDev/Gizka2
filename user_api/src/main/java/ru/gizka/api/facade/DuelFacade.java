@@ -13,7 +13,8 @@ import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.service.AppUserService;
 import ru.gizka.api.service.DuelService;
 import ru.gizka.api.service.HeroService;
-import ru.gizka.api.service.NotificationService;
+import ru.gizka.api.service.notification.NotificationBuilder;
+import ru.gizka.api.service.notification.NotificationService;
 import ru.gizka.api.service.fightLogic.FightLogic;
 import ru.gizka.api.util.DtoConverter;
 
@@ -29,6 +30,7 @@ public class DuelFacade {
     private final DtoConverter dtoConverter;
     private final DuelService duelService;
     private final NotificationService notificationService;
+    private final NotificationBuilder notificationBuilder;
 
 
     @Autowired
@@ -37,13 +39,15 @@ public class DuelFacade {
                       AppUserService appUserService,
                       DtoConverter dtoConverter,
                       DuelService duelService,
-                      NotificationService notificationService) {
+                      NotificationService notificationService,
+                      NotificationBuilder notificationBuilder) {
         this.fightLogic = fightLogic;
         this.heroService = heroService;
         this.appUserService = appUserService;
         this.dtoConverter = dtoConverter;
         this.duelService = duelService;
         this.notificationService = notificationService;
+        this.notificationBuilder = notificationBuilder;
     }
 
     public ResponseEntity<DuelDto> simulateDuel(AppUser user1, String login) {
@@ -61,7 +65,8 @@ public class DuelFacade {
         }
         Duel duel = fightLogic.simulate(heroes1.get(0), heroes2.get(0));
         duelService.save(duel);
-        notificationService.saveNotification(duel);
+        notificationService.save(notificationBuilder.buildForAttacker(duel), user1);
+        notificationService.save(notificationBuilder.buildForDefender(duel), user2);
         saveRelation(duel);
         return new ResponseEntity<>(dtoConverter.getResponseDto(duel), HttpStatus.CREATED);
     }
