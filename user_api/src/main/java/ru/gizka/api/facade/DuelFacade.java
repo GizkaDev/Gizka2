@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.dto.fight.DuelDto;
 import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.model.hero.Hero;
@@ -64,10 +65,7 @@ public class DuelFacade {
             throw new EntityNotFoundException("У одного из пользователей нет героя со статусом ALIVE.");
         }
         Duel duel = fightLogic.simulate(heroes1.get(0), heroes2.get(0));
-        duelService.save(duel);
-        notificationService.save(notificationBuilder.buildForAttacker(duel), user1);
-        notificationService.save(notificationBuilder.buildForDefender(duel), user2);
-        saveRelation(duel);
+        saveRelation(duel, user1, user2);
         return new ResponseEntity<>(dtoConverter.getResponseDto(duel), HttpStatus.CREATED);
     }
 
@@ -83,7 +81,11 @@ public class DuelFacade {
         return ResponseEntity.ok(Collections.emptyList());
     }
 
-    private void saveRelation(Duel duel) {
+    @Transactional
+    private void saveRelation(Duel duel, AppUser user1, AppUser user2) {
+        duelService.save(duel);
+        notificationService.save(notificationBuilder.buildForAttacker(duel), user1);
+        notificationService.save(notificationBuilder.buildForDefender(duel), user2);
         Hero hero1 = heroService.getByIdWithDuels(duel.getHeroes().get(0).getId());
         Hero hero2 = heroService.getByIdWithDuels(duel.getHeroes().get(1).getId());
         log.info("Сервис дуэлей сохраняет связь герой-дуэль для героев: {} {}({}) и {} {}({})",

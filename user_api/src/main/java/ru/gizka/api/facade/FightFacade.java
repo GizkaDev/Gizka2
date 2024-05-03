@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.dto.fight.FightDto;
 import ru.gizka.api.model.creature.Creature;
 import ru.gizka.api.model.fight.Fight;
@@ -61,6 +62,12 @@ public class FightFacade {
                 .orElseThrow(() ->
                         new EntityNotFoundException("Моб с таким названием не найден"));
         Fight fight = fightLogic.simulate(heroes.get(0), creature);
+        saveRelation(fight, appUser);
+        return new ResponseEntity<>(dtoConverter.getResponseDto(fight), HttpStatus.CREATED);
+    }
+
+    @Transactional
+    private void saveRelation(Fight fight, AppUser appUser) {
         fightService.save(fight);
         Notification notification = notificationBuilder.buildForFight(fight);
         notificationService.save(notification, appUser);
@@ -73,6 +80,5 @@ public class FightFacade {
         }
 
         heroService.save(fight.getHero());
-        return new ResponseEntity<>(dtoConverter.getResponseDto(fight), HttpStatus.CREATED);
     }
 }

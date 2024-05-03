@@ -58,7 +58,7 @@ public class RequestParentTest {
 
     public static ResultActions getEventsSortedByDate(MockMvc mockMvc, String token) throws Exception {
         MockHttpServletRequestBuilder eventRequest = MockMvcRequestBuilders
-                .get("/api/user/event")
+                .get("/api/user/notification")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", String.format("Bearer %s", token));
         return mockMvc.perform(eventRequest);
@@ -113,5 +113,14 @@ public class RequestParentTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", String.format("Bearer %s", token));
         return mockMvc.perform(getTreatRequest);
+    }
+
+    public static ResultActions insertProduct(MockMvc mockMvc, String productDtoAsString, String token) throws Exception {
+        RequestBuilder productRequest = MockMvcRequestBuilders
+                .post("/api/admin/product")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(productDtoAsString)
+                .header("Authorization", "Bearer " + token);
+        return mockMvc.perform(productRequest);
     }
 }

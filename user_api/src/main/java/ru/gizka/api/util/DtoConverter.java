@@ -12,6 +12,8 @@ import ru.gizka.api.dto.creature.ResponseCreatureDto;
 import ru.gizka.api.dto.fight.FightDto;
 import ru.gizka.api.dto.fight.Fighter;
 import ru.gizka.api.dto.fight.Turn;
+import ru.gizka.api.dto.item.RequestProductDto;
+import ru.gizka.api.dto.item.ResponseProductDto;
 import ru.gizka.api.dto.notification.NotificationDto;
 import ru.gizka.api.dto.fight.DuelDto;
 import ru.gizka.api.dto.hero.RequestHeroDto;
@@ -22,6 +24,7 @@ import ru.gizka.api.dto.user.RequestAppUserDto;
 import ru.gizka.api.dto.user.ResponseAppUserDto;
 import ru.gizka.api.model.creature.Creature;
 import ru.gizka.api.model.fight.Fight;
+import ru.gizka.api.model.item.Product;
 import ru.gizka.api.model.notification.Notification;
 import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.model.hero.Hero;
@@ -43,9 +46,28 @@ public class DtoConverter {
         this.objectMapper = objectMapper;
     }
 
+    public ResponseProductDto getResponseDto(Product product) {
+        log.info("Конвертер переводит {} в {}", Product.class, ResponseProductDto.class);
+        return ResponseProductDto.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .price(product.getPrice())
+                .amount(product.getAmount())
+                .build();
+    }
+
+    public Product getModel(RequestProductDto productDto) {
+        log.info("Конвертер переводит {} в {}", RequestProductDto.class, Product.class);
+        return Product.builder()
+                .name(productDto.getName())
+                .price(productDto.getPrice())
+                .amount(productDto.getAmount())
+                .build();
+    }
+
     public ResponseCreatureDto getResponseDto(Creature creature) {
-        log.info("Конвертер переводит {} в {}", Creature.class, RequestCreatureDto.class);
-        return ru.gizka.api.dto.creature.ResponseCreatureDto.builder()
+        log.info("Конвертер переводит {} в {}", Creature.class, ResponseCreatureDto.class);
+        return ResponseCreatureDto.builder()
                 .id(creature.getId())
                 .name(creature.getName())
                 .str(creature.getStr())

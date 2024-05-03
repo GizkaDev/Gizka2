@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import ru.gizka.api.dto.hero.RequestHeroDto;
@@ -61,8 +62,7 @@ public class HeroFacade {
         log.info("Сервис героев начинает создание нового героя: {}", heroDto);
         Optional<Race> mbRace = raceService.getByName(heroDto.getRace());
         checkValues(heroDto, bindingResult, mbRace);
-        Hero hero = heroService.create(dtoConverter.getModel(heroDto), appUser, mbRace.get());
-        notificationService.save(notificationBuilder.buildForNewHero(hero), appUser);
+        Hero hero = saveRelation(dtoConverter.getModel(heroDto), appUser, mbRace.get());
         return dtoConverter.getResponseDto(hero);
     }
 
@@ -83,11 +83,23 @@ public class HeroFacade {
         if (heroes.get(0).getTreatAt() == null || new Date().getTime() - heroes.get(0).getTreatAt().getTime() >= TimeUnit.SECONDS.toMillis(Integer.parseInt(period))) {
             int hpBeforeHeal = heroes.get(0).getCurrentHp();
             Hero hero = heroActionLogic.treat(heroes.get(0));
-            notificationService.save(notificationBuilder.buildForTreat(hero, hpBeforeHeal), appUser);
-            heroService.save(hero);
+            saveRelation(hero, appUser, hpBeforeHeal);
             return dtoConverter.getResponseDto(hero);
         }
         throw new IllegalStateException(String.format("Перевязывать раны можно только раз в сутки. Время последнего применения %s", heroes.get(0).getTreatAt()));
+    }
+
+    @Transactional
+    private void saveRelation(Hero hero, AppUser appUser, int hpBeforeHeal) {
+        notificationService.save(notificationBuilder.buildForTreat(hero, hpBeforeHeal), appUser);
+        heroService.save(hero);
+    }
+
+    @Transactional
+    private Hero saveRelation(Hero hero, AppUser appUser, Race race){
+        Hero created = heroService.create(hero, appUser, race);
+        notificationService.save(notificationBuilder.buildForNewHero(hero), appUser);
+        return created;
     }
 
     private void checkValues(RequestHeroDto heroDto,

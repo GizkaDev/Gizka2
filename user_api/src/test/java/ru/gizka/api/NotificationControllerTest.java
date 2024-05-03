@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
 public class NotificationControllerTest extends RequestParentTest {
-    private String uri = "/api/user/event";
+    private String uri = "/api/user/notification";
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
     private RequestAppUserDto userDto;

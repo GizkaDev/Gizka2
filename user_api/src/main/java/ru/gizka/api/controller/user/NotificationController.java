@@ -14,7 +14,7 @@ import ru.gizka.api.model.user.AuthUser;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/user/event")
+@RequestMapping("/api/user/notification")
 @Slf4j
 public class NotificationController {
     private final NotificationFacade notificationFacade;
