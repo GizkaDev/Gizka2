@@ -30,8 +30,4 @@ public class Product {
     @Column(name = "price")
     @PositiveOrZero
     private Integer price;
-
-    @Column(name = "amount")
-    @PositiveOrZero
-    private Long amount;
 }

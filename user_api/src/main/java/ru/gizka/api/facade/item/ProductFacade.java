@@ -1,5 +1,6 @@
 package ru.gizka.api.facade.item;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.item.ResponseProductDto;
+import ru.gizka.api.dto.race.ResponseRaceDto;
 import ru.gizka.api.model.item.Product;
+import ru.gizka.api.model.race.Race;
 import ru.gizka.api.service.item.ProductService;
 import ru.gizka.api.util.DtoConverter;
 import ru.gizka.api.util.validator.ProductValidator;
@@ -38,6 +41,21 @@ public class ProductFacade {
         Product product = productService.create(dtoConverter.getModel(productDto));
         return dtoConverter.getResponseDto(product);
    }
+
+    public ResponseProductDto getByName(String name) {
+        log.info("Сервис товаров начинает поиск товара: {}", name);
+        Product product = productService.getByName(name)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(String.format("Товар не найден: %s", name)));
+        return dtoConverter.getResponseDto(product);
+    }
+
+    public List<ResponseProductDto> getAll() {
+        log.info("Сервис товаров начинает поиск всех товаров");
+        return productService.getAll().stream()
+                .map(dtoConverter::getResponseDto)
+                .toList();
+    }
 
     private void checkValues(RequestProductDto productDto,
                              BindingResult bindingResult) {

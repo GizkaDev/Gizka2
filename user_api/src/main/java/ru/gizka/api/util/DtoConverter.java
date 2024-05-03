@@ -52,7 +52,6 @@ public class DtoConverter {
                 .id(product.getId())
                 .name(product.getName())
                 .price(product.getPrice())
-                .amount(product.getAmount())
                 .build();
     }
 
@@ -61,7 +60,6 @@ public class DtoConverter {
         return Product.builder()
                 .name(productDto.getName())
                 .price(productDto.getPrice())
-                .amount(productDto.getAmount())
                 .build();
     }
 

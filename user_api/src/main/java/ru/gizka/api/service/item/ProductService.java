@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.model.item.Product;
+import ru.gizka.api.model.race.Race;
 import ru.gizka.api.repo.ProductRepo;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,5 +32,10 @@ public class ProductService {
     public Optional<Product> getByName(String name) {
         log.info("Сервис товаров ищет товар: {}", name);
         return productRepo.findByName(name);
+    }
+
+    public List<Product> getAll(){
+        log.info("Сервис рас ищет все расы");
+        return productRepo.findAll();
     }
 }

@@ -61,7 +61,6 @@ public class AdminProductControllerTest {
             productDto = RequestProductDto.builder()
                     .name("Роскошь")
                     .price(500)
-                    .amount(50L)
                     .build();
         }
 
@@ -83,9 +82,7 @@ public class AdminProductControllerTest {
                     .andExpect(
                             jsonPath("$.name").value(productDto.getName()))
                     .andExpect(
-                            jsonPath("$.price").value(productDto.getPrice()))
-                    .andExpect(
-                            jsonPath("$.amount").value(productDto.getAmount()));
+                            jsonPath("$.price").value(productDto.getPrice()));
         }
 
         @Test
@@ -138,7 +135,6 @@ public class AdminProductControllerTest {
             //given
             productDto = RequestProductDto.builder()
                     .price(100)
-                    .amount(100L)
                     .build();
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -233,26 +229,6 @@ public class AdminProductControllerTest {
                             status().isBadRequest())
                     .andExpect(
                             jsonPath("$.descr").value(containsString("Цена товара должна быть больше или равна 0")));
-        }
-
-        @Test
-        @Description(value = "Тест на создание товара c отрицательным количеством")
-        void Product_create_NegativeAmount() throws Exception {
-            //given
-            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
-            String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
-            RequestParentTest.setAdminRights(mockMvc, token);
-            productDto.setAmount(-1L);
-            createRequest
-                    .content(objectMapper.writeValueAsString(productDto))
-                    .header("Authorization", "Bearer " + token);
-            //when
-            mockMvc.perform(createRequest)
-                    //then
-                    .andExpect(
-                            status().isBadRequest())
-                    .andExpect(
-                            jsonPath("$.descr").value(containsString("Количество товара должно быть больше или равно 0")));
         }
 
         @Test

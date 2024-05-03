@@ -19,7 +19,4 @@ public class RequestProductDto {
 
     @PositiveOrZero(message = "Цена товара должна быть больше или равна 0")
     private Integer price;
-
-    @PositiveOrZero(message = "Количество товара должно быть больше или равно 0")
-    private Long amount;
 }
