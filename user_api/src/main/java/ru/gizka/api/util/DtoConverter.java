@@ -12,7 +12,9 @@ import ru.gizka.api.dto.creature.ResponseCreatureDto;
 import ru.gizka.api.dto.fight.FightDto;
 import ru.gizka.api.dto.fight.Fighter;
 import ru.gizka.api.dto.fight.Turn;
+import ru.gizka.api.dto.item.RequestItemDto;
 import ru.gizka.api.dto.item.RequestProductDto;
+import ru.gizka.api.dto.item.ResponseItemDto;
 import ru.gizka.api.dto.item.ResponseProductDto;
 import ru.gizka.api.dto.notification.NotificationDto;
 import ru.gizka.api.dto.fight.DuelDto;
@@ -24,6 +26,7 @@ import ru.gizka.api.dto.user.RequestAppUserDto;
 import ru.gizka.api.dto.user.ResponseAppUserDto;
 import ru.gizka.api.model.creature.Creature;
 import ru.gizka.api.model.fight.Fight;
+import ru.gizka.api.model.item.Item;
 import ru.gizka.api.model.item.Product;
 import ru.gizka.api.model.notification.Notification;
 import ru.gizka.api.model.fight.Duel;
@@ -44,6 +47,26 @@ public class DtoConverter {
                         ObjectMapper objectMapper) {
         this.modelMapper = modelMapper;
         this.objectMapper = objectMapper;
+    }
+
+    public ResponseItemDto getResponseDto(Item item) {
+        log.info("Конвертер переводит {} в {}", Item.class, ResponseItemDto.class);
+        return ResponseItemDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .weight(item.getWeight())
+                .value(item.getValue())
+                .productDto(getResponseDto(item.getProduct()))
+                .build();
+    }
+
+    public Item getModel(RequestItemDto itemDto) {
+        log.info("Конвертер переводит {} в {}", RequestItemDto.class, Item.class);
+        return Item.builder()
+                .name(itemDto.getName())
+                .weight(itemDto.getWeight())
+                .value(itemDto.getValue())
+                .build();
     }
 
     public ResponseProductDto getResponseDto(Product product) {

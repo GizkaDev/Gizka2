@@ -123,4 +123,13 @@ public class RequestParentTest {
                 .header("Authorization", "Bearer " + token);
         return mockMvc.perform(productRequest);
     }
+
+    public static ResultActions insertItem(MockMvc mockMvc, String itemDtoAsString, String token) throws Exception {
+        RequestBuilder productRequest = MockMvcRequestBuilders
+                .post("/api/admin/item")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(itemDtoAsString)
+                .header("Authorization", "Bearer " + token);
+        return mockMvc.perform(productRequest);
+    }
 }

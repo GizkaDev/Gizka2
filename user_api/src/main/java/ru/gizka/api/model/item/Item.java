@@ -2,6 +2,7 @@ package ru.gizka.api.model.item;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -9,15 +10,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Entity
-@Table(name = "product")
+@Table(name = "item")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Product {
+public class Item {
 
     @Id
     @Column(name = "id")
@@ -25,16 +24,19 @@ public class Product {
     private Long id;
 
     @Column(name = "name", unique = true)
-    @Size(min = 3, max = 100)
+    @Size(min = 1, max = 200)
     @NotBlank
     private String name;
 
-    @Column(name = "price")
+    @Column(name = "weight")
     @PositiveOrZero
-    private Integer price;
+    private Long weight;
 
-    @OneToMany(mappedBy = "product",
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.REMOVE)
-    private List<Item> items;
+    @Column(name = "item_value")
+    @Positive
+    private Integer value;
+
+    @ManyToOne
+    @JoinColumn(name = "item_product", referencedColumnName = "name")
+    private Product product;
 }
