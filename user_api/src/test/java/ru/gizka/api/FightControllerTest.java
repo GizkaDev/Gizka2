@@ -47,10 +47,8 @@ public class FightControllerTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        raceDto = RequestRaceDto.builder()
-                .name("Человек")
-                .isPlayable(true)
-                .build();
+        raceDto = new RequestRaceDto("Человек" , true,
+                0, 0, 0, 0);
 
         userDto = RequestAppUserDto.builder()
                 .login("Biba")

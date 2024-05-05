@@ -30,7 +30,7 @@ public class AttributeCalcTest {
     public void testCalculateAttributes() {
         // given
         appUser = new AppUser(0L, "testLogin", null, null, null, null, null);
-        race = new Race(0L, "Человек", null, true, null, null);
+        race = new Race(0L, "Человек", null, true, null, null, 0, 0, 0, 0);
         hero = new Hero(1234L, "TestName", "TestLastName",
                 9, 10, 11, 10, new Date(),
                 appUser,
@@ -61,7 +61,7 @@ public class AttributeCalcTest {
     public void testCalculateMinMaxAttributes() {
         // given
         appUser = new AppUser(0L, "testLogin", null, null, null, null, null);
-        race = new Race(0L, "Человек", null, true, null, null);
+        race = new Race(0L, "Человек", null, true, null, null, 0, 0, 0, 0);
         hero = new Hero(1234L, "TestName", "TestLastName",
                 9, 10, 11, 10, new Date(),
                 appUser,
@@ -90,7 +90,7 @@ public class AttributeCalcTest {
     @Description(value = "Тест на расчет мин. и макс. атрибутов героя")
     public void testCreatureCalculateMinMaxAttributes() {
         // given
-        race = new Race(0L, "Человек", null, true, null, null);
+        race = new Race(0L, "Человек", null, true, null, null, 0, 0, 0, 0);
         creature = new Creature(1234L, "TestName",
                 9, 10, 11, new Date(),
                 race, null, null, null, null, null, null, null, null, null, null, null, null);

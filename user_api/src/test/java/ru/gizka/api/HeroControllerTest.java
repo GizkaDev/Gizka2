@@ -21,8 +21,7 @@ import ru.gizka.api.dto.user.RequestAppUserDto;
 
 import java.util.Random;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.matchesPattern;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -48,10 +47,9 @@ public class HeroControllerTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        raceDto = RequestRaceDto.builder()
-                .name("Человек")
-                .isPlayable(true)
-                .build();
+        raceDto = new RequestRaceDto("Человек", true,
+                0, 0, 0, 0);
+
         heroDto = RequestHeroDto.builder()
                 .name("NameЯ")
                 .lastName("LastnameБ")
@@ -497,7 +495,7 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$.descr").value(matchesPattern(".*Ловкость должна быть не меньше 5.*")))
                     .andExpect(
-                            jsonPath("$.descr").value(matchesPattern(".*Выносливость должна быть не меньше 5.*")))
+                            jsonPath("$.descr").value(matchesPattern(".*Телосложение должно быть не меньше 5.*")))
                     .andExpect(
                             jsonPath("$.descr").value(matchesPattern(".*Сила должна быть не меньше 5.*")))
                     .andExpect(
@@ -526,7 +524,7 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$.descr").value(matchesPattern(".*Ловкость должна быть не меньше 5.*")))
                     .andExpect(
-                            jsonPath("$.descr").value(matchesPattern(".*Выносливость должна быть не меньше 5.*")))
+                            jsonPath("$.descr").value(matchesPattern(".*Телосложение должно быть не меньше 5.*")))
                     .andExpect(
                             jsonPath("$.descr").value(matchesPattern(".*Сила должна быть не меньше 5.*")))
                     .andExpect(
@@ -642,10 +640,8 @@ public class HeroControllerTest {
         @Description(value = "Тест на создание героя с неиграбельной расой")
         void Hero_create_NoPlayableRace() throws Exception {
             //given
-            RequestRaceDto noPlayable = RequestRaceDto.builder()
-                    .name("Скелет")
-                    .isPlayable(false)
-                    .build();
+            RequestRaceDto noPlayable = new RequestRaceDto("Скелет", false,
+                    0, 0, 0, 0);
             String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token1);
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(noPlayable));
@@ -762,6 +758,97 @@ public class HeroControllerTest {
                             jsonPath("$.currentHp").isNumber())
                     .andExpect(
                             jsonPath("$.currentCon").isNumber());
+        }
+
+        @Test
+        @Description(value = "Простое создание героя, в том числе проверка на создание героя, если у пользователя до этого нет героя со статусом ALIVE c расой с активными бонусами")
+        void Hero_create_SuccessWithRaceBonuses() throws Exception {
+            //given
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            raceDto = new RequestRaceDto("Мутант", true,
+                    -3, -2, 2, 3);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            heroDto.setRace(raceDto.getName());
+            requestBuilder
+                    .content(objectMapper.writeValueAsString(heroDto))
+                    .header("Authorization", String.format("Bearer %s", token));
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isCreated())
+                    .andExpect(
+                            jsonPath("$.name").value(heroDto.getName()))
+                    .andExpect(
+                            jsonPath("$.lastname").value(heroDto.getLastName()))
+                    .andExpect(
+                            jsonPath("$.str").value(heroDto.getStr() + raceDto.getStrBonus()))
+                    .andExpect(
+                            jsonPath("$.dex").value(heroDto.getDex() + raceDto.getDexBonus()))
+                    .andExpect(
+                            jsonPath("$.con").value(heroDto.getCon() + raceDto.getConBonus()))
+                    .andExpect(
+                            jsonPath("$.wis").value(heroDto.getWis() + raceDto.getWisBonus()))
+                    .andExpect(
+                            jsonPath("$.createdAt").value(Matchers.not(Matchers.empty())))
+                    .andExpect(
+                            jsonPath("$.userLogin").value(userDto.getLogin()))
+                    .andExpect(
+                            jsonPath("$.status").value("ALIVE"))
+                    .andExpect(
+                            jsonPath("$.race").value(raceDto.getName()))
+                    .andExpect(
+                            jsonPath("$.minInit").isNumber())
+                    .andExpect(
+                            jsonPath("$.maxInit").isNumber())
+                    .andExpect(
+                            jsonPath("$.minAttack").isNumber())
+                    .andExpect(
+                            jsonPath("$.maxAttack").isNumber())
+                    .andExpect(
+                            jsonPath("$.minEvasion").isNumber())
+                    .andExpect(
+                            jsonPath("$.maxEvasion").isNumber())
+                    .andExpect(
+                            jsonPath("$.minPhysDamage").isNumber())
+                    .andExpect(
+                            jsonPath("$.maxPhysDamage").isNumber())
+                    .andExpect(
+                            jsonPath("$.maxHp").isNumber())
+                    .andExpect(
+                            jsonPath("$.currentHp").isNumber())
+                    .andExpect(
+                            jsonPath("$.currentCon").isNumber());
+        }
+
+        @Test
+        @Description(value = "Простое создание героя, в том числе проверка на создание героя, если у пользователя до этого нет героя со статусом ALIVE " +
+                "c расой с активными бонусами, но с суммой меньше 5")
+        void Hero_create_SuccessWithRaceBonusesLowSum() throws Exception {
+            //given
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            raceDto = new RequestRaceDto("Мутант", true,
+                    -1, -2, -3, -4);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            heroDto = new RequestHeroDto("Гуль", "Борисович",
+                    5, 6, 7, 22, raceDto.getName());
+            heroDto.setRace(raceDto.getName());
+            requestBuilder
+                    .content(objectMapper.writeValueAsString(heroDto))
+                    .header("Authorization", String.format("Bearer %s", token));
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(containsString("Сила должна быть не меньше 5")))
+                    .andExpect(
+                            jsonPath("$.descr").value(containsString("Ловкость должна быть не меньше 5")))
+                    .andExpect(
+                            jsonPath("$.descr").value(containsString("Телосложение должно быть не меньше 5")));
         }
     }
 

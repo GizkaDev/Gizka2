@@ -73,10 +73,8 @@ public class DuelLogicTest extends RequestParentTest {
         heroFighter2 = new Fighter();
         heroFighter2.setCon(9);
 
-        raceDto = RequestRaceDto.builder()
-                .name("Человек")
-                .isPlayable(true)
-                .build();
+        raceDto = new RequestRaceDto("Человек", true,
+                0,0,0,0);
 
         userDto = RequestAppUserDto.builder()
                 .login("Biba")
@@ -114,7 +112,7 @@ public class DuelLogicTest extends RequestParentTest {
     void testGetMaxTurns() throws Exception {
         //given
         AppUser appUser = new AppUser(0L, "testLogin", null, null, null, null, null);
-        Race race = new Race(0L, "Человек", null, true, null, null);
+        Race race = new Race(0L, "Человек", null, true, null, null, 0, 0, 0, 0);
         Hero hero1 = new Hero(1234L, "TestName", "TestLastName",
                 9, 10, 15, 10, new Date(),
                 appUser,
@@ -124,7 +122,7 @@ public class DuelLogicTest extends RequestParentTest {
         attributeCalculator.calculateForNew(hero1);
         heroFighter1 = new Fighter(hero1);
         AppUser appUser2 = new AppUser(0L, "testLogin", null, null, null, null, null);
-        Race race2 = new Race(0L, "Ящер", null, true, null, null);
+        Race race2 = new Race(0L, "Ящер", null, true, null, null, 0, 0, 0, 0);
         Hero hero2 = new Hero(1234L, "TestName", "TestLastName",
                 9, 10, 9, 10, new Date(),
                 appUser2,

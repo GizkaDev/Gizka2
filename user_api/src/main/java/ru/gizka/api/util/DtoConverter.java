@@ -127,6 +127,10 @@ public class DtoConverter {
                 .name(race.getName())
                 .createdAt(race.getCreatedAt())
                 .isPlayable(race.getIsPlayable())
+                .strBonus(race.getStrBonus())
+                .dexBonus(race.getDexBonus())
+                .conBonus(race.getConBonus())
+                .wisBonus(race.getWisBonus())
                 .build();
     }
 
@@ -135,6 +139,10 @@ public class DtoConverter {
         return Race.builder()
                 .name(raceDto.getName())
                 .isPlayable(raceDto.getIsPlayable())
+                .strBonus(raceDto.getStrBonus())
+                .dexBonus(raceDto.getDexBonus())
+                .conBonus(raceDto.getConBonus())
+                .wisBonus(raceDto.getWisBonus())
                 .build();
     }
 

@@ -51,6 +51,10 @@ public class HeroService {
             hero.setDuels(duels);
             hero.setAppUser(appUser);
             hero.setRace(race);
+            hero.setStr(hero.getStr() + race.getStrBonus());
+            hero.setDex(hero.getDex() + race.getDexBonus());
+            hero.setCon(hero.getCon() + race.getConBonus());
+            hero.setWis(hero.getWis() + race.getWisBonus());
             hero.setStatus(Status.ALIVE);
             hero.setCreatedAt(new Date());
             attributeCalculator.calculateForNew(hero);

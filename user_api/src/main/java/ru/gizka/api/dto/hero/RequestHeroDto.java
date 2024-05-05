@@ -30,8 +30,8 @@ public class RequestHeroDto {
     @NotNull(message = "Ловкость должна быть не меньше 5")
     private Integer dex;
 
-    @Min(value = 5, message = "Выносливость должна быть не меньше 5")
-    @NotNull(message = "Выносливость должна быть не меньше 5")
+    @Min(value = 5, message = "Телосложение должно быть не меньше 5")
+    @NotNull(message = "Телосложение должно быть не меньше 5")
     private Integer con;
 
     @Min(value = 5, message = "Мудрость должна быть не меньше 5")

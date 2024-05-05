@@ -57,10 +57,8 @@ public class CreatureControllerTest {
                     .password("Qwerty12345!")
                     .build();
 
-            raceDto = RequestRaceDto.builder()
-                    .name("Монстр")
-                    .isPlayable(true)
-                    .build();
+            raceDto = new RequestRaceDto("Монстр", true,
+                    0, 0, 0, 0);
 
             creatureDto = RequestCreatureDto.builder()
                     .name("Злобоглаз")
@@ -240,10 +238,8 @@ public class CreatureControllerTest {
                     .password("Qwerty12345!")
                     .build();
 
-            raceDto = RequestRaceDto.builder()
-                    .name("Дракон")
-                    .isPlayable(false)
-                    .build();
+            raceDto = new RequestRaceDto("Дракон", false,
+                    0, 0, 0, 0);
 
             creatureDto1 = RequestCreatureDto.builder()
                     .name("Черный дракон")

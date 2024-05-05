@@ -57,10 +57,8 @@ public class AdminCreatureControllerTest {
                     .password("Qwerty12345!")
                     .build();
 
-            raceDto = RequestRaceDto.builder()
-                    .name("Гоблин")
-                    .isPlayable(true)
-                    .build();
+            raceDto = new RequestRaceDto("Гоблин", true,
+                    0,0,0,0);
 
             creatureDto = RequestCreatureDto.builder()
                     .name("Безумный гоблин")

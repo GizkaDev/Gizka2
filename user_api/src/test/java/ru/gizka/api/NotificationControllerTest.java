@@ -55,10 +55,9 @@ public class NotificationControllerTest extends RequestParentTest {
 
     @BeforeEach
     void setUp() {
-        raceDto = RequestRaceDto.builder()
-                .name("Человек")
-                .isPlayable(true)
-                .build();
+        raceDto = new RequestRaceDto("Человек", true,
+                0,0,0,0);
+
         userDto = RequestAppUserDto.builder()
                 .login("Biba")
                 .password("Qwerty12345!")

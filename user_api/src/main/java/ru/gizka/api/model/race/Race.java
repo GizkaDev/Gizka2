@@ -1,16 +1,14 @@
 package ru.gizka.api.model.race;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Range;
 import ru.gizka.api.model.creature.Creature;
 import ru.gizka.api.model.hero.Hero;
-import ru.gizka.api.model.hero.Status;
 
 import java.util.Date;
 import java.util.List;
@@ -50,4 +48,20 @@ public class Race {
             fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE)
     private List<Creature> creatures;
+
+    @Column(name = "str_bonus")
+    @Range(min = -5, max = 5)
+    private Integer strBonus;
+
+    @Column(name = "dex_bonus")
+    @Range(min = -5, max = 5)
+    private Integer dexBonus;
+
+    @Column(name = "con_bonus")
+    @Range(min = -5, max = 5)
+    private Integer conBonus;
+
+    @Column(name = "wis_bonus")
+    @Range(min = -5, max = 5)
+    private Integer wisBonus;
 }

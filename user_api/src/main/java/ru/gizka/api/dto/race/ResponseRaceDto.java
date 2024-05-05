@@ -16,4 +16,8 @@ public class ResponseRaceDto {
     private String name;
     private Date createdAt;
     private Boolean isPlayable;
+    private Integer strBonus;
+    private Integer dexBonus;
+    private Integer conBonus;
+    private Integer wisBonus;
 }

@@ -2,6 +2,7 @@ package ru.gizka.api.facade;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -96,7 +97,7 @@ public class HeroFacade {
     }
 
     @Transactional
-    private Hero saveRelation(Hero hero, AppUser appUser, Race race){
+    private Hero saveRelation(Hero hero, AppUser appUser, Race race) {
         Hero created = heroService.create(hero, appUser, race);
         notificationService.save(notificationBuilder.buildForNewHero(hero), appUser);
         return created;
@@ -114,6 +115,22 @@ public class HeroFacade {
             if (!mbRace.get().getIsPlayable()) {
                 bindingResult.rejectValue("", "", "Использована неиграбельная раса");
                 log.error("Сервис героев сообщает, что для создания героя использована неиграбельная раса: {}", heroDto.getRace());
+            }
+            if (heroDto.getStr() == null || (heroDto.getStr() + mbRace.get().getStrBonus()) < 5) {
+                bindingResult.rejectValue("str", "", "Сила должна быть не меньше 5");
+                log.error("Сервис героев сообщает, что при создании героя сумма силы и расового бонуса меньше 5: {} + {}", heroDto.getStr(), mbRace.get().getStrBonus());
+            }
+            if (heroDto.getDex() == null || (heroDto.getDex() + mbRace.get().getDexBonus()) < 5) {
+                bindingResult.rejectValue("dex", "", "Ловкость должна быть не меньше 5");
+                log.error("Сервис героев сообщает, что при создании героя сумма ловкости и расового бонуса меньше 5: {} + {}", heroDto.getDex(), mbRace.get().getDexBonus());
+            }
+            if (heroDto.getCon() == null || (heroDto.getCon() + mbRace.get().getConBonus()) < 5) {
+                bindingResult.rejectValue("con", "", "Телосложение должно быть не меньше 5");
+                log.error("Сервис героев сообщает, что при создании героя сумма телосложения и расового бонуса меньше 5: {} + {}", heroDto.getCon(), mbRace.get().getConBonus());
+            }
+            if (heroDto.getWis() == null || (heroDto.getWis() + mbRace.get().getWisBonus()) < 5) {
+                bindingResult.rejectValue("con", "", "Мудрость должна быть не меньше 5");
+                log.error("Сервис героев сообщает, что при создании героя сумма мудрости и расового бонуса меньше 5: {} + {}", heroDto.getWis(), mbRace.get().getWisBonus());
             }
         }
         List<ObjectError> errors = bindingResult.getAllErrors();

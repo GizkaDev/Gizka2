@@ -55,10 +55,8 @@ public class RaceControllerTest {
                     .password("Qwerty12345!")
                     .build();
 
-            raceDto = RequestRaceDto.builder()
-                    .name("Человек")
-                    .isPlayable(true)
-                    .build();
+            raceDto = new RequestRaceDto("Человек", true,
+                    0, 0, 0, 0);
         }
 
         @Test
@@ -200,30 +198,20 @@ public class RaceControllerTest {
                     .password("Qwerty12345!")
                     .build();
 
-            raceDto1 = RequestRaceDto.builder()
-                    .name("Человек")
-                    .isPlayable(true)
-                    .build();
+            raceDto1 = new RequestRaceDto("Человек", true,
+                    0, 0, 0, 0);
 
-            raceDto2 = RequestRaceDto.builder()
-                    .name("Эльф")
-                    .isPlayable(true)
-                    .build();
+            raceDto2 = new RequestRaceDto("Эльф", true,
+                    0, 0, 0, 0);
 
-            raceDto3 = RequestRaceDto.builder()
-                    .name("Гном")
-                    .isPlayable(true)
-                    .build();
+            raceDto3 = new RequestRaceDto("Гном", true,
+                    0, 0, 0, 0);
 
-            raceDto4 = RequestRaceDto.builder()
-                    .name("Тролль")
-                    .isPlayable(false)
-                    .build();
+            raceDto4 = new RequestRaceDto("Тролль", true,
+                    0, 0, 0, 0);
 
-            raceDto5 = RequestRaceDto.builder()
-                    .name("Скелет")
-                    .isPlayable(false)
-                    .build();
+            raceDto5 = new RequestRaceDto("Скелет", true,
+                    0, 0, 0, 0);
         }
 
         @Test
