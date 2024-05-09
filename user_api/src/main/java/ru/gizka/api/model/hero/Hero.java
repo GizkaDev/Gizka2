@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.model.fight.Fight;
+import ru.gizka.api.model.item.ItemObject;
 import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.user.AppUser;
 
@@ -71,8 +72,7 @@ public class Hero {
     @JoinTable(
             name = "hero_duel",
             joinColumns = @JoinColumn(name = "hero_id"),
-            inverseJoinColumns = @JoinColumn(name = "duel_id")
-    )
+            inverseJoinColumns = @JoinColumn(name = "duel_id"))
     private List<Duel> duels;
 
     @ManyToOne
@@ -120,4 +120,9 @@ public class Hero {
     @Column(name = "treat_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date treatAt;
+
+    @OneToMany(mappedBy = "hero",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE)
+    private List<ItemObject> inventory;
 }

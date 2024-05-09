@@ -7,8 +7,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 public class RequestParentTest {
     public static void insertUser(MockMvc mockMvc, String userDtoAsString) throws Exception {
         RequestBuilder userRequest =
@@ -99,12 +97,12 @@ public class RequestParentTest {
         return mockMvc.perform(getCurrentHeroRequest);
     }
 
-    public static void insertFight(MockMvc mockMvc, String name, String token) throws Exception {
+    public static ResultActions insertFight(MockMvc mockMvc, String name, String token) throws Exception {
         RequestBuilder fightRequest = MockMvcRequestBuilders
                 .post(String.format("%s?name=%s", "/api/user/hero/fight", name))
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", String.format("Bearer %s", token));
-        mockMvc.perform(fightRequest);
+       return mockMvc.perform(fightRequest);
     }
 
     public static ResultActions treat(MockMvc mockMvc, String token) throws Exception {
@@ -124,7 +122,7 @@ public class RequestParentTest {
         return mockMvc.perform(productRequest);
     }
 
-    public static ResultActions insertItem(MockMvc mockMvc, String itemDtoAsString, String token) throws Exception {
+    public static ResultActions insertItemPattern(MockMvc mockMvc, String itemDtoAsString, String token) throws Exception {
         RequestBuilder productRequest = MockMvcRequestBuilders
                 .post("/api/admin/item")
                 .contentType(MediaType.APPLICATION_JSON)

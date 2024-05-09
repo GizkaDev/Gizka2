@@ -3,7 +3,10 @@ package ru.gizka.api;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,8 +26,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -590,6 +594,68 @@ public class DuelControllerTest extends RequestParentTest {
                             status().isOk())
                     .andExpect(
                             jsonPath("$", hasSize(4)))
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString();
+
+            List<DuelDto> duels = objectMapper.readValue(response, new TypeReference<>() {
+            });
+
+            for (int i = 0; i < duels.size() - 1; i++) {
+                Date createdAt1 = duels.get(i).getCreatedAt();
+                Date createdAt2 = duels.get(i + 1).getCreatedAt();
+                assertTrue(createdAt1.after(createdAt2) || createdAt1.equals(createdAt2));
+            }
+        }
+
+        @Test
+        @Description(value = "Тест на получение именно личных дуэлей в сортированном виде")
+        void Duel_GetOwnSortedDuels() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto2));
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(new RequestAppUserDto("Pupa", userDto.getPassword())));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token2 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto2));
+            String token3 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(new RequestAppUserDto("Pupa", userDto.getPassword())));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto2), token2);
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(new RequestHeroDto("Йцукенг", "Йфя", 10, 10, 10, 10, raceDto.getName())), token3);
+            RequestParentTest.setAdminRights(mockMvc, token1);
+
+            token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.insertDuel(mockMvc, userDto2.getLogin(), token1);
+
+            token2 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto2));
+            RequestParentTest.insertDuel(mockMvc, userDto.getLogin(), token2);
+
+            token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.insertDuel(mockMvc, userDto2.getLogin(), token1);
+
+            token2 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto2));
+            RequestParentTest.insertDuel(mockMvc, userDto.getLogin(), token2);
+
+            RequestParentTest.insertDuel(mockMvc, userDto.getLogin(), token3);
+
+            token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+
+            requestBuilder = MockMvcRequestBuilders
+                    .get(uri)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token));
+
+            //when
+            String response = mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isOk())
+                    .andExpect(
+                            jsonPath("$", hasSize(5)))
+                    .andExpect(
+                            jsonPath("$.[*].heroFighters.[*].name").value(hasItem(
+                                    String.format("%s %s(%s)", heroDto.getName(), heroDto.getLastName(), userDto.getLogin()))))
                     .andReturn()
                     .getResponse()
                     .getContentAsString();

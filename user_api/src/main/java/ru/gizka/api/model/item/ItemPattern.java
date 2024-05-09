@@ -9,14 +9,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.gizka.api.model.fight.Fight;
+
+import java.util.List;
 
 @Entity
-@Table(name = "item")
+@Table(name = "item_pattern")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Item {
+public class ItemPattern {
 
     @Id
     @Column(name = "id")
@@ -37,6 +40,13 @@ public class Item {
     private Integer value;
 
     @ManyToOne
-    @JoinColumn(name = "item_product", referencedColumnName = "name")
+    @JoinColumn(name = "item_pattern_product", referencedColumnName = "name")
     private Product product;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "item_pattern_fight",
+            joinColumns = @JoinColumn(name = "item_pattern_id"),
+            inverseJoinColumns = @JoinColumn(name = "fight_id"))
+    private List<Fight> fights;
 }

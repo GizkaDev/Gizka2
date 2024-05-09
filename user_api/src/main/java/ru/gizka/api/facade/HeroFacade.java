@@ -2,7 +2,6 @@ package ru.gizka.api.facade;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
-import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

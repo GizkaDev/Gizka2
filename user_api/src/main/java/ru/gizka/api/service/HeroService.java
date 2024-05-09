@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.model.fight.Duel;
+import ru.gizka.api.model.item.ItemObject;
 import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.model.hero.Hero;
@@ -48,6 +49,7 @@ public class HeroService {
             }
             log.info("Сервис героев создает нового героя: {} для пользователя: {}", hero, appUser.getLogin());
             List<Duel> duels = new ArrayList<>();
+            List<ItemObject> inventory = new ArrayList<>();
             hero.setDuels(duels);
             hero.setAppUser(appUser);
             hero.setRace(race);
@@ -57,6 +59,7 @@ public class HeroService {
             hero.setWis(hero.getWis() + race.getWisBonus());
             hero.setStatus(Status.ALIVE);
             hero.setCreatedAt(new Date());
+            hero.setInventory(inventory);
             attributeCalculator.calculateForNew(hero);
         } else {
             log.error("Сервис героев прервал создание героя для пользователя: {} , т.к. у пользователя есть герой: {} со статусом ALIVE",
@@ -78,17 +81,19 @@ public class HeroService {
     }
 
     public Hero getByIdWithDuels(Long id) {
-        log.info("Сервис героев ищет героя id: {}", id);
-        Hero hero = heroRepo.findByIdWithDuels(id).orElseThrow(
-                () -> new EntityNotFoundException(String.format("Герой с id: %d не найден", id))
-        );
-        hero.setDuels(hero.getDuels());
-        return hero;
+        log.info("Сервис героев ищет героя id: {} с дуэлями", id);
+        return heroRepo.findByIdWithDuels(id).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Герой с id: %d не найден", id)));
     }
 
     @Transactional
     public Hero save(Hero hero) {
         log.info("Сервис героев сохраняет героя id: {}", hero.getId());
         return heroRepo.save(hero);
+    }
+
+    public Optional<Hero> getLatest(AppUser appUser){
+        log.info("Сервис героев ищет последнего героя пользователя: {}", appUser.getLogin());
+        return heroRepo.findTopByAppUserLoginOrderByCreatedAtDesc(appUser.getLogin());
     }
 }

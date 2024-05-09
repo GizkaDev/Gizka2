@@ -14,9 +14,9 @@ import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.service.AppUserService;
 import ru.gizka.api.service.DuelService;
 import ru.gizka.api.service.HeroService;
+import ru.gizka.api.service.actionLogic.HeroActionLogic;
 import ru.gizka.api.service.notification.NotificationBuilder;
 import ru.gizka.api.service.notification.NotificationService;
-import ru.gizka.api.service.fightLogic.FightLogic;
 import ru.gizka.api.util.DtoConverter;
 
 import java.util.Collections;
@@ -25,30 +25,30 @@ import java.util.List;
 @Service
 @Slf4j
 public class DuelFacade {
-    private final FightLogic fightLogic;
     private final HeroService heroService;
     private final AppUserService appUserService;
     private final DtoConverter dtoConverter;
     private final DuelService duelService;
     private final NotificationService notificationService;
     private final NotificationBuilder notificationBuilder;
+    private final HeroActionLogic heroActionLogic;
 
 
     @Autowired
-    public DuelFacade(FightLogic fightLogic,
-                      HeroService heroService,
+    public DuelFacade(HeroService heroService,
                       AppUserService appUserService,
                       DtoConverter dtoConverter,
                       DuelService duelService,
                       NotificationService notificationService,
-                      NotificationBuilder notificationBuilder) {
-        this.fightLogic = fightLogic;
+                      NotificationBuilder notificationBuilder,
+                      HeroActionLogic heroActionLogic) {
         this.heroService = heroService;
         this.appUserService = appUserService;
         this.dtoConverter = dtoConverter;
         this.duelService = duelService;
         this.notificationService = notificationService;
         this.notificationBuilder = notificationBuilder;
+        this.heroActionLogic = heroActionLogic;
     }
 
     public ResponseEntity<DuelDto> simulateDuel(AppUser user1, String login) {
@@ -64,7 +64,7 @@ public class DuelFacade {
         if (heroes1.isEmpty() || heroes2.isEmpty()) {
             throw new EntityNotFoundException("У одного из пользователей нет героя со статусом ALIVE.");
         }
-        Duel duel = fightLogic.simulate(heroes1.get(0), heroes2.get(0));
+        Duel duel = heroActionLogic.simulateDuel(heroes1.get(0), heroes2.get(0));
         saveRelation(duel, user1, user2);
         return new ResponseEntity<>(dtoConverter.getResponseDto(duel), HttpStatus.CREATED);
     }
@@ -72,7 +72,7 @@ public class DuelFacade {
     public ResponseEntity<List<DuelDto>> getAllDuelsForCurrentHero(AppUser appUser) {
         log.info("Сервис сражений начинает поиск дуэлей для текущего героя пользователя: {}", appUser.getLogin());
         List<Hero> heroes = heroService.getAliveByUser(appUser);
-        if(!heroes.isEmpty()) {
+        if (!heroes.isEmpty()) {
             List<Duel> duels = duelService.getAllDuelsByHeroIdSortedByDate(heroes.get(0).getId());
             return ResponseEntity.ok(duels.stream()
                     .map(dtoConverter::getResponseDto)

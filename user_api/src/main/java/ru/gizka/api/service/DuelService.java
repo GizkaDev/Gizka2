@@ -30,6 +30,6 @@ public class DuelService {
 
     public List<Duel> getAllDuelsByHeroIdSortedByDate(Long id) {
         log.info("Сервис дуэлей ищет сражения для героя id: {}", id);
-        return duelRepo.findAllDuelsByHeroIdSortedByDate(id);
+        return duelRepo.findByHeroesIdOrderByCreatedAtDesc(id);
     }
 }

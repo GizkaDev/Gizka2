@@ -12,14 +12,16 @@ import ru.gizka.api.model.creature.Creature;
 import ru.gizka.api.model.fight.Fight;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.hero.Status;
-import ru.gizka.api.model.notification.Notification;
+import ru.gizka.api.model.item.ItemPattern;
 import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.service.CreatureService;
 import ru.gizka.api.service.FightService;
 import ru.gizka.api.service.HeroService;
+import ru.gizka.api.service.actionLogic.HeroActionLogic;
+import ru.gizka.api.service.item.ItemObjectService;
+import ru.gizka.api.service.item.ItemPatternService;
 import ru.gizka.api.service.notification.NotificationBuilder;
 import ru.gizka.api.service.notification.NotificationService;
-import ru.gizka.api.service.fightLogic.FightLogic;
 import ru.gizka.api.util.DtoConverter;
 
 import java.util.List;
@@ -27,29 +29,35 @@ import java.util.List;
 @Service
 @Slf4j
 public class FightFacade {
-    private final FightLogic fightLogic;
     private final HeroService heroService;
     private final CreatureService creatureService;
     private final DtoConverter dtoConverter;
     private final FightService fightService;
     private final NotificationService notificationService;
     private final NotificationBuilder notificationBuilder;
+    private final HeroActionLogic heroActionLogic;
+    private final ItemPatternService itemPatternService;
+    private final ItemObjectService itemObjectService;
 
     @Autowired
-    public FightFacade(FightLogic fightLogic,
-                       HeroService heroService,
+    public FightFacade(HeroService heroService,
                        CreatureService creatureService,
                        DtoConverter dtoConverter,
                        FightService fightService,
                        NotificationService notificationService,
-                       NotificationBuilder notificationBuilder) {
-        this.fightLogic = fightLogic;
+                       NotificationBuilder notificationBuilder,
+                       HeroActionLogic heroActionLogic,
+                       ItemPatternService itemPatternService,
+                       ItemObjectService itemObjectService) {
         this.heroService = heroService;
         this.creatureService = creatureService;
         this.dtoConverter = dtoConverter;
         this.fightService = fightService;
         this.notificationService = notificationService;
         this.notificationBuilder = notificationBuilder;
+        this.heroActionLogic = heroActionLogic;
+        this.itemPatternService = itemPatternService;
+        this.itemObjectService = itemObjectService;
     }
 
     public ResponseEntity<FightDto> simulate(AppUser appUser, String name) {
@@ -61,24 +69,55 @@ public class FightFacade {
         Creature creature = creatureService.getByName(name)
                 .orElseThrow(() ->
                         new EntityNotFoundException("Моб с таким названием не найден"));
-        Fight fight = fightLogic.simulate(heroes.get(0), creature);
-        saveRelation(fight, appUser);
+        Fight fight = heroActionLogic.simulateFight(heroes.get(0), creature);
+        saveNotificationAndRelation(fight, appUser);
         return new ResponseEntity<>(dtoConverter.getResponseDto(fight), HttpStatus.CREATED);
     }
 
-    @Transactional
-    private void saveRelation(Fight fight, AppUser appUser) {
-        fightService.save(fight);
-        Notification notification = notificationBuilder.buildForFight(fight);
-        notificationService.save(notification, appUser);
+    public ResponseEntity<FightDto> getLatestByAppUserForCurrentHero(AppUser appUser) {
+        log.info("Сервис сражений начинает поиск последнего сражения для пользователя: {}", appUser.getLogin());
+        Hero hero = heroService.getLatest(appUser).orElseThrow(
+                () -> new EntityNotFoundException("У пользователя нет героев"));
+        Fight fight = fightService.getLatest(hero).orElseThrow(
+                () -> new EntityNotFoundException("У героя нет сражений"));
+        return ResponseEntity.ok(dtoConverter.getResponseDto(fight));
+    }
 
-        Hero afterFightHero = fight.getHero();
-        if (afterFightHero.getCurrentHp() <= 0) {
-            afterFightHero.setStatus(Status.DEAD);
-            afterFightHero.setCurrentHp(1);
-            notificationService.save(notificationBuilder.buildForDeath(afterFightHero), afterFightHero.getAppUser());
+    private void saveNotificationAndRelation(Fight fight, AppUser appUser) {
+        log.info("Сервис сражений начинает готовить оповещения для пользователя: {}", appUser.getLogin());
+        //оповещение о сражении
+        notificationService.save(notificationBuilder.buildForFight(fight), appUser);
+        //оповещение о смерти, если она наступила
+        if (fight.getHero().getCurrentHp() <= 0) {
+            fight.getHero().setStatus(Status.DEAD);
+            fight.getHero().setCurrentHp(1);
+            try {
+                Thread.sleep(1); // чтобы оповещение о сражении и оповещение о смерти (в ее случае) имели разное время создания
+            } catch (InterruptedException e) {
+            }
+            notificationService.save(notificationBuilder.buildForDeath(fight.getHero()), appUser);
         }
+        //оповещение о добыче, если она есть
+        List<ItemPattern> loot = itemPatternService.getRandomLootPattern(fight);
+        fight.setLoot(loot);
+        if (loot != null && !loot.isEmpty()) {
+            notificationService.save(notificationBuilder.buildForLoot(fight), appUser);
+        }
+        saveRelation(fight);
+    }
 
+    @Transactional
+    private void saveRelation(Fight fight) {
+        log.info("Сервис сражений начинает сохранять связи для сражения");
+        Fight savedFight = fightService.save(fight);
         heroService.save(fight.getHero());
+        if (fight.getLoot() != null && !fight.getLoot().isEmpty()) {
+            for (ItemPattern itemPattern : fight.getLoot()) {
+                ItemPattern ip = itemPatternService.getByNameWithFights(itemPattern.getName());
+                ip.getFights().add(savedFight);
+                itemPatternService.save(ip);
+                itemObjectService.save(ip, fight.getHero());
+            }
+        }
     }
 }

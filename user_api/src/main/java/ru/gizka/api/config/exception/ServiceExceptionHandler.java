@@ -5,6 +5,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.LazyInitializationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -16,14 +17,19 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import ru.gizka.api.dto.ExceptionResponse;
 
-import java.util.Arrays;
-
 @ControllerAdvice
 @Slf4j
 public class ServiceExceptionHandler {
 
     @ExceptionHandler
     private ResponseEntity<ExceptionResponse> handleException(Exception e) {
+        logException(e);
+        ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<ExceptionResponse> handleException(LazyInitializationException e) {
         logException(e);
         ExceptionResponse response = new ExceptionResponse(e.getClass().getName(), e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);

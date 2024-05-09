@@ -2,7 +2,6 @@ package ru.gizka.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,16 +16,18 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.dto.creature.RequestCreatureDto;
-import ru.gizka.api.dto.notification.NotificationDto;
 import ru.gizka.api.dto.hero.RequestHeroDto;
+import ru.gizka.api.dto.item.RequestItemPatternDto;
+import ru.gizka.api.dto.item.RequestProductDto;
+import ru.gizka.api.dto.notification.NotificationDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 
 import java.util.Date;
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -45,6 +46,8 @@ public class NotificationControllerTest extends RequestParentTest {
     private RequestRaceDto raceDto;
     private RequestCreatureDto weakCreatureDto;
     private RequestCreatureDto strongCreatureDto;
+    private RequestItemPatternDto itemPatternDto;
+    private RequestProductDto productDto;
 
     @Autowired
     private NotificationControllerTest(MockMvc mockMvc,
@@ -103,6 +106,12 @@ public class NotificationControllerTest extends RequestParentTest {
                 .con(1000)
                 .race(raceDto.getName())
                 .build();
+
+        productDto = new RequestProductDto(
+                "Роскошь", 500);
+
+        itemPatternDto = new RequestItemPatternDto(
+                "Медаль", 1L, 1, productDto.getName());
     }
 
     @Nested
@@ -250,7 +259,7 @@ public class NotificationControllerTest extends RequestParentTest {
                     .andExpect(
                             status().isOk())
                     .andExpect(
-                            jsonPath("$[0].message").value(Matchers.containsString("Вы вызвали на дуэль Lyakusha Swamp(Boba)")));
+                            jsonPath("$[0].message").value(containsString("Вы вызвали на дуэль Lyakusha Swamp(Boba)")));
         }
 
         @Test
@@ -276,7 +285,7 @@ public class NotificationControllerTest extends RequestParentTest {
                     .andExpect(
                             status().isOk())
                     .andExpect(
-                            jsonPath("$[0].message").value(Matchers.containsString("Вас вызвал на дуэль Gizka Green(Biba)")));
+                            jsonPath("$[0].message").value(containsString("Вас вызвал на дуэль Gizka Green(Biba)")));
         }
 
         @Test
@@ -324,7 +333,115 @@ public class NotificationControllerTest extends RequestParentTest {
                     .andExpect(
                             status().isOk())
                     .andExpect(
-                            jsonPath("$[0].message").value(Matchers.containsString("Герой Gizka Green перевязал свои раны на")));
+                            jsonPath("$[0].message").value(containsString("Герой Gizka Green перевязал свои раны на")));
+        }
+
+        @Test
+        @Description(value = "Тест на получение оповещений о получении добычи")
+        void Notification_LootNotification() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            weakCreatureDto.setDex(1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(weakCreatureDto));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
+            RequestParentTest.insertFight(mockMvc, weakCreatureDto.getName(), token1);
+            MockHttpServletRequestBuilder eventRequest1 = MockMvcRequestBuilders
+                    .get(uri)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token1));
+            //when
+            mockMvc.perform(eventRequest1)
+                    //then
+                    .andExpect(
+                            status().isOk())
+                    .andExpect(
+                            jsonPath("$[0].message").value(containsString("С поверженного врага вы сняли")));
+        }
+
+        @Test
+        @Description(value = "Тест на нет оповещений о получении добычи при ничьей")
+        void Notification_DrawLootNotification() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            weakCreatureDto.setDex(100);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(weakCreatureDto));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Броня", 30)), token1);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Кольчуга", 5L, 30, "Броня")), token1);
+            RequestParentTest.insertFight(mockMvc, weakCreatureDto.getName(), token1);
+            MockHttpServletRequestBuilder eventRequest1 = MockMvcRequestBuilders
+                    .get(uri)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token1));
+            //when
+            mockMvc.perform(eventRequest1)
+                    //then
+                    .andExpect(
+                            status().isOk())
+                    .andExpect(
+                            jsonPath("$[0].message").value(containsString("Вы встретились в бою с Разбойник , и у вас ничья.")));
+        }
+
+        @Test
+        @Description(value = "Тест на нет оповещений о получении добычи при поражении")
+        void Notification_LostLootNotification() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(strongCreatureDto));
+            RequestParentTest.insertFight(mockMvc, strongCreatureDto.getName(), token1);
+            MockHttpServletRequestBuilder eventRequest1 = MockMvcRequestBuilders
+                    .get(uri)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token1));
+            //when
+            mockMvc.perform(eventRequest1)
+                    //then
+                    .andExpect(
+                            status().isOk())
+                    .andExpect(
+                            jsonPath("$[0].message").value(containsString("Ваш герой Gizka Green погиб")));
+        }
+
+        @Test
+        @Description(value = "Тест на оповещения, что принадлежат определенному пользователю")
+        void Notification_CheckOwner() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(strongCreatureDto));
+            RequestParentTest.insertFight(mockMvc, strongCreatureDto.getName(), token1);
+
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto2));
+            String token2 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto2));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token2);
+            RequestParentTest.insertFight(mockMvc, weakCreatureDto.getName(), token2);
+
+            MockHttpServletRequestBuilder eventRequest1 = MockMvcRequestBuilders
+                    .get(uri)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token1));
+            //when
+            mockMvc.perform(eventRequest1)
+                    //then
+                    .andExpect(
+                            status().isOk())
+                    .andExpect(
+                            jsonPath("$[0].message").value(containsString("Ваш герой Gizka Green погиб")));
         }
     }
 }

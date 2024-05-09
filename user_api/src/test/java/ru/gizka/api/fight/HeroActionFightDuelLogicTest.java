@@ -1,6 +1,7 @@
 package ru.gizka.api.fight;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +15,12 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.RequestParentTest;
+import ru.gizka.api.dto.creature.RequestCreatureDto;
 import ru.gizka.api.dto.fight.DuelDto;
 import ru.gizka.api.dto.fight.Fighter;
 import ru.gizka.api.dto.hero.RequestHeroDto;
+import ru.gizka.api.dto.item.RequestItemPatternDto;
+import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 import ru.gizka.api.model.fight.Result;
@@ -31,14 +35,17 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Date;
 
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
-public class DuelLogicTest extends RequestParentTest {
+public class HeroActionFightDuelLogicTest extends RequestParentTest {
     private FightLogic duelLogic;
     private Fighter heroFighter1;
     private Fighter heroFighter2;
@@ -49,15 +56,16 @@ public class DuelLogicTest extends RequestParentTest {
     private MockHttpServletRequestBuilder requestBuilder;
     private String uri = "/api/user/hero/duel";
     private String token;
-    private RequestRaceDto raceDto;;
+    private RequestRaceDto raceDto;
+    ;
 
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
     private final AttributeCalculator attributeCalculator;
 
     @Autowired
-    private DuelLogicTest(MockMvc mockMvc,
-                          ObjectMapper objectMapper) {
+    private HeroActionFightDuelLogicTest(MockMvc mockMvc,
+                                         ObjectMapper objectMapper) {
         this.mockMvc = mockMvc;
         this.objectMapper = objectMapper;
         this.attributeCalculator = new AttributeCalculator();
@@ -65,7 +73,7 @@ public class DuelLogicTest extends RequestParentTest {
 
     @BeforeEach
     void setUp() {
-        duelLogic = new FightLogic(null, null);
+        duelLogic = new FightLogic(null);
 
         heroFighter1 = new Fighter();
         heroFighter1.setCon(15);
@@ -74,7 +82,7 @@ public class DuelLogicTest extends RequestParentTest {
         heroFighter2.setCon(9);
 
         raceDto = new RequestRaceDto("Человек", true,
-                0,0,0,0);
+                0, 0, 0, 0);
 
         userDto = RequestAppUserDto.builder()
                 .login("Biba")
@@ -118,7 +126,7 @@ public class DuelLogicTest extends RequestParentTest {
                 appUser,
                 Status.ALIVE,
                 Collections.emptyList(),
-                race, null, null, null, null, null, null, null, null, null, null, null, null, null);
+                race, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         attributeCalculator.calculateForNew(hero1);
         heroFighter1 = new Fighter(hero1);
         AppUser appUser2 = new AppUser(0L, "testLogin", null, null, null, null, null);
@@ -128,7 +136,7 @@ public class DuelLogicTest extends RequestParentTest {
                 appUser2,
                 Status.ALIVE,
                 Collections.emptyList(),
-                race2, null, null, null, null, null, null, null, null, null, null, null, null, null);
+                race2, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         attributeCalculator.calculateForNew(hero2);
         heroFighter2 = new Fighter(hero2);
         Class<?> clazz = duelLogic.getClass();
@@ -214,5 +222,82 @@ public class DuelLogicTest extends RequestParentTest {
             }
             assertEquals(duelDto.getResult(), duelResult.name());
         }
+    }
+
+    @Test
+    @Description(value = "Тест на то, что после победы в сражении дается случайная добыча")
+    void getLootTest() throws Exception {
+        //given
+        RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+        String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+        RequestParentTest.setAdminRights(mockMvc, token1);
+        RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+        RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Слабак", 1, 1, 1, raceDto.getName())));
+        RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+        RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Оружие", 50)), token1);
+        RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Меч", 2L, 1, "Оружие")), token1);
+        RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Булава", 2L, 1, "Оружие")), token1);
+        RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Копье", 2L, 1, "Оружие")), token1);
+        //when
+        RequestParentTest.insertFight(mockMvc, "Слабак", token1)
+                //then
+                .andExpect(
+                        status().isCreated())
+                .andExpect(
+                        jsonPath("$.loot.[*].name", Matchers.anyOf(hasItem("Меч"), hasItem("Булава"), hasItem("Копье"))));
+//                .andExpect(
+//                        jsonPath("$.loot.[*].name", hasItem("Булава")))
+//                .andExpect(
+//                        jsonPath("$.loot.[*].name", hasItem("Копье")));
+//                .andExpect(
+//                        jsonPath("$.loot[*].name", hasItems("Меч", "Булава", "Копье")));
+    }
+
+    @Test
+    @Description(value = "Тест на то, что после ничьей в сражении не дается добыча")
+    void getLootDrawTest() throws Exception {
+        //given
+        RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+        String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+        RequestParentTest.setAdminRights(mockMvc, token1);
+        RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+        RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Слабак", 1, 1000, 1, raceDto.getName())));
+        RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+        RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Оружие", 50)), token1);
+        RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Меч", 2L, 1, "Оружие")), token1);
+        RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Булава", 2L, 1, "Оружие")), token1);
+        RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Копье", 2L, 1, "Оружие")), token1);
+        //when
+        RequestParentTest.insertFight(mockMvc, "Слабак", token1)
+                //then
+                .andExpect(
+                        status().isCreated())
+                .andExpect(
+                        jsonPath("$.loot").value(nullValue())
+                );
+    }
+
+    @Test
+    @Description(value = "Тест на то, что после поражения в сражении не дается добыча")
+    void getLootLoseTest() throws Exception {
+        //given
+        RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+        String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+        RequestParentTest.setAdminRights(mockMvc, token1);
+        RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+        RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Слабак", 100, 100, 100, raceDto.getName())));
+        RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+        RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Оружие", 50)), token1);
+        RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Меч", 2L, 1, "Оружие")), token1);
+        RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Булава", 2L, 1, "Оружие")), token1);
+        RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Копье", 2L, 1, "Оружие")), token1);
+        //when
+        RequestParentTest.insertFight(mockMvc, "Слабак", token1)
+                //then
+                .andExpect(
+                        status().isCreated())
+                .andExpect(
+                        jsonPath("$.loot").value(nullValue())
+                );
     }
 }

@@ -7,12 +7,16 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.model.fight.Fight;
+import ru.gizka.api.model.hero.Hero;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FightRepo extends JpaRepository<Fight, Long> {
     @EntityGraph(attributePaths = {"heroes"}, type = EntityGraph.EntityGraphType.LOAD)
-    @Query("SELECT d FROM Fight d ORDER BY d.createdAt DESC")
-    List<Duel> findAllFightsByHeroIdSortedByDate(@Param("id") Long id);
+    @Query("SELECT d FROM Fight d WHERE d.hero.id = :id ORDER BY d.createdAt DESC")
+    List<Fight> findAllFightsByHeroIdSortedByDate(@Param("id") Long id);
+
+    Optional<Fight> findTopByHeroIdOrderByCreatedAtDesc(Long heroId);
 }

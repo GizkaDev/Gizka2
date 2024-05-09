@@ -30,6 +30,7 @@ public class NotificationService {
         return notificationRepo.findByAppUserLoginOrderByCreatedAtDesc(login);
     }
 
+    @Transactional
     public Notification save(Notification notification, AppUser appUser) {
         log.info("Сервис оповещений сохраняет оповещение: [{}] для пользователя: {}", notification.getMessage(), appUser.getLogin());
         notification.setAppUser(appUser);

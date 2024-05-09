@@ -6,6 +6,7 @@ import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.model.fight.Fight;
 import ru.gizka.api.model.fight.Result;
 import ru.gizka.api.model.hero.Hero;
+import ru.gizka.api.model.item.ItemPattern;
 import ru.gizka.api.model.notification.Notification;
 
 @Service
@@ -86,6 +87,18 @@ public class NotificationBuilder {
                 hero.getName(), hero.getLastname(), hero.getAppUser().getLogin());
         return Notification.builder()
                 .message(String.format("Герой %s %s перевязал свои раны на %d ОЗ", hero.getName(), hero.getLastname(), hero.getCurrentHp() - beforeHeal))
+                .build();
+    }
+
+    public Notification buildForLoot(Fight fight) {
+        log.info("Сервис оповещений создает новое оповещение для героя: {} {}({}) для получения добычи",
+                fight.getHero().getName(), fight.getHero().getLastname(), fight.getHero().getAppUser().getLogin());
+        StringBuilder loots = new StringBuilder();
+        for (ItemPattern itemPattern : fight.getLoot()) {
+            loots.append(itemPattern.getName()).append(" ");
+        }
+        return Notification.builder()
+                .message(String.format("С поверженного врага вы сняли %s", loots))
                 .build();
     }
 }

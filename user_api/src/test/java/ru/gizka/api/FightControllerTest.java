@@ -1,7 +1,6 @@
 package ru.gizka.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,12 +14,16 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.dto.creature.RequestCreatureDto;
+import ru.gizka.api.dto.fight.FightDto;
 import ru.gizka.api.dto.hero.RequestHeroDto;
+import ru.gizka.api.dto.item.RequestItemPatternDto;
+import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 
 import java.util.Random;
 
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -37,6 +40,8 @@ public class FightControllerTest {
     private RequestHeroDto heroDto;
     private RequestRaceDto raceDto;
     private RequestCreatureDto creatureDto;
+    private RequestItemPatternDto itemPatternDto;
+    private RequestProductDto productDto;
 
     @Autowired
     private FightControllerTest(MockMvc mockMvc,
@@ -47,7 +52,7 @@ public class FightControllerTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        raceDto = new RequestRaceDto("Человек" , true,
+        raceDto = new RequestRaceDto("Человек", true,
                 0, 0, 0, 0);
 
         userDto = RequestAppUserDto.builder()
@@ -72,6 +77,12 @@ public class FightControllerTest {
                 .con(5)
                 .race(raceDto.getName())
                 .build();
+
+        productDto = new RequestProductDto(
+                "Роскошь", 500);
+
+        itemPatternDto = new RequestItemPatternDto(
+                "Медаль", 1L, 1, productDto.getName());
     }
 
     @Nested
@@ -88,7 +99,8 @@ public class FightControllerTest {
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
             RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
-
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
 
             requestBuilder = MockMvcRequestBuilders
                     .post(String.format("%s?name=%s", uri, creatureDto.getName()))
@@ -283,7 +295,7 @@ public class FightControllerTest {
                     .andExpect(
                             jsonPath("$[0].wis").value(heroDto.getWis()))
                     .andExpect(
-                            jsonPath("$[0].createdAt").value(Matchers.not(Matchers.empty())))
+                            jsonPath("$[0].createdAt").value(not(empty())))
                     .andExpect(
                             jsonPath("$[0].userLogin").value(userDto.getLogin()))
                     .andExpect(
@@ -309,7 +321,7 @@ public class FightControllerTest {
                     .andExpect(
                             jsonPath("$[0].maxHp").value(heroDto.getCon() * 3))
                     .andExpect(
-                            jsonPath("$[0].currentHp").value(Matchers.lessThanOrEqualTo(heroDto.getCon() * 3)))
+                            jsonPath("$[0].currentHp").value(lessThanOrEqualTo(heroDto.getCon() * 3)))
                     .andExpect(
                             jsonPath("$[0].currentCon").value(heroDto.getCon()));
 
@@ -385,6 +397,162 @@ public class FightControllerTest {
                             status().isNotFound())
                     .andExpect(
                             jsonPath("$.descr").value("У пользователя нет героя со статусом ALIVE."));
+        }
+    }
+
+    @Nested
+    @Description(value = "Тест на получение последнего сражения")
+    class GetLatestTest {
+        @Test
+        @Description(value = "Тест на получение последнего сражения с проверкой, что сражение принадлежит именно данному герою")
+        void GetLatest_success() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            creatureDto.setCon(1);
+            creatureDto.setDex(1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
+            RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1);
+            RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1);
+            RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1);
+            FightDto lastFight = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1)
+                    .andReturn().getResponse().getContentAsString(), FightDto.class);
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(new RequestAppUserDto("Boba", userDto.getPassword())));
+            String token2 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(new RequestAppUserDto("Boba", userDto.getPassword())));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token2);
+            RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token2);
+            requestBuilder = MockMvcRequestBuilders
+                    .get(uri)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token1));
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isOk())
+                    .andExpect(
+                            jsonPath("$.id").value(lastFight.getId()))
+                    .andExpect(
+                            jsonPath("$.heroFighter.id").value(lastFight.getHeroFighter().getId()))
+                    .andExpect(
+                            jsonPath("$.creatureFighter.id").value(lastFight.getCreatureFighter().getId()))
+                    .andExpect(
+                            jsonPath("$.turns").value(not(empty())))
+                    .andExpect(
+                            jsonPath("$.result").value(lastFight.getResult()))
+                    .andExpect(
+                            jsonPath("$.createdAt").value(lastFight.getCreatedAt()))
+                    .andExpect(
+                            jsonPath("$.loot").value(not(empty())));
+        }
+
+        @Test
+        @Description(value = "Тест на получение последнего сражения, если новый герой, а сражение было у предыдущего")
+        void GetLatest_IfNewHero() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
+            RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1);
+            RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1);
+            RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Титан", 1000, 1000, 1000, raceDto.getName())));
+            FightDto lastFight = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, "Титан", token1)
+                    .andReturn().getResponse().getContentAsString(), FightDto.class);
+            Thread.sleep(20 * 1000);
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            requestBuilder = MockMvcRequestBuilders
+                    .get(uri)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token1));
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isNotFound())
+                    .andExpect(
+                            jsonPath("$.descr").value("У героя нет сражений"));
+        }
+
+        @Test
+        @Description(value = "Тест на получение последнего сражения, если нового героя нет")
+        void GetLatest_IfNoNewHero() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
+            RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1);
+            RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1);
+            RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Титан", 1000, 1000, 1000, raceDto.getName())));
+            FightDto lastFight = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, "Титан", token1)
+                    .andReturn().getResponse().getContentAsString(), FightDto.class);
+            requestBuilder = MockMvcRequestBuilders
+                    .get(uri)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token1));
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isOk())
+                    .andExpect(
+                            jsonPath("$.id").value(lastFight.getId()))
+                    .andExpect(
+                            jsonPath("$.heroFighter.id").value(lastFight.getHeroFighter().getId()))
+                    .andExpect(
+                            jsonPath("$.creatureFighter.id").value(lastFight.getCreatureFighter().getId()))
+                    .andExpect(
+                            jsonPath("$.turns").value(not(empty())))
+                    .andExpect(
+                            jsonPath("$.result").value(lastFight.getResult()))
+                    .andExpect(
+                            jsonPath("$.createdAt").value(lastFight.getCreatedAt()))
+                    .andExpect(
+                            jsonPath("$.loot").value(nullValue()));
+        }
+
+        @Test
+        @Description(value = "Тест на получение последнего сражения, если вообще не было создано героев")
+        void GetLatest_NoHeroes() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
+            RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1);
+            RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1);
+            RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Титан", 1000, 1000, 1000, raceDto.getName())));
+            requestBuilder = MockMvcRequestBuilders
+                    .get(uri)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token1));
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isNotFound())
+                    .andExpect(
+                            jsonPath("$.descr").value("У пользователя нет героев"));
         }
     }
 }

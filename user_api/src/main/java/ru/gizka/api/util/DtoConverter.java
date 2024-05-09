@@ -9,28 +9,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.gizka.api.dto.creature.RequestCreatureDto;
 import ru.gizka.api.dto.creature.ResponseCreatureDto;
+import ru.gizka.api.dto.fight.DuelDto;
 import ru.gizka.api.dto.fight.FightDto;
 import ru.gizka.api.dto.fight.Fighter;
 import ru.gizka.api.dto.fight.Turn;
-import ru.gizka.api.dto.item.RequestItemDto;
+import ru.gizka.api.dto.hero.RequestHeroDto;
+import ru.gizka.api.dto.hero.ResponseHeroDto;
+import ru.gizka.api.dto.item.RequestItemPatternDto;
 import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.item.ResponseItemDto;
 import ru.gizka.api.dto.item.ResponseProductDto;
 import ru.gizka.api.dto.notification.NotificationDto;
-import ru.gizka.api.dto.fight.DuelDto;
-import ru.gizka.api.dto.hero.RequestHeroDto;
-import ru.gizka.api.dto.hero.ResponseHeroDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.race.ResponseRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 import ru.gizka.api.dto.user.ResponseAppUserDto;
 import ru.gizka.api.model.creature.Creature;
+import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.model.fight.Fight;
-import ru.gizka.api.model.item.Item;
+import ru.gizka.api.model.hero.Hero;
+import ru.gizka.api.model.item.ItemObject;
+import ru.gizka.api.model.item.ItemPattern;
 import ru.gizka.api.model.item.Product;
 import ru.gizka.api.model.notification.Notification;
-import ru.gizka.api.model.fight.Duel;
-import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.user.AppUser;
 
@@ -49,20 +50,31 @@ public class DtoConverter {
         this.objectMapper = objectMapper;
     }
 
-    public ResponseItemDto getResponseDto(Item item) {
-        log.info("Конвертер переводит {} в {}", Item.class, ResponseItemDto.class);
+    public ResponseItemDto getResponseDto(ItemObject itemObject) {
+        log.info("Конвертер переводит {} в {}", ItemPattern.class, ResponseItemDto.class);
         return ResponseItemDto.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .weight(item.getWeight())
-                .value(item.getValue())
-                .productDto(getResponseDto(item.getProduct()))
+                .id(itemObject.getId())
+                .name(itemObject.getName())
+                .weight(itemObject.getWeight())
+                .value(itemObject.getValue())
+                .productDto(getResponseDto(itemObject.getProduct()))
                 .build();
     }
 
-    public Item getModel(RequestItemDto itemDto) {
-        log.info("Конвертер переводит {} в {}", RequestItemDto.class, Item.class);
-        return Item.builder()
+    public ResponseItemDto getResponseDto(ItemPattern itemPattern) {
+        log.info("Конвертер переводит {} в {}", ItemPattern.class, ResponseItemDto.class);
+        return ResponseItemDto.builder()
+                .id(itemPattern.getId())
+                .name(itemPattern.getName())
+                .weight(itemPattern.getWeight())
+                .value(itemPattern.getValue())
+                .productDto(getResponseDto(itemPattern.getProduct()))
+                .build();
+    }
+
+    public ItemPattern getModel(RequestItemPatternDto itemDto) {
+        log.info("Конвертер переводит {} в {}", RequestItemPatternDto.class, ItemPattern.class);
+        return ItemPattern.builder()
                 .name(itemDto.getName())
                 .weight(itemDto.getWeight())
                 .value(itemDto.getValue())
@@ -237,7 +249,7 @@ public class DtoConverter {
         }
         ResponseHeroDto responseHeroDto = getResponseDto(fight.getHero());
         ResponseCreatureDto responseCreatureDto = getResponseDto(fight.getCreature());
-        return FightDto.builder()
+        FightDto fightDto = FightDto.builder()
                 .id(fight.getId())
                 .heroFighter(responseHeroDto)
                 .creatureFighter(responseCreatureDto)
@@ -245,6 +257,14 @@ public class DtoConverter {
                 .result(fight.getResult().name())
                 .createdAt(fight.getCreatedAt())
                 .build();
+        if (fight.getLoot() != null) {
+            if (!fight.getLoot().isEmpty()) {
+                fightDto.setLoot(fight.getLoot().stream()
+                        .map(this::getResponseDto)
+                        .toList());
+            }
+        }
+        return fightDto;
     }
 
     public NotificationDto getResponseDto(Notification notification) {

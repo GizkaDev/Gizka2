@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.RequestParentTest;
-import ru.gizka.api.dto.item.RequestItemDto;
+import ru.gizka.api.dto.item.RequestItemPatternDto;
 import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 
@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
-public class AdminItemControllerTest {
+public class AdminItemPatternControllerTest {
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
     private MockHttpServletRequestBuilder createRequest;
@@ -36,16 +36,16 @@ public class AdminItemControllerTest {
     private String uri = "/api/admin/item";
 
     @Autowired
-    private AdminItemControllerTest(MockMvc mockMvc){
+    private AdminItemPatternControllerTest(MockMvc mockMvc){
         this.mockMvc = mockMvc;
         this.objectMapper = new ObjectMapper();
         this.random = new Random();
     }
 
     @Nested
-    @DisplayName(value = "Тесты на создание нового предмета")
+    @DisplayName(value = "Тесты на создание нового шаблона предмета")
     class CreateTest {
-        private RequestItemDto itemDto;
+        private RequestItemPatternDto itemDto;
         private RequestAppUserDto userDto;
         private RequestProductDto productDto;
 
@@ -65,7 +65,7 @@ public class AdminItemControllerTest {
                     .price(500)
                     .build();
 
-            itemDto = RequestItemDto.builder()
+            itemDto = RequestItemPatternDto.builder()
                     .name("Золотой кубок")
                     .value(1)
                     .weight(1000L)
@@ -74,7 +74,7 @@ public class AdminItemControllerTest {
         }
 
         @Test
-        @Description(value = "Тест на создание предмета")
+        @Description(value = "Тест на создание шаблона предмета")
         void Item_createSuccess() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -100,7 +100,7 @@ public class AdminItemControllerTest {
         }
 
         @Test
-        @Description(value = "Тест на создание предмета с коротким названием")
+        @Description(value = "Тест на создание шаблона предмета с коротким названием")
         void Item_create_EmptyShortName() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -117,11 +117,11 @@ public class AdminItemControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.descr").value(containsString("Название предмета должно состоять из 1-200 символов")));
+                            jsonPath("$.descr").value(containsString("Название шаблона предмета должно состоять из 1-200 символов")));
         }
 
         @Test
-        @Description(value = "Тест на создание предмета с длинным названием")
+        @Description(value = "Тест на создание шаблона предмета с длинным названием")
         void Item_create_LongName() throws Exception {
             //given
             StringBuilder name = new StringBuilder();
@@ -143,11 +143,11 @@ public class AdminItemControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.descr").value(containsString("Название предмета должно состоять из 1-200 символов")));
+                            jsonPath("$.descr").value(containsString("Название шаблона предмета должно состоять из 1-200 символов")));
         }
 
         @Test
-        @Description(value = "Тест на создание предмета без названия")
+        @Description(value = "Тест на создание шаблона предмета без названия")
         void Item_create_NulltName() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -164,11 +164,11 @@ public class AdminItemControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.descr").value(containsString("Название предмета должно состоять из 1-200 символов")));
+                            jsonPath("$.descr").value(containsString("Название шаблона предмета должно состоять из 1-200 символов")));
         }
 
         @Test
-        @Description(value = "Тест на создание предмета без названия")
+        @Description(value = "Тест на создание шаблона предмета без названия")
         void Item_create_BlankName() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -185,11 +185,11 @@ public class AdminItemControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.descr").value(containsString("Название предмета должно состоять из 1-200 символов")));
+                            jsonPath("$.descr").value(containsString("Название шаблона предмета должно состоять из 1-200 символов")));
         }
 
         @Test
-        @Description(value = "Тест на создание предмета с отрицательным весом")
+        @Description(value = "Тест на создание шаблона предмета с отрицательным весом")
         void Item_create_NegativeWeight() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -206,11 +206,11 @@ public class AdminItemControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.descr").value(containsString("Вес предмета должны быть равен или больше 0")));
+                            jsonPath("$.descr").value(containsString("Вес шаблона предмета должны быть равен или больше 0")));
         }
 
         @Test
-        @Description(value = "Тест на создание предмета с ценностью меньше 1")
+        @Description(value = "Тест на создание шаблона предмета с ценностью меньше 1")
         void Item_create_Less1() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -227,18 +227,18 @@ public class AdminItemControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.descr").value(containsString("Ценность предмета должна быть больше 0")));
+                            jsonPath("$.descr").value(containsString("Ценность шаблона предмета должна быть больше 0")));
         }
 
         @Test
-        @Description(value = "Тест на создание предмета с уникальным названием")
+        @Description(value = "Тест на создание шаблона предмета с уникальным названием")
         void Item_create_UniqueName() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
             RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token);
-            RequestParentTest.insertItem(mockMvc, objectMapper.writeValueAsString(itemDto), token);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemDto), token);
             itemDto.setValue(0);
             createRequest
                     .content(objectMapper.writeValueAsString(itemDto))
@@ -249,11 +249,11 @@ public class AdminItemControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.descr").value(containsString("Название предмета уже существует")));
+                            jsonPath("$.descr").value(containsString("Название шаблона предмета уже существует")));
         }
 
         @Test
-        @Description(value = "Тест на создание предмета с недопустимым названием")
+        @Description(value = "Тест на создание шаблона предмета с недопустимым названием")
         void Item_create_NotAllowName() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -274,7 +274,7 @@ public class AdminItemControllerTest {
         }
 
         @Test
-        @Description(value = "Тест на создание предмета с несуществующим товаром")
+        @Description(value = "Тест на создание шаблона предмета с несуществующим товаром")
         void Item_create_NotExistProduct() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -293,7 +293,7 @@ public class AdminItemControllerTest {
         }
 
         @Test
-        @Description(value = "Тест на создание предмета без прав администратора")
+        @Description(value = "Тест на создание шаблона предмета без прав администратора")
         void Item_create_NoAdmin() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));

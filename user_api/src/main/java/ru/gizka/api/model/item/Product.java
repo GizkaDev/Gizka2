@@ -36,5 +36,10 @@ public class Product {
     @OneToMany(mappedBy = "product",
             fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE)
-    private List<Item> items;
+    private List<ItemPattern> itemPatterns;
+
+    @OneToMany(mappedBy = "product",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE)
+    private List<ItemObject> itemObjects;
 }

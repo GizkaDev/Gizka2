@@ -4,9 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.gizka.api.dto.item.ResponseItemDto;
 import ru.gizka.api.model.hero.Hero;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -62,30 +64,5 @@ public class ResponseHeroDto {
         this.maxHp = hero.getMaxHp();
         this.currentHp = hero.getCurrentHp();
         this.currentCon = hero.getCurrentCon();
-    }
-
-    public ResponseHeroDto(ResponseHeroDto heroDto) {
-        this.name = heroDto.getName();
-        this.lastname = heroDto.getLastname();
-        this.createdAt = heroDto.getCreatedAt();
-        this.userLogin = heroDto.getUserLogin();
-        this.status = heroDto.getStatus();
-        this.race = heroDto.getRace();
-
-        this.str = heroDto.getStr();
-        this.dex = heroDto.getDex();
-        this.con = heroDto.getCon();
-
-        this.minInit = heroDto.getMinInit();
-        this.maxInit = heroDto.getMaxInit();
-        this.minAttack = heroDto.getMinAttack();
-        this.maxAttack = heroDto.getMaxAttack();
-        this.minEvasion = heroDto.getMinEvasion();
-        this.maxEvasion = heroDto.getMaxEvasion();
-        this.minPhysDamage = heroDto.getMinPhysDamage();
-        this.maxPhysDamage = heroDto.getMaxPhysDamage();
-        this.maxHp = heroDto.getMaxHp();
-        this.currentHp = heroDto.getCurrentHp();
-        this.currentCon = heroDto.getCurrentCon();
     }
 }

@@ -7,8 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.gizka.api.model.creature.Creature;
 import ru.gizka.api.model.hero.Hero;
+import ru.gizka.api.model.item.ItemPattern;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "fight")
@@ -42,4 +44,7 @@ public class Fight {
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+
+    @ManyToMany(mappedBy = "fights")
+    private List<ItemPattern> loot;
 }

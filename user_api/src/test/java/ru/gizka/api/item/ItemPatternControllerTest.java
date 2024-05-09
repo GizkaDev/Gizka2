@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.RequestParentTest;
-import ru.gizka.api.dto.item.RequestItemDto;
+import ru.gizka.api.dto.item.RequestItemPatternDto;
 import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 
@@ -28,25 +28,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
-public class ItemControllerTest {
+public class ItemPatternControllerTest {
     private String uri = "/api/item";
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
     private final Random random;
 
     @Autowired
-    private ItemControllerTest(MockMvc mockMvc) {
+    private ItemPatternControllerTest(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
         this.objectMapper = new ObjectMapper();
         this.random = new Random();
     }
 
     @Nested
-    @DisplayName(value = "Тесты на получение предмета по названию")
+    @DisplayName(value = "Тесты на получение шаблона предмета по названию")
     class GetByNameTest {
         private RequestAppUserDto userDto;
         private RequestProductDto productDto;
-        private RequestItemDto itemDto;
+        private RequestItemPatternDto itemDto;
         private MockHttpServletRequestBuilder getRequest;
 
         @BeforeEach
@@ -61,7 +61,7 @@ public class ItemControllerTest {
                     .price(50)
                     .build();
 
-            itemDto = RequestItemDto.builder()
+            itemDto = RequestItemPatternDto.builder()
                     .name("Сломанный клинок")
                     .weight(2500L)
                     .value(1)
@@ -70,14 +70,14 @@ public class ItemControllerTest {
         }
 
         @Test
-        @Description(value = "Тест на получение предмета")
+        @Description(value = "Тест на получение шаблона предмета")
         void Item_getByName_SuccessTest() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
             RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token);
-            RequestParentTest.insertItem(mockMvc, objectMapper.writeValueAsString(itemDto), token);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemDto), token);
             getRequest = MockMvcRequestBuilders
                     .get(uri + "/" + itemDto.getName())
                     .contentType(MediaType.APPLICATION_JSON)
@@ -98,7 +98,7 @@ public class ItemControllerTest {
         }
 
         @Test
-        @Description(value = "Тест на получение несуществующего предмета")
+        @Description(value = "Тест на получение несуществующего шаблона предмета")
         void Item_getByName_NotExist() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -113,11 +113,11 @@ public class ItemControllerTest {
                     .andExpect(
                             status().isNotFound())
                     .andExpect(
-                            jsonPath("$.descr").value(containsString("Предмет не найден: " + itemDto.getName())));
+                            jsonPath("$.descr").value(containsString("Шаблон не найден: " + itemDto.getName())));
         }
 
         @Test
-        @Description(value = "Тест на получение предмета null")
+        @Description(value = "Тест на получение шаблона предмета null")
         void Item_getByName_NullName() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -132,11 +132,11 @@ public class ItemControllerTest {
                     .andExpect(
                             status().isNotFound())
                     .andExpect(
-                            jsonPath("$.descr").value(containsString("Предмет не найден: ")));
+                            jsonPath("$.descr").value(containsString("Шаблон не найден: ")));
         }
 
         @Test
-        @Description(value = "Тест на получение предмета empty")
+        @Description(value = "Тест на получение шаблона предмета empty")
         void Item_getByName_EmptyName() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -155,7 +155,7 @@ public class ItemControllerTest {
         }
 
         @Test
-        @Description(value = "Тест на получение предмета blank")
+        @Description(value = "Тест на получение шаблона предмета blank")
         void Item_getByName_BlankName() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -170,11 +170,11 @@ public class ItemControllerTest {
                     .andExpect(
                             status().isNotFound())
                     .andExpect(
-                            jsonPath("$.descr").value(containsString("Предмет не найден: ")));
+                            jsonPath("$.descr").value(containsString("Шаблон не найден: ")));
         }
 
         @Test
-        @Description(value = "Тест на получение предмета длинным именем")
+        @Description(value = "Тест на получение шаблона предмета длинным именем")
         void Item_getByName_LongName() throws Exception {
             //given
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));

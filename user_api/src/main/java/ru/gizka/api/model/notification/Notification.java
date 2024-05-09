@@ -10,7 +10,7 @@ import ru.gizka.api.model.user.AppUser;
 import java.util.Date;
 
 @Entity
-@Table(name = "event")
+@Table(name = "notification")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,6 +30,6 @@ public class Notification {
     private Date createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "app_user_event", referencedColumnName = "login")
+    @JoinColumn(name = "app_user_notification", referencedColumnName = "login")
     private AppUser appUser;
 }
