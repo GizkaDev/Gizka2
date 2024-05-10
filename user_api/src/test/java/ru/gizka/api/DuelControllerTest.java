@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.dto.creature.RequestCreatureDto;
 import ru.gizka.api.dto.fight.DuelDto;
 import ru.gizka.api.dto.hero.RequestHeroDto;
+import ru.gizka.api.dto.item.RequestItemPatternDto;
+import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 
@@ -26,8 +28,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -527,6 +528,71 @@ public class DuelControllerTest extends RequestParentTest {
                             status().isNotFound())
                     .andExpect(
                             jsonPath("$.descr").value("У одного из пользователей нет героя со статусом ALIVE."));
+        }
+
+        @Test
+        @Description(value = "Тест на симулирование дуэли с перегрузом у атакующего")
+        void Duel_simulate_AttackerOverweight() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto2));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token2 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto2));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Разбойник", 1, 1, 1, raceDto.getName())));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Роскошь", 1000)), token1);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Золотая гиря", heroDto.getStr() * 4000L, 1, "Роскошь")), token1);
+            RequestParentTest.insertFight(mockMvc, "Разбойник", token1);
+
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto2), token2);
+
+            token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+
+            requestBuilder = MockMvcRequestBuilders
+                    .post(String.format("%s?login=%s", uri, userDto2.getLogin()))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token1));
+
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(containsString("Ваш герой перегружен и не может сражаться.")));
+        }
+
+        @Test
+        @Description(value = "Тест на симулирование дуэли с перегрузом у защищающегося")
+        void Duel_simulate_DefenderOverweight() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto2));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token2 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto2));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto2), token2);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Разбойник", 1, 1, 1, raceDto.getName())));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Роскошь", 1000)), token1);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Золотая гиря", heroDto.getStr() * 4000L, 1, "Роскошь")), token1);
+            RequestParentTest.insertFight(mockMvc, "Разбойник", token);
+
+            token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+
+            requestBuilder = MockMvcRequestBuilders
+                    .post(String.format("%s?login=%s", uri, userDto2.getLogin()))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token1));
+
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isCreated());
         }
     }
 

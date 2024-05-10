@@ -126,7 +126,7 @@ public class HeroActionFightDuelLogicTest extends RequestParentTest {
                 appUser,
                 Status.ALIVE,
                 Collections.emptyList(),
-                race, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+                race, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         attributeCalculator.calculateForNew(hero1);
         heroFighter1 = new Fighter(hero1);
         AppUser appUser2 = new AppUser(0L, "testLogin", null, null, null, null, null);
@@ -136,7 +136,7 @@ public class HeroActionFightDuelLogicTest extends RequestParentTest {
                 appUser2,
                 Status.ALIVE,
                 Collections.emptyList(),
-                race2, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+                race2, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         attributeCalculator.calculateForNew(hero2);
         heroFighter2 = new Fighter(hero2);
         Class<?> clazz = duelLogic.getClass();

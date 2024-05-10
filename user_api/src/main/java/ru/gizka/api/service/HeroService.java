@@ -60,6 +60,7 @@ public class HeroService {
             hero.setStatus(Status.ALIVE);
             hero.setCreatedAt(new Date());
             hero.setInventory(inventory);
+            hero.setCurrentWeight(0L);
             attributeCalculator.calculateForNew(hero);
         } else {
             log.error("Сервис героев прервал создание героя для пользователя: {} , т.к. у пользователя есть герой: {} со статусом ALIVE",

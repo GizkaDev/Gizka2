@@ -36,7 +36,7 @@ public class AttributeCalcTest {
                 appUser,
                 Status.ALIVE,
                 Collections.emptyList(),
-                race, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+                race, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         // when
         attributeCalculator.calculateForNew(hero);
@@ -54,6 +54,7 @@ public class AttributeCalcTest {
         assertEquals(0, hero.getMinPhysDamage());
         assertEquals(0, hero.getMinInit());
         assertEquals(11, hero.getCurrentCon());
+        assertEquals(27000L, hero.getMaxWeight());
     }
 
     @Test
@@ -67,7 +68,7 @@ public class AttributeCalcTest {
                 appUser,
                 Status.ALIVE,
                 Collections.emptyList(),
-                race, null,null, null, null, null, null, null, null, null, null, null, null, null, null);
+                race, null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         // when
         attributeCalculator.calculateForNew(hero);
@@ -84,6 +85,7 @@ public class AttributeCalcTest {
         assertEquals(hero.getCon() * 3, (int) hero.getMaxHp());
         assertEquals(hero.getCon() * 3, (int) hero.getCurrentHp());
         assertEquals(hero.getCon(), hero.getCurrentCon());
+        assertEquals(hero.getStr() * 3000L, hero.getMaxWeight());
     }
 
     @Test

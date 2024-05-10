@@ -17,8 +17,11 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.dto.creature.RequestCreatureDto;
+import ru.gizka.api.dto.fight.FightDto;
 import ru.gizka.api.dto.hero.RequestHeroDto;
 import ru.gizka.api.dto.hero.ResponseHeroDto;
+import ru.gizka.api.dto.item.RequestItemPatternDto;
+import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 
@@ -160,7 +163,11 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$[0].currentHp").isNumber())
                     .andExpect(
-                            jsonPath("$[0].currentCon").isNumber());
+                            jsonPath("$[0].currentCon").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].currentWeight").value(0))
+                    .andExpect(
+                            jsonPath("$[0].maxWeight").value(heroDto.getStr() * 3000));
         }
 
         @Test
@@ -197,6 +204,77 @@ public class HeroControllerTest {
                     //then
                     .andExpect(
                             status().isForbidden());
+        }
+
+        @Test
+        @Description(value = "Тест на получение текущего героя пользователя после сражения с изменением веса")
+        void Hero_getCurrentHero_AfterFightWithWeight() throws Exception {
+            //given
+            RequestParentTest.setAdminRights(mockMvc, token);
+            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(new RequestCreatureDto("Разбойник", 1, 1, 1, raceDto.getName())));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Инструменты", 1000)), token);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Лопата", 100L, 1, "Инструменты")), token);
+            FightDto fightDto1 = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, "Разбойник", token).andReturn().getResponse().getContentAsString(), FightDto.class);
+            FightDto fightDto2 = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, "Разбойник", token).andReturn().getResponse().getContentAsString(), FightDto.class);
+            FightDto fightDto3 = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, "Разбойник", token).andReturn().getResponse().getContentAsString(), FightDto.class);
+            FightDto fightDto4 = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, "Разбойник", token).andReturn().getResponse().getContentAsString(), FightDto.class);
+            Long expectedWeight = (fightDto1.getLoot().size() + fightDto2.getLoot().size() + fightDto3.getLoot().size() + fightDto4.getLoot().size()) * 100L;
+
+
+            RequestBuilder getCurrentHeroRequest = MockMvcRequestBuilders
+                    .get(uri)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token));
+
+            //when
+            mockMvc.perform(getCurrentHeroRequest)
+                    //then
+                    .andExpect(
+                            status().isOk())
+                    .andExpect(
+                            jsonPath("$[0].name").value(heroDto.getName()))
+                    .andExpect(
+                            jsonPath("$[0].lastname").value(heroDto.getLastName()))
+                    .andExpect(
+                            jsonPath("$[0].str").value(heroDto.getStr()))
+                    .andExpect(
+                            jsonPath("$[0].dex").value(heroDto.getDex()))
+                    .andExpect(
+                            jsonPath("$[0].con").value(heroDto.getCon()))
+                    .andExpect(
+                            jsonPath("$[0].wis").value(heroDto.getWis()))
+                    .andExpect(
+                            jsonPath("$[0].createdAt").value(Matchers.not(Matchers.empty())))
+                    .andExpect(
+                            jsonPath("$[0].userLogin").value(userDto.getLogin()))
+                    .andExpect(
+                            jsonPath("$[0].status").value("ALIVE"))
+                    .andExpect(
+                            jsonPath("$[0].race").value(raceDto.getName()))
+                    .andExpect(
+                            jsonPath("$[0].minInit").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].maxInit").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].minAttack").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].maxAttack").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].minEvasion").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].maxEvasion").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].minPhysDamage").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].maxPhysDamage").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].maxHp").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].currentHp").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].currentCon").isNumber())
+                    .andExpect(
+                            jsonPath("$[0].currentWeight").value(expectedWeight));
         }
     }
 
@@ -1101,6 +1179,41 @@ public class HeroControllerTest {
                     .andReturn().getResponse().getContentAsString(), ResponseHeroDto.class);
             assertTrue(afterHeal.getCurrentHp() >= responseHero[0].getCurrentHp());
             assertTrue(afterHeal.getCurrentHp() <= afterHeal.getMaxHp());
+        }
+
+        @Test
+        @Description(value = "Тест на лечение текущего героя с перевесом")
+        void Hero_getCurrentHero_AfterFightWithWeight() throws Exception {
+            //given
+            RequestParentTest.setAdminRights(mockMvc, token);
+            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(new RequestCreatureDto("Разбойник", 1, 1, 1, raceDto.getName())));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Инструменты", 1000)), token);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Станок", heroDto.getStr() * 4000L, 1, "Инструменты")), token);
+            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(new RequestCreatureDto("Шнырь", 1, 1, 1, raceDto.getName())));
+            FightDto fightDto8 = null;
+            String result = "";
+            int currentHp = 100;
+            int lootSize = 0;
+            while (!result.equals("ATTACKER") && (currentHp >= heroDto.getCon() * 3) && lootSize == 0) {
+                fightDto8 = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, "Шнырь", token).andReturn().getResponse().getContentAsString(), FightDto.class);
+                result = fightDto8.getResult();
+                currentHp = fightDto8.getHeroFighter().getCurrentHp();
+                lootSize = fightDto8.getLoot().size();
+            }
+
+            //when
+            RequestParentTest.treat(mockMvc, token)
+                    //then
+                    .andExpect(
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(containsString("Герой перегружен и не может быть вылечен")));
+
+            RequestParentTest.getCurrentHero(mockMvc, token)
+                    .andExpect(
+                            status().isOk())
+                    .andExpect(
+                            jsonPath("$[0].currentHp").value(fightDto8.getHeroFighter().getCurrentHp()));
         }
     }
 }

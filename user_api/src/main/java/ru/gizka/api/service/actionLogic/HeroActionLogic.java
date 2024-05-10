@@ -31,6 +31,10 @@ public class HeroActionLogic {
     }
 
     public Hero treat(Hero hero) {
+        if (isOverweight(hero)) {
+            throw new IllegalArgumentException(String.format("Герой перегружен и не может быть вылечен. Текущий вес: %s, максимальный вес: %s",
+                    hero.getCurrentWeight(), hero.getMaxWeight()));
+        }
         int hpLack = hero.getMaxHp() - hero.getCurrentHp();
         int healAmount = Math.min(hpLack, hero.getWis());
         int beforeHeal = hero.getCurrentHp();
@@ -45,6 +49,10 @@ public class HeroActionLogic {
         log.info("Сервис логики сражения готовит компоненты для героя: {} {}({}) и моба: {}",
                 hero.getName(), hero.getLastname(), hero.getAppUser().getLogin(),
                 creature.getName());
+        if (isOverweight(hero)) {
+            throw new IllegalArgumentException(String.format("Герой перегружен и не может сражаться. Текущий вес: %s, максимальный вес: %s",
+                    hero.getCurrentWeight(), hero.getMaxWeight()));
+        }
         Fighter fighter1 = new Fighter(hero);
         List<Turn> turns = fightLogic.simulate(fighter1, new Fighter(creature));
         String turnsAsString = "";
@@ -71,6 +79,10 @@ public class HeroActionLogic {
         log.info("Сервис логики сражений готовит компоненты для героев: {} {}({}) и {} {}({})",
                 hero1.getName(), hero1.getLastname(), hero1.getAppUser().getLogin(),
                 hero2.getName(), hero2.getLastname(), hero2.getAppUser().getLogin());
+        if (isOverweight(hero1)) {
+            throw new IllegalArgumentException(String.format("Ваш герой перегружен и не может сражаться. Текущий вес: %s, максимальный вес: %s",
+                    hero1.getCurrentWeight(), hero1.getMaxWeight()));
+        }
         Fighter fighter1 = new Fighter(hero1);
         List<Turn> turns = fightLogic.simulate(fighter1, new Fighter(hero2));
         String turnsAsString = "";
@@ -107,5 +119,9 @@ public class HeroActionLogic {
             log.info("Сервис логики сражений определил итог: {} {}", result.getDescription(), lastTurnAttacker.getName());
         }
         return result;
+    }
+
+    private Boolean isOverweight(Hero hero) {
+        return hero.getCurrentWeight() > hero.getMaxWeight();
     }
 }

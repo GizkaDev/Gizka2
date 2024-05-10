@@ -92,7 +92,7 @@ public class FightFacade {
             fight.getHero().setStatus(Status.DEAD);
             fight.getHero().setCurrentHp(1);
             try {
-                Thread.sleep(1); // чтобы оповещение о сражении и оповещение о смерти (в ее случае) имели разное время создания
+                Thread.sleep(5); // чтобы оповещение о сражении и оповещение о смерти (в ее случае) имели разное время создания
             } catch (InterruptedException e) {
             }
             notificationService.save(notificationBuilder.buildForDeath(fight.getHero()), appUser);
@@ -109,15 +109,18 @@ public class FightFacade {
     @Transactional
     private void saveRelation(Fight fight) {
         log.info("Сервис сражений начинает сохранять связи для сражения");
-        Fight savedFight = fightService.save(fight);
-        heroService.save(fight.getHero());
+        Fight savedFight = fightService.save(fight); //сохраняем сражение
+        Hero savedHero = heroService.save(fight.getHero()); //сохраняем героя после сражения
         if (fight.getLoot() != null && !fight.getLoot().isEmpty()) {
+            Long weightForAdd = 0L;
             for (ItemPattern itemPattern : fight.getLoot()) {
                 ItemPattern ip = itemPatternService.getByNameWithFights(itemPattern.getName());
                 ip.getFights().add(savedFight);
-                itemPatternService.save(ip);
-                itemObjectService.save(ip, fight.getHero());
+                itemPatternService.save(ip); //сохраняем инф. о добыче в сражении
+                weightForAdd += itemObjectService.save(ip, savedHero).getWeight(); //добавляем объект добычи в инвентарь и складываем вес
             }
+            savedHero.setCurrentWeight(savedHero.getCurrentWeight() + weightForAdd);
+            heroService.save(savedHero); //сохраняем героя с весом
         }
     }
 }

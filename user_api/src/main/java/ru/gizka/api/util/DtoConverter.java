@@ -214,6 +214,8 @@ public class DtoConverter {
                 .maxHp(hero.getMaxHp())
                 .currentHp(hero.getCurrentHp())
                 .currentCon(hero.getCurrentCon())
+                .currentWeight(hero.getCurrentWeight())
+                .maxWeight(hero.getMaxWeight())
                 .build();
     }
 

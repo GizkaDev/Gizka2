@@ -125,4 +125,10 @@ public class Hero {
             fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE)
     private List<ItemObject> inventory;
+
+    @Column(name = "current_weight")
+    private Long currentWeight;
+
+    @Column(name = "maxWeight")
+    private Long maxWeight;
 }

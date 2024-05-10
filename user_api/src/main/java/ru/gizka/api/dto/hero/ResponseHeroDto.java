@@ -40,29 +40,6 @@ public class ResponseHeroDto {
     private Integer maxHp;
     private Integer currentHp;
     private Integer currentCon;
-
-    public ResponseHeroDto(Hero hero) {
-        this.name = hero.getName();
-        this.lastname = hero.getLastname();
-        this.createdAt = hero.getCreatedAt();
-        this.userLogin = hero.getAppUser().getLogin();
-        this.status = hero.getStatus().name();
-        this.race = hero.getRace().getName();
-
-        this.str = hero.getStr();
-        this.dex = hero.getDex();
-        this.con = hero.getCon();
-
-        this.minInit = hero.getMinInit();
-        this.maxInit = hero.getMaxInit();
-        this.minAttack = hero.getMinAttack();
-        this.maxAttack = hero.getMaxAttack();
-        this.minEvasion = hero.getMinEvasion();
-        this.maxEvasion = hero.getMaxEvasion();
-        this.minPhysDamage = hero.getMinPhysDamage();
-        this.maxPhysDamage = hero.getMaxPhysDamage();
-        this.maxHp = hero.getMaxHp();
-        this.currentHp = hero.getCurrentHp();
-        this.currentCon = hero.getCurrentCon();
-    }
+    private Long currentWeight;
+    private Long maxWeight;
 }

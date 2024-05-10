@@ -398,6 +398,33 @@ public class FightControllerTest {
                     .andExpect(
                             jsonPath("$.descr").value("У пользователя нет героя со статусом ALIVE."));
         }
+
+        @Test
+        @Description(value = "Тест на симулирование сражения с перевесом")
+        void Fight_simulate_WithOverweight() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Золотая гиря", heroDto.getStr() * 4000L, 1, productDto.getName())), token1);
+            RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1);
+
+            requestBuilder = MockMvcRequestBuilders
+                    .post(String.format("%s?name=%s", uri, creatureDto.getName()))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token1));
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(containsString("Герой перегружен и не может сражаться")));
+        }
     }
 
     @Nested

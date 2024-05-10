@@ -23,6 +23,7 @@ public class AttributeCalculator {
         hero.setMaxHp(calculateMaxHp(hero));
         hero.setCurrentHp(calculateCurrentHpForNew(hero));
         hero.setCurrentCon(calculateCurrentCon(hero));
+        hero.setMaxWeight(calculateMaxWeight(hero));
     }
 
     public void calculateForNew(Creature creature) {
@@ -43,21 +44,21 @@ public class AttributeCalculator {
 
     public Integer calculateCurrentCon(Creature creature) {
         Integer currentCon = creature.getCon();
-        log.info("Калькулятор атрибутов рассчитал запас сил: {} при выносливости: {} для моба: {}",
+        log.info("Калькулятор атрибутов рассчитал выносливость: {} при телосложении: {} для моба: {}",
                 currentCon, creature.getCon(), creature.getName());
         return currentCon;
     }
 
     public Integer calculateCurrentHpForNew(Creature creature) {
         Integer maxHp = creature.getCon() * 3;
-        log.info("Калькулятор атрибутов рассчитал текущее ОЗ: {}  при выносливости: {} для моба: {}",
+        log.info("Калькулятор атрибутов рассчитал текущее ОЗ: {}  при телосложении: {} для моба: {}",
                 maxHp, creature.getCon(), creature.getName());
         return maxHp;
     }
 
     public Integer calculateMaxHp(Creature creature) {
         Integer maxHp = creature.getCon() * 3;
-        log.info("Калькулятор атрибутов рассчитал макс. ОЗ: {}  при выносливости: {} для моба: {}",
+        log.info("Калькулятор атрибутов рассчитал макс. ОЗ: {}  при телосложении: {} для моба: {}",
                 maxHp, creature.getCon(), creature.getName());
         return maxHp;
     }
@@ -118,23 +119,30 @@ public class AttributeCalculator {
         return initiative;
     }
 
+    public Long calculateMaxWeight(Hero hero) {
+        Long maxWeight = hero.getStr() * 3 * 1000L;
+        log.info("Калькулятор атрибутов рассчитал макс. вес: {} при силе: {} для героя: {} {}({})",
+                maxWeight, hero.getStr(), hero.getName(), hero.getLastname(), hero.getAppUser().getLogin());
+        return maxWeight;
+    }
+
     public Integer calculateCurrentCon(Hero hero) {
         Integer currentCon = hero.getCon();
-        log.info("Калькулятор атрибутов рассчитал запас сил: {} при выносливости: {} для героя: {} {}({})",
+        log.info("Калькулятор атрибутов рассчитал выносливость: {} при телосложении: {} для героя: {} {}({})",
                 currentCon, hero.getCon(), hero.getName(), hero.getLastname(), hero.getAppUser().getLogin());
         return currentCon;
     }
 
     public Integer calculateCurrentHpForNew(Hero hero) {
         Integer maxHp = hero.getCon() * 3;
-        log.info("Калькулятор атрибутов рассчитал текущее ОЗ: {}  при выносливости: {} для героя: {} {}({})",
+        log.info("Калькулятор атрибутов рассчитал текущее ОЗ: {}  при телосложении: {} для героя: {} {}({})",
                 maxHp, hero.getCon(), hero.getName(), hero.getLastname(), hero.getAppUser().getLogin());
         return maxHp;
     }
 
     public Integer calculateMaxHp(Hero hero) {
         Integer maxHp = hero.getCon() * 3;
-        log.info("Калькулятор атрибутов рассчитал макс. ОЗ: {}  при выносливости: {} для героя: {} {}({})",
+        log.info("Калькулятор атрибутов рассчитал макс. ОЗ: {}  при телосложении: {} для героя: {} {}({})",
                 maxHp, hero.getCon(), hero.getName(), hero.getLastname(), hero.getAppUser().getLogin());
         return maxHp;
     }
