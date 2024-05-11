@@ -1,7 +1,10 @@
 package ru.gizka.api.item;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,12 +21,15 @@ import ru.gizka.api.dto.fight.FightDto;
 import ru.gizka.api.dto.hero.RequestHeroDto;
 import ru.gizka.api.dto.item.RequestItemPatternDto;
 import ru.gizka.api.dto.item.RequestProductDto;
+import ru.gizka.api.dto.item.ResponseItemDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
-import ru.gizka.api.model.fight.Fight;
+
+import java.util.Random;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,12 +45,14 @@ public class ItemObjectControllerTest {
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
     private MockHttpServletRequestBuilder requestBuilder;
+    private Random random;
 
     @Autowired
     private ItemObjectControllerTest(MockMvc mockMvc,
                                      ObjectMapper objectMapper) {
         this.mockMvc = mockMvc;
         this.objectMapper = objectMapper;
+        this.random = new Random();
     }
 
     @BeforeEach
@@ -90,7 +98,7 @@ public class ItemObjectControllerTest {
 
     @Nested
     @DisplayName(value = "Тесты на получение инвентаря текущего героя пользователя")
-    class HeroGetWithInventoryTest {
+    class GetInventoryTest {
         private RequestAppUserDto userDto;
         private RequestHeroDto heroDto;
         private RequestRaceDto raceDto;
@@ -328,6 +336,242 @@ public class ItemObjectControllerTest {
                             status().isOk())
                     .andExpect(
                             jsonPath("$").value(hasSize(0)));
+        }
+    }
+
+    @Nested
+    @DisplayName(value = "Тесты на сброс вещей из инвентаря")
+    class DropTest {
+        private RequestAppUserDto userDto;
+        private RequestHeroDto heroDto;
+        private RequestRaceDto raceDto;
+        private RequestCreatureDto creatureDto;
+        private RequestItemPatternDto itemPatternDto;
+        private RequestProductDto productDto;
+
+        @BeforeEach
+        void setUp() throws Exception {
+            raceDto = new RequestRaceDto("Человек", true,
+                    0, 0, 0, 0);
+
+            userDto = RequestAppUserDto.builder()
+                    .login("Biba")
+                    .password("Qwerty12345!")
+                    .build();
+
+            heroDto = RequestHeroDto.builder()
+                    .name("Gizka")
+                    .lastName("Green")
+                    .str(10)
+                    .dex(8)
+                    .con(12)
+                    .wis(10)
+                    .race("Человек")
+                    .build();
+
+            creatureDto = RequestCreatureDto.builder()
+                    .name("Разбойник")
+                    .str(1)
+                    .dex(1)
+                    .con(1)
+                    .race(raceDto.getName())
+                    .build();
+
+            productDto = new RequestProductDto(
+                    "Роскошь", 500);
+
+            itemPatternDto = new RequestItemPatternDto(
+                    "Медаль", 100L, 1, productDto.getName());
+        }
+
+        @Test
+        @Description(value = "Тест на сброс предмета из инвентаря текущего героя пользователя")
+        void ItemObject_Drop_success() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
+            FightDto fightDto = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1)
+                    .andReturn().getResponse().getContentAsString(), FightDto.class);
+            ResponseItemDto[] beforeDrop = objectMapper.readValue(RequestParentTest.getInventory(mockMvc, token1)
+                    .andReturn().getResponse().getContentAsString(), ResponseItemDto[].class);
+
+            RequestBuilder requestBuilder = MockMvcRequestBuilders
+                    .delete(uri + "/" + itemPatternDto.getName())
+                    .header("Authorization", String.format("Bearer %s", token1))
+                    .contentType(MediaType.APPLICATION_JSON);
+
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isNoContent());
+
+            ResponseItemDto[] afterDrop = objectMapper.readValue(RequestParentTest.getInventory(mockMvc, token1)
+                    .andReturn().getResponse().getContentAsString(), ResponseItemDto[].class);
+
+            assertEquals(beforeDrop.length, afterDrop.length + 1);
+        }
+
+        @Test
+        @Description(value = "Тест на сброс предмета из инвентаря текущего героя пользователя, если нет такого предмета")
+        void ItemObject_Drop_NoItem() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
+            FightDto fightDto = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1)
+                    .andReturn().getResponse().getContentAsString(), FightDto.class);
+            ResponseItemDto[] beforeDrop = objectMapper.readValue(RequestParentTest.getInventory(mockMvc, token1)
+                    .andReturn().getResponse().getContentAsString(), ResponseItemDto[].class);
+
+            RequestBuilder requestBuilder = MockMvcRequestBuilders
+                    .delete(uri + "/" + "Другой предмет")
+                    .header("Authorization", String.format("Bearer %s", token1))
+                    .contentType(MediaType.APPLICATION_JSON);
+
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isNotFound())
+                    .andExpect(
+                            jsonPath("$.descr").value(containsString("не найден в инвентаре")));
+        }
+
+        @Test
+        @Description(value = "Тест на сброс предмета из инвентаря текущего героя пользователя, если нет живого героя")
+        void ItemObject_Drop_NoAliveHero() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
+            RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Титан", 100, 100, 100, raceDto.getName())));
+            RequestParentTest.insertFight(mockMvc, "Титан", token1);
+
+            RequestBuilder requestBuilder = MockMvcRequestBuilders
+                    .delete(uri + "/" + itemPatternDto.getName())
+                    .header("Authorization", String.format("Bearer %s", token1))
+                    .contentType(MediaType.APPLICATION_JSON);
+
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isNotFound())
+                    .andExpect(
+                            jsonPath("$.descr").value(containsString("У пользователя нет героя со статусом ALIVE")));
+        }
+
+        @Test
+        @Description(value = "Тест на сброс предмета из инвентаря текущего героя пользователя, если нет такого предмета")
+        void ItemObject_Drop_NullItem() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
+            FightDto fightDto = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1)
+                    .andReturn().getResponse().getContentAsString(), FightDto.class);
+            ResponseItemDto[] beforeDrop = objectMapper.readValue(RequestParentTest.getInventory(mockMvc, token1)
+                    .andReturn().getResponse().getContentAsString(), ResponseItemDto[].class);
+
+            RequestBuilder requestBuilder = MockMvcRequestBuilders
+                    .delete(uri + "/" + null)
+                    .header("Authorization", String.format("Bearer %s", token1))
+                    .contentType(MediaType.APPLICATION_JSON);
+
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isNotFound())
+                    .andExpect(
+                            jsonPath("$.descr").value(containsString("не найден в инвентаре")));
+        }
+
+        @Test
+        @Description(value = "Тест на сброс предмета из инвентаря текущего героя пользователя, если нет такого предмета")
+        void ItemObject_Drop_EmptyItem() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
+            FightDto fightDto = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1)
+                    .andReturn().getResponse().getContentAsString(), FightDto.class);
+            ResponseItemDto[] beforeDrop = objectMapper.readValue(RequestParentTest.getInventory(mockMvc, token1)
+                    .andReturn().getResponse().getContentAsString(), ResponseItemDto[].class);
+
+            RequestBuilder requestBuilder = MockMvcRequestBuilders
+                    .delete(uri + "/" + "")
+                    .header("Authorization", String.format("Bearer %s", token1))
+                    .contentType(MediaType.APPLICATION_JSON);
+
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isNotFound())
+                    .andExpect(
+                            jsonPath("$.descr").value(containsString("No static resource")));
+        }
+
+        @Test
+        @Description(value = "Тест на сброс предмета из инвентаря текущего героя пользователя, если нет такого предмета")
+        void ItemObject_Drop_BlankItem() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
+            FightDto fightDto = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1)
+                    .andReturn().getResponse().getContentAsString(), FightDto.class);
+            ResponseItemDto[] beforeDrop = objectMapper.readValue(RequestParentTest.getInventory(mockMvc, token1)
+                    .andReturn().getResponse().getContentAsString(), ResponseItemDto[].class);
+
+            StringBuilder name = new StringBuilder();
+            for (int i = 0; i < 201; i++) {
+                name.append(Character.toString('А' + random.nextInt(33)));
+            }
+            RequestBuilder requestBuilder = MockMvcRequestBuilders
+                    .delete(uri + "/" + name)
+                    .header("Authorization", String.format("Bearer %s", token1))
+                    .contentType(MediaType.APPLICATION_JSON);
+
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isBadRequest());
         }
     }
 }

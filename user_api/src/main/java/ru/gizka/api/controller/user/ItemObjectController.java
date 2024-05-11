@@ -1,12 +1,13 @@
 package ru.gizka.api.controller.user;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.gizka.api.dto.item.ResponseItemDto;
 import ru.gizka.api.facade.item.ItemObjectFacade;
 import ru.gizka.api.model.user.AuthUser;
@@ -28,5 +29,13 @@ public class ItemObjectController {
     public ResponseEntity<List<ResponseItemDto>> getInventory(@AuthenticationPrincipal AuthUser authUser) {
         log.info("Контроллер предметов принял запрос GET /inventory текущего героя для пользователя: {}", authUser.login());
         return ResponseEntity.ok(itemObjectFacade.getInventory(authUser.getUser()));
+    }
+
+    @DeleteMapping("/{name}")
+    public ResponseEntity<HttpStatus> drop(@AuthenticationPrincipal AuthUser authUser,
+                                           @PathVariable @NotNull @Size(min = 1, max = 200) String name) {
+        log.info("Контроллер предметов принял запрос DELETE /inventory/{} текущего героя для пользователя: {}", name, authUser.login());
+        itemObjectFacade.deleteFromInventory(authUser.getUser(), name);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

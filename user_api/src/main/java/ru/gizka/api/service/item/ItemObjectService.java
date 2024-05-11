@@ -44,4 +44,10 @@ public class ItemObjectService {
                 hero.getName(), hero.getLastname(), hero.getAppUser().getLogin());
         return itemObjectRepo.findByHero(hero);
     }
+
+    @Transactional
+    public void delete(ItemObject itemObject){
+        log.info("Сервис предметов удаляет предмет: {} с id: {}", itemObject.getName(), itemObject.getId());
+        itemObjectRepo.delete(itemObject);
+    }
 }

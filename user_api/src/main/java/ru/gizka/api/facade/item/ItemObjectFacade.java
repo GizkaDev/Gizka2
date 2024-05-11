@@ -24,14 +24,14 @@ public class ItemObjectFacade {
     @Autowired
     public ItemObjectFacade(HeroService heroService,
                             ItemObjectService itemObjectService,
-                            DtoConverter dtoConverter){
+                            DtoConverter dtoConverter) {
         this.heroService = heroService;
         this.itemObjectService = itemObjectService;
         this.dtoConverter = dtoConverter;
     }
 
     public List<ResponseItemDto> getInventory(AppUser appUser) {
-        log.info("Сервис героев начинает поиск текущего героя для пользователя: {}", appUser.getLogin());
+        log.info("Сервис предметов начинает поиск инвентаря текущего героя для пользователя: {}", appUser.getLogin());
         List<Hero> heroes = heroService.getAliveByUser(appUser);
         if (heroes.isEmpty()) {
             throw new EntityNotFoundException("У пользователя нет героя со статусом ALIVE.");
@@ -40,5 +40,24 @@ public class ItemObjectFacade {
         return inventory.stream()
                 .map(dtoConverter::getResponseDto)
                 .toList();
+    }
+
+    public void deleteFromInventory(AppUser appUser, String name) {
+        log.info("Сервис предметов начинает удаление предмета: {} из  инвентаря текущего героя для пользователя: {}", name, appUser.getLogin());
+        List<Hero> heroes = heroService.getAliveByUser(appUser);
+        if (heroes.isEmpty()) {
+            throw new EntityNotFoundException("У пользователя нет героя со статусом ALIVE.");
+        }
+        List<ItemObject> inventory = itemObjectService.getByHero(heroes.get(0));
+        ItemObject itemToDelete = null;
+        for (ItemObject item : inventory) {
+            if (item.getName().equals(name)) {
+                itemToDelete = item;
+            }
+        }
+        if (itemToDelete == null) {
+            throw new EntityNotFoundException(String.format("Предмет: %s не найден в инвентаре", name));
+        }
+        itemObjectService.delete(itemToDelete);
     }
 }

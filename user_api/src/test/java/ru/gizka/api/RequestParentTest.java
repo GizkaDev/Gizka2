@@ -102,7 +102,7 @@ public class RequestParentTest {
                 .post(String.format("%s?name=%s", "/api/user/hero/fight", name))
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", String.format("Bearer %s", token));
-       return mockMvc.perform(fightRequest);
+        return mockMvc.perform(fightRequest);
     }
 
     public static ResultActions treat(MockMvc mockMvc, String token) throws Exception {
@@ -129,5 +129,13 @@ public class RequestParentTest {
                 .content(itemDtoAsString)
                 .header("Authorization", "Bearer " + token);
         return mockMvc.perform(productRequest);
+    }
+
+    public static ResultActions getInventory(MockMvc mockMvc, String token) throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/api/user/hero/inventory")
+                .header("Authorization", String.format("Bearer %s", token))
+                .contentType(MediaType.APPLICATION_JSON);
+        return mockMvc.perform(requestBuilder);
     }
 }
