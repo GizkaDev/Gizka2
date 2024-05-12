@@ -1,4 +1,4 @@
-package ru.gizka.api.service.fightLogic;
+package ru.gizka.api.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,8 +22,10 @@ public class AttributeCalculator {
         hero.setMaxPhysDamage(calculateMaxPhysDamage(hero));
         hero.setMaxHp(calculateMaxHp(hero));
         hero.setCurrentHp(calculateCurrentHpForNew(hero));
-        hero.setCurrentCon(calculateCurrentCon(hero));
+        hero.setEndurance(calculateEndurance(hero));
         hero.setMaxWeight(calculateMaxWeight(hero));
+        hero.setSearch(calculateSearch(hero));
+        hero.setTreat(calculateTreat(hero));
     }
 
     public void calculateForNew(Creature creature) {
@@ -39,10 +41,10 @@ public class AttributeCalculator {
         creature.setMaxPhysDamage(calculateMaxPhysDamage(creature));
         creature.setMaxHp(calculateMaxHp(creature));
         creature.setCurrentHp(calculateCurrentHpForNew(creature));
-        creature.setCurrentCon(calculateCurrentCon(creature));
+        creature.setEndurance(calculateEndurance(creature));
     }
 
-    public Integer calculateCurrentCon(Creature creature) {
+    public Integer calculateEndurance(Creature creature) {
         Integer currentCon = creature.getCon();
         log.info("Калькулятор атрибутов рассчитал выносливость: {} при телосложении: {} для моба: {}",
                 currentCon, creature.getCon(), creature.getName());
@@ -119,6 +121,20 @@ public class AttributeCalculator {
         return initiative;
     }
 
+    public Integer calculateTreat(Hero hero) {
+        Integer treat = hero.getWis();
+        log.info("Калькулятор атрибутов рассчитал навык лечения: {} при мудрости: {} для героя: {} {}({})",
+                treat, hero.getStr(), hero.getName(), hero.getLastname(), hero.getAppUser().getLogin());
+        return treat;
+    }
+
+    public Integer calculateSearch(Hero hero) {
+        Integer search = hero.getWis();
+        log.info("Калькулятор атрибутов рассчитал навык обыска: {} при мудрости: {} для героя: {} {}({})",
+                search, hero.getStr(), hero.getName(), hero.getLastname(), hero.getAppUser().getLogin());
+        return search;
+    }
+
     public Long calculateMaxWeight(Hero hero) {
         Long maxWeight = hero.getStr() * 3 * 1000L;
         log.info("Калькулятор атрибутов рассчитал макс. вес: {} при силе: {} для героя: {} {}({})",
@@ -126,7 +142,7 @@ public class AttributeCalculator {
         return maxWeight;
     }
 
-    public Integer calculateCurrentCon(Hero hero) {
+    public Integer calculateEndurance(Hero hero) {
         Integer currentCon = hero.getCon();
         log.info("Калькулятор атрибутов рассчитал выносливость: {} при телосложении: {} для героя: {} {}({})",
                 currentCon, hero.getCon(), hero.getName(), hero.getLastname(), hero.getAppUser().getLogin());

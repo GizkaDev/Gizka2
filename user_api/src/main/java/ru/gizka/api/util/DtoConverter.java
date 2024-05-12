@@ -35,6 +35,7 @@ import ru.gizka.api.model.notification.Notification;
 import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.user.AppUser;
 
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -118,7 +119,7 @@ public class DtoConverter {
                 .maxPhysDamage(creature.getMaxPhysDamage())
                 .maxHp(creature.getMaxHp())
                 .currentHp(creature.getCurrentHp())
-                .currentCon(creature.getCurrentCon())
+                .endurance(creature.getEndurance())
                 .build();
     }
 
@@ -194,15 +195,12 @@ public class DtoConverter {
                 .id(hero.getId())
                 .name(hero.getName())
                 .lastname(hero.getLastname())
+
                 .str(hero.getStr())
                 .dex(hero.getDex())
                 .con(hero.getCon())
                 .wis(hero.getWis())
-                .createdAt(hero.getCreatedAt())
-                .userLogin(hero.getAppUser().getLogin())
-                .status(hero.getStatus().name())
-                .race(hero.getRace().getName())
-                .treatAt(hero.getTreatAt())
+
                 .minInit(hero.getMinInit())
                 .maxInit(hero.getMaxInit())
                 .minAttack(hero.getMinAttack())
@@ -212,10 +210,19 @@ public class DtoConverter {
                 .minPhysDamage(hero.getMinPhysDamage())
                 .maxPhysDamage(hero.getMaxPhysDamage())
                 .maxHp(hero.getMaxHp())
-                .currentHp(hero.getCurrentHp())
-                .currentCon(hero.getCurrentCon())
-                .currentWeight(hero.getCurrentWeight())
+                .endurance(hero.getEndurance())
                 .maxWeight(hero.getMaxWeight())
+                .search(hero.getSearch())
+                .treat(hero.getTreat())
+
+                .currentHp(hero.getCurrentHp())
+                .currentWeight(hero.getCurrentWeight())
+
+                .createdAt(hero.getCreatedAt())
+                .userLogin(hero.getAppUser().getLogin())
+                .status(hero.getStatus().name())
+                .race(hero.getRace().getName())
+                .treatAt(hero.getTreatAt())
                 .build();
     }
 
@@ -260,11 +267,11 @@ public class DtoConverter {
                 .createdAt(fight.getCreatedAt())
                 .build();
         if (fight.getLoot() != null) {
-            if (!fight.getLoot().isEmpty()) {
-                fightDto.setLoot(fight.getLoot().stream()
-                        .map(this::getResponseDto)
-                        .toList());
-            }
+            List<ResponseItemDto> loot = fight.getLoot().isEmpty() ? Collections.emptyList() :
+                    fight.getLoot().stream()
+                            .map(this::getResponseDto)
+                            .toList();
+            fightDto.setLoot(loot);
         }
         return fightDto;
     }

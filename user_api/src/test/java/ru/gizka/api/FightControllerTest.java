@@ -323,7 +323,13 @@ public class FightControllerTest {
                     .andExpect(
                             jsonPath("$[0].currentHp").value(lessThanOrEqualTo(heroDto.getCon() * 3)))
                     .andExpect(
-                            jsonPath("$[0].currentCon").value(heroDto.getCon()));
+                            jsonPath("$[0].endurance").value(heroDto.getCon()))
+                    .andExpect(
+                            jsonPath("$[0].currentWeight").value(0))
+                    .andExpect(
+                            jsonPath("$[0].search").value(heroDto.getWis() + raceDto.getWisBonus()))
+                    .andExpect(
+                            jsonPath("$[0].treat").value(heroDto.getWis() + raceDto.getWisBonus()));
 
             //when
             RequestParentTest.getCreature(mockMvc, token1, creatureDto.getName())
@@ -361,7 +367,7 @@ public class FightControllerTest {
                     .andExpect(
                             jsonPath("$.currentHp").value(creatureDto.getCon() * 3))
                     .andExpect(
-                            jsonPath("$.currentCon").value(creatureDto.getCon()));
+                            jsonPath("$.endurance").value(creatureDto.getCon()));
         }
 
         @Test
@@ -411,7 +417,11 @@ public class FightControllerTest {
             RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
             RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
             RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Золотая гиря", heroDto.getStr() * 4000L, 1, productDto.getName())), token1);
-            RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1);
+            int lootsize = 0;
+            while (lootsize == 0) {
+                FightDto fightDto = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1).andReturn().getResponse().getContentAsString(), FightDto.class);
+                lootsize = fightDto.getLoot().size();
+            }
 
             requestBuilder = MockMvcRequestBuilders
                     .post(String.format("%s?name=%s", uri, creatureDto.getName()))
@@ -473,9 +483,7 @@ public class FightControllerTest {
                     .andExpect(
                             jsonPath("$.result").value(lastFight.getResult()))
                     .andExpect(
-                            jsonPath("$.createdAt").value(lastFight.getCreatedAt()))
-                    .andExpect(
-                            jsonPath("$.loot").value(not(empty())));
+                            jsonPath("$.createdAt").value(lastFight.getCreatedAt()));
         }
 
         @Test
@@ -551,7 +559,7 @@ public class FightControllerTest {
                     .andExpect(
                             jsonPath("$.createdAt").value(lastFight.getCreatedAt()))
                     .andExpect(
-                            jsonPath("$.loot").value(nullValue()));
+                            jsonPath("$.loot").value(empty()));
         }
 
         @Test

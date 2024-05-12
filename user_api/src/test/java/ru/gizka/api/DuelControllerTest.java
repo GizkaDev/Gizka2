@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.dto.creature.RequestCreatureDto;
 import ru.gizka.api.dto.fight.DuelDto;
+import ru.gizka.api.dto.fight.FightDto;
 import ru.gizka.api.dto.hero.RequestHeroDto;
 import ru.gizka.api.dto.item.RequestItemPatternDto;
 import ru.gizka.api.dto.item.RequestProductDto;
@@ -401,7 +402,13 @@ public class DuelControllerTest extends RequestParentTest {
                     .andExpect(
                             jsonPath("$[0].currentHp").value(heroDto.getCon() * 3))
                     .andExpect(
-                            jsonPath("$[0].currentCon").value(heroDto.getCon()));
+                            jsonPath("$[0].endurance").value(heroDto.getCon()))
+                    .andExpect(
+                            jsonPath("$[0].currentWeight").value(0))
+                    .andExpect(
+                            jsonPath("$[0].search").value(heroDto.getWis() + raceDto.getWisBonus()))
+                    .andExpect(
+                            jsonPath("$[0].treat").value(heroDto.getWis() + raceDto.getWisBonus()));;
 
             //when
             RequestParentTest.getCurrentHero(mockMvc, token2)
@@ -449,7 +456,13 @@ public class DuelControllerTest extends RequestParentTest {
                     .andExpect(
                             jsonPath("$[0].currentHp").value(heroDto2.getCon() * 3))
                     .andExpect(
-                            jsonPath("$[0].currentCon").value(heroDto2.getCon()));
+                            jsonPath("$[0].endurance").value(heroDto2.getCon()))
+                    .andExpect(
+                            jsonPath("$[0].currentWeight").value(0))
+                    .andExpect(
+                            jsonPath("$[0].search").value(heroDto.getWis() + raceDto.getWisBonus()))
+                    .andExpect(
+                            jsonPath("$[0].treat").value(heroDto.getWis() + raceDto.getWisBonus()));
         }
 
         @Test
@@ -544,7 +557,12 @@ public class DuelControllerTest extends RequestParentTest {
             RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Разбойник", 1, 1, 1, raceDto.getName())));
             RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Роскошь", 1000)), token1);
             RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Золотая гиря", heroDto.getStr() * 4000L, 1, "Роскошь")), token1);
-            RequestParentTest.insertFight(mockMvc, "Разбойник", token1);
+
+            int lootSize = 0;
+            while (lootSize == 0) {
+                FightDto fightDto = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, "Разбойник", token1).andReturn().getResponse().getContentAsString(), FightDto.class);
+                lootSize = fightDto.getLoot().size();
+            }
 
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto2), token2);
 

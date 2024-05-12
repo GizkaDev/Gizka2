@@ -11,12 +11,14 @@ import org.springframework.context.annotation.Description;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.RequestParentTest;
 import ru.gizka.api.dto.creature.RequestCreatureDto;
 import ru.gizka.api.dto.fight.DuelDto;
+import ru.gizka.api.dto.fight.FightDto;
 import ru.gizka.api.dto.fight.Fighter;
 import ru.gizka.api.dto.hero.RequestHeroDto;
 import ru.gizka.api.dto.item.RequestItemPatternDto;
@@ -28,15 +30,15 @@ import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.hero.Status;
 import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.user.AppUser;
-import ru.gizka.api.service.fightLogic.AttributeCalculator;
+import ru.gizka.api.service.AttributeCalculator;
 import ru.gizka.api.service.fightLogic.FightLogic;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Date;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -122,21 +124,19 @@ public class HeroActionFightDuelLogicTest extends RequestParentTest {
         AppUser appUser = new AppUser(0L, "testLogin", null, null, null, null, null);
         Race race = new Race(0L, "Человек", null, true, null, null, 0, 0, 0, 0);
         Hero hero1 = new Hero(1234L, "TestName", "TestLastName",
-                9, 10, 15, 10, new Date(),
-                appUser,
-                Status.ALIVE,
-                Collections.emptyList(),
-                race, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+                9, 10, 11, 10,
+                null, null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null,
+                new Date(), appUser, Status.ALIVE, Collections.emptyList(), race, null, null, null);
         attributeCalculator.calculateForNew(hero1);
         heroFighter1 = new Fighter(hero1);
         AppUser appUser2 = new AppUser(0L, "testLogin", null, null, null, null, null);
         Race race2 = new Race(0L, "Ящер", null, true, null, null, 0, 0, 0, 0);
         Hero hero2 = new Hero(1234L, "TestName", "TestLastName",
-                9, 10, 9, 10, new Date(),
-                appUser2,
-                Status.ALIVE,
-                Collections.emptyList(),
-                race2, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+                9, 10, 9, 10,
+                null, null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null,
+                new Date(), appUser, Status.ALIVE, Collections.emptyList(), race, null, null, null);
         attributeCalculator.calculateForNew(hero2);
         heroFighter2 = new Fighter(hero2);
         Class<?> clazz = duelLogic.getClass();
@@ -239,7 +239,13 @@ public class HeroActionFightDuelLogicTest extends RequestParentTest {
         RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Булава", 2L, 1, "Оружие")), token1);
         RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Копье", 2L, 1, "Оружие")), token1);
         //when
-        RequestParentTest.insertFight(mockMvc, "Слабак", token1)
+        int lootsize = 0;
+        ResultActions resultActions = null;
+        while (lootsize < 20) {
+            resultActions = RequestParentTest.insertFight(mockMvc, "Слабак", token1);
+            lootsize += objectMapper.readValue(resultActions.andReturn().getResponse().getContentAsString(), FightDto.class).getLoot().size();
+        }
+        resultActions
                 //then
                 .andExpect(
                         status().isCreated())
@@ -273,7 +279,7 @@ public class HeroActionFightDuelLogicTest extends RequestParentTest {
                 .andExpect(
                         status().isCreated())
                 .andExpect(
-                        jsonPath("$.loot").value(nullValue())
+                        jsonPath("$.loot").value(empty())
                 );
     }
 
@@ -297,7 +303,32 @@ public class HeroActionFightDuelLogicTest extends RequestParentTest {
                 .andExpect(
                         status().isCreated())
                 .andExpect(
-                        jsonPath("$.loot").value(nullValue())
+                        jsonPath("$.loot").value(empty())
                 );
+    }
+
+    @Test
+    @Description(value = "Тест на то, что после победы в сражении дается случайная добыча размере в рамках навыка обыска")
+    void getLootTest_InSearchCase() throws Exception {
+        //given
+        RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+        String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+        RequestParentTest.setAdminRights(mockMvc, token1);
+        RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+        RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Слабак", 1, 1, 1, raceDto.getName())));
+        RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+        RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Оружие", 50)), token1);
+        RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Меч", 2L, 1, "Оружие")), token1);
+        RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Булава", 2L, 1, "Оружие")), token1);
+        RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Копье", 2L, 1, "Оружие")), token1);
+        //when
+        int commonLootsize = 0;
+        ResultActions resultActions = null;
+        while (commonLootsize < 100) {
+            resultActions = RequestParentTest.insertFight(mockMvc, "Слабак", token1);
+            int currentLootSize = objectMapper.readValue(resultActions.andReturn().getResponse().getContentAsString(), FightDto.class).getLoot().size();
+            assertTrue(currentLootSize <= heroDto.getWis());
+            commonLootsize += currentLootSize;
+        }
     }
 }

@@ -13,7 +13,6 @@ import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.hero.Status;
 import ru.gizka.api.repo.HeroRepo;
-import ru.gizka.api.service.fightLogic.AttributeCalculator;
 
 import java.util.ArrayList;
 import java.util.Date;

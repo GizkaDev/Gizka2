@@ -396,8 +396,11 @@ public class ItemObjectControllerTest {
             RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
             RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
             RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
-            FightDto fightDto = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1)
-                    .andReturn().getResponse().getContentAsString(), FightDto.class);
+            int lootsize = 0;
+            while (lootsize == 0) {
+                FightDto fightDto = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1).andReturn().getResponse().getContentAsString(), FightDto.class);
+                lootsize = fightDto.getLoot().size();
+            }
             ResponseItemDto[] beforeDrop = objectMapper.readValue(RequestParentTest.getInventory(mockMvc, token1)
                     .andReturn().getResponse().getContentAsString(), ResponseItemDto[].class);
 

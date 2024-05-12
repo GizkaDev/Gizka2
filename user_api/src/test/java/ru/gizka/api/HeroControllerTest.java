@@ -163,11 +163,15 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$[0].currentHp").isNumber())
                     .andExpect(
-                            jsonPath("$[0].currentCon").isNumber())
+                            jsonPath("$[0].endurance").isNumber())
                     .andExpect(
                             jsonPath("$[0].currentWeight").value(0))
                     .andExpect(
-                            jsonPath("$[0].maxWeight").value(heroDto.getStr() * 3000));
+                            jsonPath("$[0].maxWeight").value(heroDto.getStr() * 3000))
+                    .andExpect(
+                            jsonPath("$[0].search").value(heroDto.getWis()))
+                    .andExpect(
+                            jsonPath("$[0].treat").value(heroDto.getWis()));
         }
 
         @Test
@@ -272,9 +276,13 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$[0].currentHp").isNumber())
                     .andExpect(
-                            jsonPath("$[0].currentCon").isNumber())
+                            jsonPath("$[0].endurance").isNumber())
                     .andExpect(
-                            jsonPath("$[0].currentWeight").value(expectedWeight));
+                            jsonPath("$[0].currentWeight").value(expectedWeight))
+                    .andExpect(
+                            jsonPath("$[0].search").value(heroDto.getWis()))
+                    .andExpect(
+                            jsonPath("$[0].treat").value(heroDto.getWis()));
         }
     }
 
@@ -338,7 +346,13 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$.currentHp").isNumber())
                     .andExpect(
-                            jsonPath("$.currentCon").isNumber());
+                            jsonPath("$.endurance").isNumber())
+                    .andExpect(
+                            jsonPath("$.currentWeight").value(0))
+                    .andExpect(
+                            jsonPath("$.search").value(heroDto.getWis()))
+                    .andExpect(
+                            jsonPath("$.treat").value(heroDto.getWis()));
         }
 
         @Test
@@ -839,7 +853,13 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$.currentHp").isNumber())
                     .andExpect(
-                            jsonPath("$.currentCon").isNumber());
+                            jsonPath("$.endurance").isNumber())
+                    .andExpect(
+                            jsonPath("$.currentWeight").value(0))
+                    .andExpect(
+                            jsonPath("$.search").value(heroDto.getWis()))
+                    .andExpect(
+                            jsonPath("$.treat").value(heroDto.getWis()));
         }
 
         @Test
@@ -901,7 +921,13 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$.currentHp").isNumber())
                     .andExpect(
-                            jsonPath("$.currentCon").isNumber());
+                            jsonPath("$.endurance").isNumber())
+                    .andExpect(
+                            jsonPath("$.currentWeight").value(0))
+                    .andExpect(
+                            jsonPath("$.search").value(heroDto.getWis() + raceDto.getWisBonus()))
+                    .andExpect(
+                            jsonPath("$.treat").value(heroDto.getWis() + raceDto.getWisBonus()));
         }
 
         @Test
@@ -1194,7 +1220,7 @@ public class HeroControllerTest {
             String result = "";
             int currentHp = 100;
             int lootSize = 0;
-            while (!result.equals("ATTACKER") && (currentHp >= heroDto.getCon() * 3) && lootSize == 0) {
+            while (lootSize == 0) {
                 fightDto8 = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, "Шнырь", token).andReturn().getResponse().getContentAsString(), FightDto.class);
                 result = fightDto8.getResult();
                 currentHp = fightDto8.getHeroFighter().getCurrentHp();

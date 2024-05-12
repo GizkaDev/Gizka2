@@ -29,32 +29,62 @@ public class Hero {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(name = "name")
     @Size(min = 1, max = 50)
     @NotBlank
     private String name;
-
     @Column(name = "lastname")
     @Size(min = 1, max = 100)
     @NotBlank
     private String lastname;
 
+
     @Column(name = "str")
     @Positive
     private Integer str;
-
     @Column(name = "dex")
     @Positive
     private Integer dex;
-
     @Column(name = "con")
     @Positive
     private Integer con;
-
     @Column(name = "wis")
     @Positive
     private Integer wis;
+
+
+    @Column(name = "min_init")
+    private Integer minInit;
+    @Column(name = "max_init")
+    private Integer maxInit;
+    @Column(name = "min_attack")
+    private Integer minAttack;
+    @Column(name = "max_attack")
+    private Integer maxAttack;
+    @Column(name = "min_evasion")
+    private Integer minEvasion;
+    @Column(name = "max_evasion")
+    private Integer maxEvasion;
+    @Column(name = "min_phys_damage")
+    private Integer minPhysDamage;
+    @Column(name = "max_phys_damage")
+    private Integer maxPhysDamage;
+    @Column(name = "max_hp")
+    private Integer maxHp;
+    @Column(name = "endurance")
+    private Integer endurance;
+    @Column(name = "maxWeight")
+    private Long maxWeight;
+    @Column(name = "search")
+    private Integer search;
+    @Column(name = "treat")
+    private Integer treat;
+
+    @Column(name = "current_hp")
+    private Integer currentHp;
+    @Column(name = "current_weight")
+    private Long currentWeight;
+
 
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
@@ -79,39 +109,6 @@ public class Hero {
     @JoinColumn(name = "hero_race", referencedColumnName = "name")
     private Race race;
 
-    @Column(name = "min_init")
-    private Integer minInit;
-
-    @Column(name = "max_init")
-    private Integer maxInit;
-
-    @Column(name = "min_attack")
-    private Integer minAttack;
-
-    @Column(name = "max_attack")
-    private Integer maxAttack;
-
-    @Column(name = "min_evasion")
-    private Integer minEvasion;
-
-    @Column(name = "max_evasion")
-    private Integer maxEvasion;
-
-    @Column(name = "min_phys_damage")
-    private Integer minPhysDamage;
-
-    @Column(name = "max_phys_damage")
-    private Integer maxPhysDamage;
-
-    @Column(name = "max_hp")
-    private Integer maxHp;
-
-    @Column(name = "current_hp")
-    private Integer currentHp;
-
-    @Column(name = "current_con")
-    private Integer currentCon;
-
     @OneToMany(mappedBy = "hero",
             fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE)
@@ -125,10 +122,4 @@ public class Hero {
             fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE)
     private List<ItemObject> inventory;
-
-    @Column(name = "current_weight")
-    private Long currentWeight;
-
-    @Column(name = "maxWeight")
-    private Long maxWeight;
 }

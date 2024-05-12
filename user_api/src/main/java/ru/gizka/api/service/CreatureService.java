@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.model.creature.Creature;
 import ru.gizka.api.model.race.Race;
 import ru.gizka.api.repo.CreatureRepo;
-import ru.gizka.api.service.fightLogic.AttributeCalculator;
 
 import java.util.Date;
 import java.util.List;

@@ -12,7 +12,7 @@ import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.hero.Status;
 import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.user.AppUser;
-import ru.gizka.api.service.fightLogic.AttributeCalculator;
+import ru.gizka.api.service.AttributeCalculator;
 import ru.gizka.api.service.fightLogic.TurnLogic;
 import ru.gizka.api.util.RandomRoller;
 
@@ -44,18 +44,16 @@ public class TurnLogicTest {
         appUser1 = new AppUser(0L, "testLogin", null, null, null, null, null);
         race = new Race(0L, "Человек", null, true, null, null, 0, 0, 0, 0);
         hero1 = new Hero(1234L, "TestName", "TestLastName",
-                9, 10, 11,10, new Date(),
-                appUser1,
-                Status.ALIVE,
-                Collections.emptyList(),
-                race, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+                9, 10, 11, 10,
+                null, null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null,
+                new Date(), appUser1, Status.ALIVE, Collections.emptyList(), race, null, null, null);
         appUser2 = new AppUser(0L, "testLogin2", null, null, null, null, null);
         hero2 = new Hero(1234L, "TestName2", "TestLastName2",
-                14, 5, 11, 10,new Date(),
-                appUser2,
-                Status.ALIVE,
-                Collections.emptyList(),
-                race, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+                4, 5, 11, 10,
+                null, null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null,
+                new Date(), appUser2, Status.ALIVE, Collections.emptyList(), race, null, null, null);
         attributeCalculator.calculateForNew(hero1);
         attributeCalculator.calculateForNew(hero2);
         heroFighter1 = new Fighter(hero1);

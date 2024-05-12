@@ -8,7 +8,7 @@ import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.hero.Status;
 import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.user.AppUser;
-import ru.gizka.api.service.fightLogic.AttributeCalculator;
+import ru.gizka.api.service.AttributeCalculator;
 
 import java.util.Collections;
 import java.util.Date;
@@ -32,11 +32,10 @@ public class AttributeCalcTest {
         appUser = new AppUser(0L, "testLogin", null, null, null, null, null);
         race = new Race(0L, "Человек", null, true, null, null, 0, 0, 0, 0);
         hero = new Hero(1234L, "TestName", "TestLastName",
-                9, 10, 11, 10, new Date(),
-                appUser,
-                Status.ALIVE,
-                Collections.emptyList(),
-                race, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+                9, 10, 11, 10,
+                null, null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null,
+                new Date(), appUser, Status.ALIVE, Collections.emptyList(), race, null, null, null);
 
         // when
         attributeCalculator.calculateForNew(hero);
@@ -48,13 +47,15 @@ public class AttributeCalcTest {
         assertEquals(11 * 3, hero.getMaxHp());
         assertEquals(10, hero.getMaxInit());
         assertEquals(11 * 3, hero.getCurrentHp());
-        assertEquals(11, hero.getCurrentCon());
+        assertEquals(11, hero.getEndurance());
         assertEquals(0, hero.getMinAttack());
         assertEquals(0, hero.getMinEvasion());
         assertEquals(0, hero.getMinPhysDamage());
         assertEquals(0, hero.getMinInit());
-        assertEquals(11, hero.getCurrentCon());
+        assertEquals(11, hero.getEndurance());
         assertEquals(27000L, hero.getMaxWeight());
+        assertEquals(10, hero.getSearch());
+        assertEquals(10, hero.getTreat());
     }
 
     @Test
@@ -64,11 +65,10 @@ public class AttributeCalcTest {
         appUser = new AppUser(0L, "testLogin", null, null, null, null, null);
         race = new Race(0L, "Человек", null, true, null, null, 0, 0, 0, 0);
         hero = new Hero(1234L, "TestName", "TestLastName",
-                9, 10, 11, 10, new Date(),
-                appUser,
-                Status.ALIVE,
-                Collections.emptyList(),
-                race, null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+                9, 10, 11, 10,
+                null, null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null,
+                new Date(), appUser, Status.ALIVE, Collections.emptyList(), race, null, null, null);
 
         // when
         attributeCalculator.calculateForNew(hero);
@@ -84,8 +84,10 @@ public class AttributeCalcTest {
         assertEquals(hero.getStr(), (int) hero.getMaxPhysDamage());
         assertEquals(hero.getCon() * 3, (int) hero.getMaxHp());
         assertEquals(hero.getCon() * 3, (int) hero.getCurrentHp());
-        assertEquals(hero.getCon(), hero.getCurrentCon());
+        assertEquals(hero.getCon(), hero.getEndurance());
         assertEquals(hero.getStr() * 3000L, hero.getMaxWeight());
+        assertEquals(hero.getTreat(), hero.getWis());
+        assertEquals(hero.getSearch(), hero.getWis());
     }
 
     @Test
@@ -111,6 +113,6 @@ public class AttributeCalcTest {
         assertEquals(creature.getStr(), (int) creature.getMaxPhysDamage());
         assertEquals(creature.getCon() * 3, (int) creature.getMaxHp());
         assertEquals(creature.getCon() * 3, (int) creature.getCurrentHp());
-        assertEquals(creature.getCon(), creature.getCurrentCon());
+        assertEquals(creature.getCon(), creature.getEndurance());
     }
 }

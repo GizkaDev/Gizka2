@@ -118,7 +118,7 @@ public class CreatureControllerTest {
                     .andExpect(
                             jsonPath("$.currentHp").value(creatureDto.getCon() * 3))
                     .andExpect(
-                            jsonPath("$.currentCon").value(creatureDto.getCon()));
+                            jsonPath("$.endurance").value(creatureDto.getCon()));
         }
 
         @Test

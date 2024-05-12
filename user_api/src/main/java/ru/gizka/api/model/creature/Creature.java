@@ -81,8 +81,8 @@ public class Creature {
     @Column(name = "current_hp")
     private Integer currentHp;
 
-    @Column(name = "current_con")
-    private Integer currentCon;
+    @Column(name = "endurance")
+    private Integer endurance;
 
     @OneToMany(mappedBy = "creature",
             fetch = FetchType.LAZY,

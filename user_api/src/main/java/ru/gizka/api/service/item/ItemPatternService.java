@@ -46,15 +46,15 @@ public class ItemPatternService {
     }
 
     public List<ItemPattern> getRandomLootPattern(Fight fight) {
-        if (Objects.requireNonNull(fight.getResult()) == Result.ATTACKER) {
+        int num = random.nextInt(0, (int) (Math.round(fight.getHero().getSearch().doubleValue() / 4.0) + 1));
+        if (Objects.requireNonNull(fight.getResult()) == Result.ATTACKER || num == 0) {
             List<ItemPattern> loot = new ArrayList<>();
-            int num = random.nextInt(1, 10); // можно сделать от характеристики или навыка
-            for (int i = 0; i < num; i++) {
+            for (int i = 1; i <= num; i++) {
                 getRandom().ifPresent(loot::add);
             }
             return loot;
         }
-        return null;
+        return Collections.emptyList();
     }
 
     @Transactional

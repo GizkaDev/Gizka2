@@ -53,7 +53,7 @@ public class Fighter {
         this.maxPhysDamage = creature.getMaxPhysDamage();
         this.maxHp = creature.getMaxHp();
         this.currentHp = creature.getCurrentHp();
-        this.currentCon = creature.getCurrentCon();
+        this.currentCon = creature.getEndurance();
     }
 
     public Fighter(Hero hero) {
@@ -75,7 +75,7 @@ public class Fighter {
         this.maxPhysDamage = hero.getMaxPhysDamage();
         this.maxHp = hero.getMaxHp();
         this.currentHp = hero.getCurrentHp();
-        this.currentCon = hero.getCurrentCon();
+        this.currentCon = hero.getEndurance();
     }
 
     public Fighter(Fighter fighter) {

@@ -4,11 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.gizka.api.dto.item.ResponseItemDto;
-import ru.gizka.api.model.hero.Hero;
 
 import java.util.Date;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -18,11 +15,6 @@ public class ResponseHeroDto {
     private Long id;
     private String name;
     private String lastname;
-    private Date createdAt;
-    private String userLogin;
-    private String status;
-    private String race;
-    private Date treatAt;
 
     private Integer str;
     private Integer dex;
@@ -38,8 +30,17 @@ public class ResponseHeroDto {
     private Integer minPhysDamage;
     private Integer maxPhysDamage;
     private Integer maxHp;
-    private Integer currentHp;
-    private Integer currentCon;
-    private Long currentWeight;
+    private Integer endurance;
     private Long maxWeight;
+    private Integer search;
+    private Integer treat;
+
+    private Integer currentHp;
+    private Long currentWeight;
+
+    private Date createdAt;
+    private String userLogin;
+    private String status;
+    private String race;
+    private Date treatAt;
 }

@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.dto.creature.RequestCreatureDto;
+import ru.gizka.api.dto.fight.FightDto;
 import ru.gizka.api.dto.hero.RequestHeroDto;
 import ru.gizka.api.dto.item.RequestItemPatternDto;
 import ru.gizka.api.dto.item.RequestProductDto;
@@ -349,7 +350,11 @@ public class NotificationControllerTest extends RequestParentTest {
             RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(weakCreatureDto));
             RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
             RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
-            RequestParentTest.insertFight(mockMvc, weakCreatureDto.getName(), token1);
+            int lootsize = 0;
+            while (lootsize == 0) {
+                FightDto fightDto = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, weakCreatureDto.getName(), token1).andReturn().getResponse().getContentAsString(), FightDto.class);
+                lootsize = fightDto.getLoot().size();
+            }
             MockHttpServletRequestBuilder eventRequest1 = MockMvcRequestBuilders
                     .get(uri)
                     .contentType(MediaType.APPLICATION_JSON)
