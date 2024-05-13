@@ -138,4 +138,13 @@ public class RequestParentTest {
                 .contentType(MediaType.APPLICATION_JSON);
         return mockMvc.perform(requestBuilder);
     }
+
+    public static ResultActions insertArmorPattern(MockMvc mockMvc, String armorDtoAsString, String token) throws Exception {
+        RequestBuilder productRequest = MockMvcRequestBuilders
+                .post("/api/admin/armor")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(armorDtoAsString)
+                .header("Authorization", "Bearer " + token);
+        return mockMvc.perform(productRequest);
+    }
 }

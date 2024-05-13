@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import ru.gizka.api.model.creature.Creature;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.item.ItemPattern;
+import ru.gizka.api.model.item.armor.ArmorPattern;
 
 import java.util.Date;
 import java.util.List;
