@@ -1,5 +1,6 @@
 package ru.gizka.api.facade.item.armor;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,14 @@ public class ArmorPatternFacade {
         log.info("Сервис шаблонов доспехов начинает создание нового шаблона: {}", armorDto.getName());
         checkValues(armorDto, bindingResult);
         ArmorPattern armorPattern = armorPatternService.create(dtoConverter.getModel(armorDto));
+        return dtoConverter.getResponseDto(armorPattern);
+    }
+
+    public ResponseArmorPatternDto getByName(String name) {
+        log.info("Сервис шаблонов доспехов начинает поиск шаблона: {}", name);
+        ArmorPattern armorPattern = armorPatternService.getByName(name)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(String.format("Шаблон не найден: %s", name)));
         return dtoConverter.getResponseDto(armorPattern);
     }
 

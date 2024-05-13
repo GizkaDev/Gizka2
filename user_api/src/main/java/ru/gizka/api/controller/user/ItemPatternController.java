@@ -24,7 +24,7 @@ public class ItemPatternController {
 
     @GetMapping("/{name}")
     public ResponseEntity<ResponseItemDto> getByName(@PathVariable @Size(min = 1, max = 200) String name) {
-        log.info("Контроллер шаблонов предметов принял запрос POST /{name}");
+        log.info("Контроллер шаблонов предметов принял запрос POST /{}", name);
         return ResponseEntity.ok(itemPatternFacade.getByName(name));
     }
 }
