@@ -18,6 +18,9 @@ public class RequestArmorPatternDto {
     @PositiveOrZero(message = "Значение брони должно быть 0 или больше")
     private Integer armor;
 
+    @NegativeOrZero(message = "Значение штрафа к ловкости должно быть 0 или меньше")
+    private Integer dexPenalty;
+
     @Pattern(regexp = "CLOTHES|LIGHT|MEDIUM|HEAVY", message = "Недействительный тип доспехов")
     private String armorType;
 }

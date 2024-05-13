@@ -62,6 +62,7 @@ public class AdminArmorPatternControllerTest {
             armorDto = new RequestArmorPatternDto(
                     "Кольчуга",
                     3,
+                    -3,
                     ArmorType.MEDIUM.toString());
         }
 
@@ -84,6 +85,8 @@ public class AdminArmorPatternControllerTest {
                             jsonPath("$.name").value(armorDto.getName()))
                     .andExpect(
                             jsonPath("$.armor").value(armorDto.getArmor()))
+                    .andExpect(
+                            jsonPath("$.dexPenalty").value(armorDto.getDexPenalty()))
                     .andExpect(
                             jsonPath("$.armorType").value(armorDto.getArmorType()));
         }
@@ -249,6 +252,26 @@ public class AdminArmorPatternControllerTest {
                             status().isBadRequest())
                     .andExpect(
                             jsonPath("$.descr").value(containsString("Значение брони должно быть 0 или больше")));
+        }
+
+        @Test
+        @Description(value = "Тест на создание шаблона доспеха с положительным штрафом на ловкость")
+        void Armor_create_PositiveDexPenalty() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token);
+            armorDto.setDexPenalty(2);
+            createRequest
+                    .content(objectMapper.writeValueAsString(armorDto))
+                    .header("Authorization", "Bearer " + token);
+            //when
+            mockMvc.perform(createRequest)
+                    //then
+                    .andExpect(
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(containsString("Значение штрафа к ловкости должно быть 0 или меньше")));
         }
 
         @Test

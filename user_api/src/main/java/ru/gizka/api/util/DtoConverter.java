@@ -57,13 +57,13 @@ public class DtoConverter {
 
     public ResponseArmorPatternDto getResponseDto(ArmorPattern armorPattern) {
         log.info("Конвертер переводит {} в {}", ArmorPattern.class, ResponseArmorPatternDto.class);
-        return new ResponseArmorPatternDto(armorPattern.getName(), armorPattern.getArmor(), armorPattern.getArmorType());
+        return new ResponseArmorPatternDto(armorPattern.getName(), armorPattern.getArmor(), armorPattern.getDexPenalty(), armorPattern.getArmorType());
     }
 
     public ArmorPattern getModel(RequestArmorPatternDto armorDto) {
         log.info("Конвертер переводит {} в {}", RequestArmorPatternDto.class, ArmorPattern.class);
         ArmorType armorType = ArmorType.valueOf(ArmorType.class, armorDto.getArmorType());
-        return new ArmorPattern(armorDto.getName(), armorDto.getArmor(), armorType);
+        return new ArmorPattern(armorDto.getName(), armorDto.getArmor(), armorDto.getDexPenalty(), armorType);
     }
 
     public ResponseItemDto getResponseDto(ItemObject itemObject) {

@@ -1,18 +1,13 @@
 package ru.gizka.api.model.item.armor;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NegativeOrZero;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.gizka.api.model.fight.Fight;
-import ru.gizka.api.model.item.ItemPattern;
-import ru.gizka.api.model.item.Product;
-
-import java.util.List;
 
 
 @Entity
@@ -22,9 +17,10 @@ import java.util.List;
 @NoArgsConstructor
 public class ArmorPattern {
 
-    public ArmorPattern(String name, Integer armor, ArmorType armorType) {
+    public ArmorPattern(String name, Integer armor, Integer dexPenalty, ArmorType armorType) {
         this.name = name;
         this.armor = armor;
+        this.dexPenalty = dexPenalty;
         this.armorType = armorType;
     }
 
@@ -41,6 +37,10 @@ public class ArmorPattern {
     @Column(name = "armor")
     @PositiveOrZero
     private Integer armor;
+
+    @Column(name = "dex_penalty")
+    @NegativeOrZero
+    private Integer dexPenalty;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "armor_type")

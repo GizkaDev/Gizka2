@@ -12,5 +12,6 @@ import ru.gizka.api.model.item.armor.ArmorType;
 public class ResponseArmorPatternDto {
     private String name;
     private Integer armor;
+    private Integer dexPenalty;
     private ArmorType armorType;
 }

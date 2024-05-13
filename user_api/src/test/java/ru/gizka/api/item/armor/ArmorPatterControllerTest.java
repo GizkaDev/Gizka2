@@ -58,6 +58,7 @@ public class ArmorPatterControllerTest {
             armorDto = new RequestArmorPatternDto(
                     "Кольчуга",
                     3,
+                    -2,
                     ArmorType.MEDIUM.toString());
         }
 
@@ -82,6 +83,8 @@ public class ArmorPatterControllerTest {
                             jsonPath("$.name").value(armorDto.getName()))
                     .andExpect(
                             jsonPath("$.armor").value(armorDto.getArmor()))
+                    .andExpect(
+                            jsonPath("$.dexPenalty").value(armorDto.getDexPenalty()))
                     .andExpect(
                             jsonPath("$.armorType").value(armorDto.getArmorType()));
         }
