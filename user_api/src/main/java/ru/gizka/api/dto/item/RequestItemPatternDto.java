@@ -1,9 +1,6 @@
 package ru.gizka.api.dto.item;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,9 +17,11 @@ public class RequestItemPatternDto {
     private String name;
 
     @PositiveOrZero(message = "Вес шаблона предмета должны быть равен или больше 0")
+    @NotNull(message = "Вес шаблона предмета должны быть равен или больше 0")
     private Long weight;
 
     @Positive(message = "Ценность шаблона предмета должна быть больше 0")
+    @NotNull(message = "Ценность шаблона предмета должна быть больше 0")
     private Integer value;
 
     @NotBlank(message = "Тип шаблона предмета не выбран")

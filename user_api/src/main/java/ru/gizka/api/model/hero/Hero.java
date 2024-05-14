@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.model.fight.Fight;
 import ru.gizka.api.model.item.ItemObject;
+import ru.gizka.api.model.item.armor.ArmorObject;
 import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.user.AppUser;
 
@@ -38,7 +39,6 @@ public class Hero {
     @NotBlank
     private String lastname;
 
-
     @Column(name = "str")
     @Positive
     private Integer str;
@@ -51,7 +51,6 @@ public class Hero {
     @Column(name = "wis")
     @Positive
     private Integer wis;
-
 
     @Column(name = "min_init")
     private Integer minInit;
@@ -84,7 +83,6 @@ public class Hero {
     private Integer currentHp;
     @Column(name = "current_weight")
     private Long currentWeight;
-
 
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)

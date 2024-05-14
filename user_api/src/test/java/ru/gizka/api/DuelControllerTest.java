@@ -24,6 +24,7 @@ import ru.gizka.api.dto.item.RequestItemPatternDto;
 import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.model.race.RaceSize;
 
 import java.util.Date;
 import java.util.List;
@@ -59,7 +60,7 @@ public class DuelControllerTest extends RequestParentTest {
     @BeforeEach
     void setUp() throws Exception {
         raceDto = new RequestRaceDto("Человек", true,
-                0, 0, 0, 0);
+                0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
         userDto = RequestAppUserDto.builder()
                 .login("Biba")

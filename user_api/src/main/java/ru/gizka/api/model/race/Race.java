@@ -64,4 +64,12 @@ public class Race {
     @Column(name = "wis_bonus")
     @Range(min = -5, max = 5)
     private Integer wisBonus;
+
+    @Column(name = "def_bonus")
+    @PositiveOrZero
+    private Integer defBonus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "race_size")
+    private RaceSize raceSize;
 }

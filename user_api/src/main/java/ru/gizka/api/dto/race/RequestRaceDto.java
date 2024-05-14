@@ -1,9 +1,6 @@
 package ru.gizka.api.dto.race;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,4 +35,12 @@ public class RequestRaceDto {
     @Range(min = -5, max = 5, message = "Бонус мудрости должен быть в диапазоне от -5 до 5")
     @NotNull(message = "Бонус мудрости должен быть в диапазоне от -5 до 5")
     private Integer wisBonus;
+
+    @PositiveOrZero(message = "Бонус защиты должен быть 0 или больше")
+    @NotNull(message = "Бонус защиты должен быть 0 или больше")
+    private Integer defBonus;
+
+    @Pattern(regexp = "TINY|LITTLE|SMALL|AVERAGE|BIG|GREAT|GIANT", message = "Недействительный размер расы")
+    @NotNull(message = "Недействительный размер расы")
+    private String raceSize;
 }

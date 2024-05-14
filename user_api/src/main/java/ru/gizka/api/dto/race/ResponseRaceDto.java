@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.gizka.api.model.race.RaceSize;
 
 import java.util.Date;
 
@@ -20,4 +21,6 @@ public class ResponseRaceDto {
     private Integer dexBonus;
     private Integer conBonus;
     private Integer wisBonus;
+    private Integer defBonus;
+    private RaceSize raceSize;
 }

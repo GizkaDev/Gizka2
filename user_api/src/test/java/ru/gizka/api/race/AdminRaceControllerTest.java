@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.RequestParentTest;
 import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.model.race.RaceSize;
 
 import java.util.Random;
 
@@ -56,7 +57,7 @@ public class AdminRaceControllerTest {
                     .build();
 
             raceDto = new RequestRaceDto("Человек", true,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
             createRequest = MockMvcRequestBuilders
                     .post(uri)
@@ -81,7 +82,9 @@ public class AdminRaceControllerTest {
                     .andExpect(
                             jsonPath("$.name").value(raceDto.getName()))
                     .andExpect(
-                            jsonPath("$.isPlayable").value(raceDto.getIsPlayable()));
+                            jsonPath("$.isPlayable").value(raceDto.getIsPlayable()))
+                    .andExpect(
+                            jsonPath("$.raceSize").value(raceDto.getRaceSize()));
         }
 
         @Test
@@ -109,7 +112,7 @@ public class AdminRaceControllerTest {
         void Race_create_NoName() throws Exception {
             //given
             raceDto = new RequestRaceDto("", true,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
@@ -130,7 +133,7 @@ public class AdminRaceControllerTest {
         void Race_create_NullName() throws Exception {
             //given
             raceDto = new RequestRaceDto(null, true,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
@@ -151,7 +154,7 @@ public class AdminRaceControllerTest {
         void Race_create_BlankName() throws Exception {
             //given
             raceDto = new RequestRaceDto("      ", true,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
@@ -174,7 +177,7 @@ public class AdminRaceControllerTest {
         void Race_create_EmptyName() throws Exception {
             //given
             raceDto = new RequestRaceDto("", true,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
@@ -197,7 +200,7 @@ public class AdminRaceControllerTest {
         void Race_create_NoIsPlayable() throws Exception {
             //given
             raceDto = new RequestRaceDto("Человек", null,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
@@ -218,7 +221,7 @@ public class AdminRaceControllerTest {
         void Race_create_NullIsPlayable() throws Exception {
             //given
             raceDto = new RequestRaceDto("Человек", null,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
@@ -239,7 +242,7 @@ public class AdminRaceControllerTest {
         void Race_create_NoAdmin() throws Exception {
             //given
             raceDto = new RequestRaceDto("Человек", true,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             createRequest
@@ -261,7 +264,7 @@ public class AdminRaceControllerTest {
                 name.append(Character.toString('А' + random.nextInt(33)));
             }
             raceDto = new RequestRaceDto(name.toString(), true,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -283,7 +286,7 @@ public class AdminRaceControllerTest {
         void Race_create_ForbiddenSymbols() throws Exception {
             //given
             raceDto = new RequestRaceDto("ЭльфZ", true,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -304,7 +307,7 @@ public class AdminRaceControllerTest {
         @Description(value = "Тест на создание расы c бонусом расы")
         void Race_createSuccess_WithBonus() throws Exception {
             //given
-            raceDto = new RequestRaceDto("Гном", true, 1, -2, 0, 1);
+            raceDto = new RequestRaceDto("Гном", true, 1, -2, 0, 1, 0, RaceSize.AVERAGE.name());
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
@@ -327,14 +330,16 @@ public class AdminRaceControllerTest {
                     .andExpect(
                             jsonPath("$.conBonus").value(raceDto.getConBonus()))
                     .andExpect(
-                            jsonPath("$.wisBonus").value(raceDto.getWisBonus()));
+                            jsonPath("$.wisBonus").value(raceDto.getWisBonus()))
+                    .andExpect(
+                            jsonPath("$.defBonus").value(raceDto.getDefBonus()));
         }
 
         @Test
         @Description(value = "Тест на создание расы c бонусом расы за пределами")
         void Race_createSuccess_WithTooBigBonus() throws Exception {
             //given
-            raceDto = new RequestRaceDto("Гном", true, -6, 6, -6, 6);
+            raceDto = new RequestRaceDto("Гном", true, -6, 6, -6, 6, -1, RaceSize.AVERAGE.name());
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
@@ -353,14 +358,16 @@ public class AdminRaceControllerTest {
                     .andExpect(
                             jsonPath("$.descr").value(containsString("Бонус телосложения должен быть в диапазоне от -5 до 5")))
                     .andExpect(
-                            jsonPath("$.descr").value(containsString("Бонус мудрости должен быть в диапазоне от -5 до 5")));
+                            jsonPath("$.descr").value(containsString("Бонус мудрости должен быть в диапазоне от -5 до 5")))
+                    .andExpect(
+                            jsonPath("$.descr").value(containsString("Бонус защиты должен быть 0 или больше")));
         }
 
         @Test
         @Description(value = "Тест на создание расы c бонусом расы null")
         void Race_createSuccess_WithNullBonus() throws Exception {
             //given
-            raceDto = new RequestRaceDto("Гном", true, null, null, null, null);
+            raceDto = new RequestRaceDto("Гном", true, null, null, null, null, null, RaceSize.AVERAGE.name());
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
@@ -379,7 +386,43 @@ public class AdminRaceControllerTest {
                     .andExpect(
                             jsonPath("$.descr").value(containsString("Бонус телосложения должен быть в диапазоне от -5 до 5")))
                     .andExpect(
-                            jsonPath("$.descr").value(containsString("Бонус мудрости должен быть в диапазоне от -5 до 5")));
+                            jsonPath("$.descr").value(containsString("Бонус мудрости должен быть в диапазоне от -5 до 5")))
+                    .andExpect(
+                            jsonPath("$.descr").value(containsString("Бонус защиты должен быть 0 или больше")));
+        }
+
+        @Test
+        @Description(value = "Тест на создание расы с недействительным размером")
+        void Race_create_WrongSize() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token);
+            //when
+            RequestParentTest.insertRace(mockMvc, token, objectMapper.writeValueAsString(new RequestRaceDto("Человек", true,
+                            0, 0, 0, 0, 0, "EPIC")))
+                    //then
+                    .andExpect(
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(containsString("Недействительный размер расы")));
+        }
+
+        @Test
+        @Description(value = "Тест на создание расы с недействительным размером")
+        void Race_create_NullSize() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token);
+            //when
+            RequestParentTest.insertRace(mockMvc, token, objectMapper.writeValueAsString(new RequestRaceDto("Человек", true,
+                            0, 0, 0, 0, 0, null)))
+                    //then
+                    .andExpect(
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(containsString("Недействительный размер расы")));
         }
     }
 }

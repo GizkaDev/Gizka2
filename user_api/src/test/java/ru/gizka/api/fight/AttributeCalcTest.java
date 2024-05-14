@@ -7,6 +7,7 @@ import ru.gizka.api.model.creature.Creature;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.hero.Status;
 import ru.gizka.api.model.race.Race;
+import ru.gizka.api.model.race.RaceSize;
 import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.service.AttributeCalculator;
 
@@ -30,7 +31,7 @@ public class AttributeCalcTest {
     public void testCalculateAttributes() {
         // given
         appUser = new AppUser(0L, "testLogin", null, null, null, null, null);
-        race = new Race(0L, "Человек", null, true, null, null, 0, 0, 0, 0);
+        race = new Race(0L, "Человек", null, true, null, null, 0, 0, 0, 0, 0, RaceSize.AVERAGE);
         hero = new Hero(1234L, "TestName", "TestLastName",
                 9, 10, 11, 10,
                 null, null, null, null, null, null, null, null, null, null, null, null, null,
@@ -63,7 +64,7 @@ public class AttributeCalcTest {
     public void testCalculateMinMaxAttributes() {
         // given
         appUser = new AppUser(0L, "testLogin", null, null, null, null, null);
-        race = new Race(0L, "Человек", null, true, null, null, 0, 0, 0, 0);
+        race = new Race(0L, "Человек", null, true, null, null, 0, 0, 0, 0, 0, RaceSize.AVERAGE);
         hero = new Hero(1234L, "TestName", "TestLastName",
                 9, 10, 11, 10,
                 null, null, null, null, null, null, null, null, null, null, null, null, null,
@@ -94,7 +95,7 @@ public class AttributeCalcTest {
     @Description(value = "Тест на расчет мин. и макс. атрибутов героя")
     public void testCreatureCalculateMinMaxAttributes() {
         // given
-        race = new Race(0L, "Человек", null, true, null, null, 0, 0, 0, 0);
+        race = new Race(0L, "Человек", null, true, null, null, 0, 0, 0, 0, 0, RaceSize.AVERAGE);
         creature = new Creature(1234L, "TestName",
                 9, 10, 11, new Date(),
                 race, null, null, null, null, null, null, null, null, null, null, null, null);

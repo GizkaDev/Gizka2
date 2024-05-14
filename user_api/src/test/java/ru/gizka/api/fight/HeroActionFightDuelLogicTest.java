@@ -29,6 +29,7 @@ import ru.gizka.api.model.fight.Result;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.hero.Status;
 import ru.gizka.api.model.race.Race;
+import ru.gizka.api.model.race.RaceSize;
 import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.service.AttributeCalculator;
 import ru.gizka.api.service.fightLogic.FightLogic;
@@ -84,7 +85,7 @@ public class HeroActionFightDuelLogicTest extends RequestParentTest {
         heroFighter2.setCon(9);
 
         raceDto = new RequestRaceDto("Человек", true,
-                0, 0, 0, 0);
+                0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
         userDto = RequestAppUserDto.builder()
                 .login("Biba")
@@ -122,7 +123,7 @@ public class HeroActionFightDuelLogicTest extends RequestParentTest {
     void testGetMaxTurns() throws Exception {
         //given
         AppUser appUser = new AppUser(0L, "testLogin", null, null, null, null, null);
-        Race race = new Race(0L, "Человек", null, true, null, null, 0, 0, 0, 0);
+        Race race = new Race(0L, "Человек", null, true, null, null, 0, 0, 0, 0, 0, RaceSize.AVERAGE);
         Hero hero1 = new Hero(1234L, "TestName", "TestLastName",
                 9, 10, 11, 10,
                 null, null, null, null, null, null, null, null, null, null, null, null, null,
@@ -131,7 +132,7 @@ public class HeroActionFightDuelLogicTest extends RequestParentTest {
         attributeCalculator.calculateForNew(hero1);
         heroFighter1 = new Fighter(hero1);
         AppUser appUser2 = new AppUser(0L, "testLogin", null, null, null, null, null);
-        Race race2 = new Race(0L, "Ящер", null, true, null, null, 0, 0, 0, 0);
+        Race race2 = new Race(0L, "Ящер", null, true, null, null, 0, 0, 0, 0, 0, RaceSize.AVERAGE);
         Hero hero2 = new Hero(1234L, "TestName", "TestLastName",
                 9, 10, 9, 10,
                 null, null, null, null, null, null, null, null, null, null, null, null, null,

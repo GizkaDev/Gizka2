@@ -37,6 +37,7 @@ import ru.gizka.api.model.item.armor.ArmorPattern;
 import ru.gizka.api.model.item.armor.ArmorType;
 import ru.gizka.api.model.notification.Notification;
 import ru.gizka.api.model.race.Race;
+import ru.gizka.api.model.race.RaceSize;
 import ru.gizka.api.model.user.AppUser;
 
 import java.util.Collections;
@@ -161,6 +162,8 @@ public class DtoConverter {
                 .dexBonus(race.getDexBonus())
                 .conBonus(race.getConBonus())
                 .wisBonus(race.getWisBonus())
+                .defBonus(race.getDefBonus())
+                .raceSize(race.getRaceSize())
                 .build();
     }
 
@@ -173,6 +176,8 @@ public class DtoConverter {
                 .dexBonus(raceDto.getDexBonus())
                 .conBonus(raceDto.getConBonus())
                 .wisBonus(raceDto.getWisBonus())
+                .defBonus(raceDto.getDefBonus())
+                .raceSize(RaceSize.valueOf(RaceSize.class, raceDto.getRaceSize()))
                 .build();
     }
 

@@ -26,6 +26,7 @@ import ru.gizka.api.dto.item.armor.RequestArmorPatternDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 import ru.gizka.api.model.item.armor.ArmorType;
+import ru.gizka.api.model.race.RaceSize;
 
 import java.util.Random;
 
@@ -60,7 +61,7 @@ public class ItemObjectControllerTest {
     @BeforeEach
     void setUp() throws Exception {
         raceDto = new RequestRaceDto("Человек", true,
-                0, 0, 0, 0);
+                0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
         heroDto = RequestHeroDto.builder()
                 .name("NameЯ")
@@ -111,7 +112,7 @@ public class ItemObjectControllerTest {
         @BeforeEach
         void setUp() throws Exception {
             raceDto = new RequestRaceDto("Человек", true,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
             userDto = RequestAppUserDto.builder()
                     .login("Biba")
@@ -361,11 +362,13 @@ public class ItemObjectControllerTest {
                 fightDto = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1)
                         .andReturn().getResponse().getContentAsString(), FightDto.class);
                 lootSize = fightDto.getLoot().size();
-                String nameSample = fightDto.getLoot().get(0).getName();
-                for(ResponseItemDto itemDto : fightDto.getLoot()){
-                    if (nameSample.equals(itemDto.getName())) {
-                        onlySame = false;
-                        break;
+                if (lootSize != 0) {
+                    String nameSample = fightDto.getLoot().get(0).getName();
+                    for (ResponseItemDto itemDto : fightDto.getLoot()) {
+                        if (nameSample.equals(itemDto.getName())) {
+                            onlySame = false;
+                            break;
+                        }
                     }
                 }
             }
@@ -432,7 +435,7 @@ public class ItemObjectControllerTest {
         @BeforeEach
         void setUp() throws Exception {
             raceDto = new RequestRaceDto("Человек", true,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
             userDto = RequestAppUserDto.builder()
                     .login("Biba")

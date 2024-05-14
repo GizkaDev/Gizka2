@@ -24,6 +24,7 @@ import ru.gizka.api.dto.item.RequestItemPatternDto;
 import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.model.race.RaceSize;
 
 import java.util.Random;
 
@@ -55,7 +56,7 @@ public class HeroControllerTest {
     @BeforeEach
     void setUp() throws Exception {
         raceDto = new RequestRaceDto("Человек", true,
-                0, 0, 0, 0);
+                0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
         heroDto = RequestHeroDto.builder()
                 .name("NameЯ")
@@ -737,7 +738,7 @@ public class HeroControllerTest {
         void Hero_create_NoPlayableRace() throws Exception {
             //given
             RequestRaceDto noPlayable = new RequestRaceDto("Скелет", false,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
             String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token1);
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(noPlayable));
@@ -869,7 +870,7 @@ public class HeroControllerTest {
             String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token1);
             raceDto = new RequestRaceDto("Мутант", true,
-                    -3, -2, 2, 3);
+                    -3, -2, 2, 3,0, RaceSize.GIANT.name());
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             heroDto.setRace(raceDto.getName());
             requestBuilder
@@ -938,7 +939,7 @@ public class HeroControllerTest {
             String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token1);
             raceDto = new RequestRaceDto("Мутант", true,
-                    -1, -2, -3, -4);
+                    -1, -2, -3, -4,0, RaceSize.BIG.name());
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             heroDto = new RequestHeroDto("Гуль", "Борисович",
                     5, 6, 7, 22, raceDto.getName());

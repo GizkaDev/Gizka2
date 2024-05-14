@@ -15,12 +15,15 @@ import ru.gizka.api.dto.item.RequestItemPatternDto;
 public class RequestArmorPatternDto extends RequestItemPatternDto {
 
     @PositiveOrZero(message = "Значение брони должно быть 0 или больше")
+    @NotNull(message = "Значение брони должно быть 0 или больше")
     private Integer armor;
 
     @NegativeOrZero(message = "Значение штрафа к ловкости должно быть 0 или меньше")
+    @NotNull(message = "Значение штрафа к ловкости должно быть 0 или меньше")
     private Integer dexPenalty;
 
     @Pattern(regexp = "CLOTHES|LIGHT|MEDIUM|HEAVY", message = "Недействительный тип доспехов")
+    @NotNull(message = "Недействительный тип доспехов")
     private String armorType;
 
     public RequestArmorPatternDto(String name, Long weight, Integer value,

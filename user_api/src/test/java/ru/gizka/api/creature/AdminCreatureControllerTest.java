@@ -18,6 +18,7 @@ import ru.gizka.api.RequestParentTest;
 import ru.gizka.api.dto.creature.RequestCreatureDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.model.race.RaceSize;
 
 import java.util.Random;
 
@@ -58,7 +59,7 @@ public class AdminCreatureControllerTest {
                     .build();
 
             raceDto = new RequestRaceDto("Гоблин", true,
-                    0,0,0,0);
+                    0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
             creatureDto = RequestCreatureDto.builder()
                     .name("Безумный гоблин")

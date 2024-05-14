@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.RequestParentTest;
 import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.model.race.RaceSize;
 
 import java.util.Random;
 
@@ -56,7 +57,7 @@ public class RaceControllerTest {
                     .build();
 
             raceDto = new RequestRaceDto("Человек", true,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
         }
 
         @Test
@@ -199,19 +200,19 @@ public class RaceControllerTest {
                     .build();
 
             raceDto1 = new RequestRaceDto("Человек", true,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
             raceDto2 = new RequestRaceDto("Эльф", true,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
             raceDto3 = new RequestRaceDto("Гном", true,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
             raceDto4 = new RequestRaceDto("Тролль", true,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.GREAT.name());
 
             raceDto5 = new RequestRaceDto("Скелет", true,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
         }
 
         @Test

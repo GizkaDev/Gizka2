@@ -1,6 +1,7 @@
 package ru.gizka.api.dto.item;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -18,5 +19,6 @@ public class RequestProductDto {
     private String name;
 
     @PositiveOrZero(message = "Цена товара должна быть больше или равна 0")
+    @NotNull(message = "Цена товара должна быть больше или равна 0")
     private Integer price;
 }

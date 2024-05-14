@@ -18,6 +18,7 @@ import ru.gizka.api.RequestParentTest;
 import ru.gizka.api.dto.creature.RequestCreatureDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.model.race.RaceSize;
 
 import java.util.Random;
 
@@ -58,7 +59,7 @@ public class CreatureControllerTest {
                     .build();
 
             raceDto = new RequestRaceDto("Монстр", true,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.GIANT.name());
 
             creatureDto = RequestCreatureDto.builder()
                     .name("Злобоглаз")
@@ -239,7 +240,7 @@ public class CreatureControllerTest {
                     .build();
 
             raceDto = new RequestRaceDto("Дракон", false,
-                    0, 0, 0, 0);
+                    0, 0, 0, 0, 0, RaceSize.GIANT.name());
 
             creatureDto1 = RequestCreatureDto.builder()
                     .name("Черный дракон")
