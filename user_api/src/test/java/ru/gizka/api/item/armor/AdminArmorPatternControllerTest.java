@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.RequestParentTest;
+import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.item.armor.RequestArmorPatternDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 import ru.gizka.api.model.item.armor.ArmorType;
@@ -47,6 +48,7 @@ public class AdminArmorPatternControllerTest {
     class CreateTest {
         private RequestArmorPatternDto armorDto;
         private RequestAppUserDto userDto;
+        private RequestProductDto productDto;
 
         @BeforeEach
         void setUp() throws Exception {
@@ -61,9 +63,15 @@ public class AdminArmorPatternControllerTest {
 
             armorDto = new RequestArmorPatternDto(
                     "Кольчуга",
+                    10000L,
+                    2,
                     3,
-                    -3,
+                    -2,
                     ArmorType.MEDIUM.toString());
+
+            productDto = new RequestProductDto(
+                    "Доспехи",
+                    10000);
         }
 
         @Test
@@ -73,6 +81,7 @@ public class AdminArmorPatternControllerTest {
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token);
             createRequest
                     .content(objectMapper.writeValueAsString(armorDto))
                     .header("Authorization", "Bearer " + token);
@@ -86,29 +95,11 @@ public class AdminArmorPatternControllerTest {
                     .andExpect(
                             jsonPath("$.armor").value(armorDto.getArmor()))
                     .andExpect(
+                            jsonPath("$.productDto.name").value(productDto.getName()))
+                    .andExpect(
                             jsonPath("$.dexPenalty").value(armorDto.getDexPenalty()))
                     .andExpect(
                             jsonPath("$.armorType").value(armorDto.getArmorType()));
-        }
-
-        @Test
-        @Description(value = "Тест на создание шаблона доспеха без названия")
-        void Armor_create_EmptyName() throws Exception {
-            //given
-            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
-            String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
-            RequestParentTest.setAdminRights(mockMvc, token);
-            armorDto.setName("");
-            createRequest
-                    .content(objectMapper.writeValueAsString(armorDto))
-                    .header("Authorization", "Bearer " + token);
-            //when
-            mockMvc.perform(createRequest)
-                    //then
-                    .andExpect(
-                            status().isBadRequest())
-                    .andExpect(
-                            jsonPath("$.descr").value(containsString("Название шаблона доспехов должно состоять из 1-200 символов")));
         }
 
         @Test
@@ -123,6 +114,7 @@ public class AdminArmorPatternControllerTest {
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token);
             armorDto.setName(name.toString());
             createRequest
                     .content(objectMapper.writeValueAsString(armorDto))
@@ -133,7 +125,7 @@ public class AdminArmorPatternControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.descr").value(containsString("Название шаблона доспехов должно состоять из 1-200 символов")));
+                            jsonPath("$.descr").value(containsString("Название шаблона предмета должно состоять из 1-200 символов")));
         }
 
         @Test
@@ -143,6 +135,7 @@ public class AdminArmorPatternControllerTest {
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token);
             armorDto.setName(null);
             createRequest
                     .content(objectMapper.writeValueAsString(armorDto))
@@ -153,7 +146,7 @@ public class AdminArmorPatternControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.descr").value(containsString("Название шаблона доспехов должно состоять из 1-200 символов")));
+                            jsonPath("$.descr").value(containsString("Название шаблона предмета должно состоять из 1-200 символов")));
         }
 
         @Test
@@ -163,6 +156,7 @@ public class AdminArmorPatternControllerTest {
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token);
             armorDto.setName("       ");
             createRequest
                     .content(objectMapper.writeValueAsString(armorDto))
@@ -173,7 +167,7 @@ public class AdminArmorPatternControllerTest {
                     .andExpect(
                             status().isBadRequest())
                     .andExpect(
-                            jsonPath("$.descr").value(containsString("Название шаблона доспехов должно состоять из 1-200 символов")));
+                            jsonPath("$.descr").value(containsString("Название шаблона предмета должно состоять из 1-200 символов")));
         }
 
         @Test
@@ -183,6 +177,7 @@ public class AdminArmorPatternControllerTest {
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token);
             RequestParentTest.insertArmorPattern(mockMvc, objectMapper.writeValueAsString(armorDto), token);
             createRequest
                     .content(objectMapper.writeValueAsString(armorDto))
@@ -292,6 +287,25 @@ public class AdminArmorPatternControllerTest {
                             status().isBadRequest())
                     .andExpect(
                             jsonPath("$.descr").value(containsString("Недействительный тип доспехов")));
+        }
+
+        @Test
+        @Description(value = "Тест на создание шаблона доспеха без товара Доспехи")
+        void ArmorPattern_NoProduct() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token);
+            createRequest
+                    .content(objectMapper.writeValueAsString(armorDto))
+                    .header("Authorization", "Bearer " + token);
+            //when
+            mockMvc.perform(createRequest)
+                    //then
+                    .andExpect(
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(containsString("Использован несуществующий товар")));
         }
     }
 }

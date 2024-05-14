@@ -28,25 +28,25 @@ public class ItemObjectService {
                 hero.getName(), hero.getLastname(), hero.getAppUser().getLogin());
         ItemObject itemObject = new ItemObject(itemPattern.getName(),
                 itemPattern.getWeight(),
-                itemPattern.getValue(),
-                itemPattern.getProduct(),
-                hero);
+                itemPattern.getValue());
+        itemObject.setProduct(itemPattern.getProduct());
+        itemObject.setHero(hero);
         return itemObjectRepo.save(itemObject);
     }
 
-    public List<ItemObject> getAll(){
+    public List<ItemObject> getAll() {
         log.info("Сервис предметов ищет все предметы");
         return itemObjectRepo.findAll();
     }
 
-    public List<ItemObject> getByHero(Hero hero){
+    public List<ItemObject> getByHero(Hero hero) {
         log.info("Сервис предметов ищет инвентарь героя: {} {}({})",
                 hero.getName(), hero.getLastname(), hero.getAppUser().getLogin());
         return itemObjectRepo.findByHero(hero);
     }
 
     @Transactional
-    public void delete(ItemObject itemObject){
+    public void delete(ItemObject itemObject) {
         log.info("Сервис предметов удаляет предмет: {} с id: {}", itemObject.getName(), itemObject.getId());
         itemObjectRepo.delete(itemObject);
     }

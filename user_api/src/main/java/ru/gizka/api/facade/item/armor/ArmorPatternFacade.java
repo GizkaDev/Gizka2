@@ -8,7 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import ru.gizka.api.dto.item.armor.RequestArmorPatternDto;
-import ru.gizka.api.dto.item.armor.ResponseArmorPatternDto;
+import ru.gizka.api.dto.item.armor.ResponseArmorDto;
+import ru.gizka.api.model.item.Product;
 import ru.gizka.api.model.item.armor.ArmorPattern;
 import ru.gizka.api.service.item.ProductService;
 import ru.gizka.api.service.item.armor.ArmorPatternService;
@@ -16,6 +17,7 @@ import ru.gizka.api.util.DtoConverter;
 import ru.gizka.api.util.validator.ArmorPatternValidator;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -36,14 +38,17 @@ public class ArmorPatternFacade {
         this.armorPatternValidator = armorPatternValidator;
     }
 
-    public ResponseArmorPatternDto create(RequestArmorPatternDto armorDto, BindingResult bindingResult) {
+    public ResponseArmorDto create(RequestArmorPatternDto armorDto, BindingResult bindingResult) {
         log.info("Сервис шаблонов доспехов начинает создание нового шаблона: {}", armorDto.getName());
-        checkValues(armorDto, bindingResult);
-        ArmorPattern armorPattern = armorPatternService.create(dtoConverter.getModel(armorDto));
-        return dtoConverter.getResponseDto(armorPattern);
+        Optional<Product> mbProduct = productService.getByName("Доспехи");
+        checkValues(armorDto, bindingResult, mbProduct);
+        ArmorPattern armorPattern = dtoConverter.getModel(armorDto);
+        armorPattern.setProduct(mbProduct.get());
+        ArmorPattern saved = armorPatternService.create(armorPattern);
+        return dtoConverter.getResponseDto(saved);
     }
 
-    public ResponseArmorPatternDto getByName(String name) {
+    public ResponseArmorDto getByName(String name) {
         log.info("Сервис шаблонов доспехов начинает поиск шаблона: {}", name);
         ArmorPattern armorPattern = armorPatternService.getByName(name)
                 .orElseThrow(() ->
@@ -52,9 +57,14 @@ public class ArmorPatternFacade {
     }
 
     private void checkValues(RequestArmorPatternDto armorDto,
-                             BindingResult bindingResult) {
+                             BindingResult bindingResult,
+                             Optional<Product> mbProduct) {
         log.info("Сервис шаблонов доспехов начинает проверку валидности нового шаблона: {}", armorDto.getName());
         armorPatternValidator.validate(armorDto, bindingResult);
+        if (mbProduct.isEmpty()) {
+            bindingResult.rejectValue("", "", "Использован несуществующий товар");
+            log.error("Сервис шаблонов предметов сообщает, что для создания шаблона использован несуществующий товар: {}", armorDto.getProduct());
+        }
         List<ObjectError> errors = bindingResult.getAllErrors();
         if (bindingResult.hasErrors()) {
             throw new ValidationException(errors.toString());

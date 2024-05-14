@@ -22,8 +22,10 @@ import ru.gizka.api.dto.hero.RequestHeroDto;
 import ru.gizka.api.dto.item.RequestItemPatternDto;
 import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.item.ResponseItemDto;
+import ru.gizka.api.dto.item.armor.RequestArmorPatternDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.model.item.armor.ArmorType;
 
 import java.util.Random;
 
@@ -336,6 +338,84 @@ public class ItemObjectControllerTest {
                             status().isOk())
                     .andExpect(
                             jsonPath("$").value(hasSize(0)));
+        }
+
+        @Test
+        @Description(value = "Тест на получение инвентаря текущего героя пользователя, если выпадают не только доспехи")
+        void Hero_getWithInventory_NotOnly() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Доспехи", 10000)), token1);
+            RequestParentTest.insertArmorPattern(mockMvc, objectMapper.writeValueAsString(new RequestArmorPatternDto("Кольчуга", 10000L, 2, 4, -2, ArmorType.MEDIUM.toString())), token1);
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
+            int lootSize = 0;
+            boolean onlySame = true;
+            FightDto fightDto = null;
+            while (lootSize == 0 && onlySame) {
+                fightDto = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1)
+                        .andReturn().getResponse().getContentAsString(), FightDto.class);
+                lootSize = fightDto.getLoot().size();
+                String nameSample = fightDto.getLoot().get(0).getName();
+                for(ResponseItemDto itemDto : fightDto.getLoot()){
+                    if (nameSample.equals(itemDto.getName())) {
+                        onlySame = false;
+                        break;
+                    }
+                }
+            }
+
+            requestBuilder = MockMvcRequestBuilders
+                    .get(uri)
+                    .header("Authorization", String.format("Bearer %s", token1))
+                    .contentType(MediaType.APPLICATION_JSON);
+
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isOk())
+                    .andExpect(
+                            jsonPath("$").value(hasSize(fightDto.getLoot().size())));
+        }
+
+        @Test
+        @Description(value = "Тест на получение инвентаря текущего героя пользователя, если выпадают доспехи")
+        void Hero_getWithInventory_OnlyArmor() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Доспехи", 10000)), token1);
+            RequestParentTest.insertArmorPattern(mockMvc, objectMapper.writeValueAsString(new RequestArmorPatternDto("Кольчуга", 10000L, 2, 4, -2, ArmorType.MEDIUM.toString())), token1);
+            int lootSize = 0;
+            FightDto fightDto = null;
+            while (lootSize == 0) {
+                fightDto = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1)
+                        .andReturn().getResponse().getContentAsString(), FightDto.class);
+                lootSize = fightDto.getLoot().size();
+            }
+
+            requestBuilder = MockMvcRequestBuilders
+                    .get(uri)
+                    .header("Authorization", String.format("Bearer %s", token1))
+                    .contentType(MediaType.APPLICATION_JSON);
+
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isOk())
+                    .andExpect(
+                            jsonPath("$").value(hasSize(fightDto.getLoot().size())));
         }
     }
 

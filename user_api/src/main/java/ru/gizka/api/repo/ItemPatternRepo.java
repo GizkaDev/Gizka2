@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface ItemPatternRepo extends JpaRepository<ItemPattern, Long> {
     Optional<ItemPattern> findByName(String name);
 
-    @Query(value = "SELECT * FROM item_pattern ORDER BY RANDOM() LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT i FROM ItemPattern i ORDER BY RANDOM() LIMIT 1")
     Optional<ItemPattern> findRandom();
 
     @EntityGraph(attributePaths = {"fights"}, type = EntityGraph.EntityGraphType.LOAD)

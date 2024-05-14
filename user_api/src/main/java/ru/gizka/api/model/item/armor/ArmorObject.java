@@ -2,26 +2,22 @@ package ru.gizka.api.model.item.armor;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NegativeOrZero;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import ru.gizka.api.model.item.ItemPattern;
-import ru.gizka.api.model.item.Product;
-
+import ru.gizka.api.model.item.ItemObject;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "armor_pattern")
+@Table(name = "armor_object")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArmorPattern extends ItemPattern {
+public class ArmorObject extends ItemObject {
 
-    public ArmorPattern(String name, Long weight, Integer value,
+    public ArmorObject(String name, Long weight, Integer value,
                         Integer armor, Integer dexPenalty, ArmorType armorType) {
         super(name, weight, value);
         this.armor = armor;

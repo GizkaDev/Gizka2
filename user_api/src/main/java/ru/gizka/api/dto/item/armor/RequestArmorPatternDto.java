@@ -3,17 +3,16 @@ package ru.gizka.api.dto.item.armor;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import ru.gizka.api.dto.item.RequestItemPatternDto;
 
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestArmorPatternDto {
-
-    @Size(min = 1, max = 200, message = "Название шаблона доспехов должно состоять из 1-200 символов")
-    @NotBlank(message = "Название шаблона доспехов должно состоять из 1-200 символов")
-    private String name;
+public class RequestArmorPatternDto extends RequestItemPatternDto {
 
     @PositiveOrZero(message = "Значение брони должно быть 0 или больше")
     private Integer armor;
@@ -23,4 +22,12 @@ public class RequestArmorPatternDto {
 
     @Pattern(regexp = "CLOTHES|LIGHT|MEDIUM|HEAVY", message = "Недействительный тип доспехов")
     private String armorType;
+
+    public RequestArmorPatternDto(String name, Long weight, Integer value,
+                                  Integer armor, Integer dexPenalty, String armorType) {
+        super(name, weight, value, "Доспехи");
+        this.armor = armor;
+        this.dexPenalty = dexPenalty;
+        this.armorType = armorType;
+    }
 }

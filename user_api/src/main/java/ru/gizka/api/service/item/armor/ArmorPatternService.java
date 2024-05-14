@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.model.item.armor.ArmorPattern;
 import ru.gizka.api.repo.ArmorPatternRepo;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -23,6 +24,7 @@ public class ArmorPatternService {
     @Transactional
     public ArmorPattern create(ArmorPattern armorPattern){
         log.info("Сервис шаблонов доспехов сохраняет новый доспех: {}", armorPattern.getName());
+        armorPattern.setFights(new ArrayList<>());
         return armorPatternRepo.save(armorPattern);
     }
 

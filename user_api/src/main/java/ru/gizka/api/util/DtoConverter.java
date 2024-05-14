@@ -20,7 +20,7 @@ import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.item.ResponseItemDto;
 import ru.gizka.api.dto.item.ResponseProductDto;
 import ru.gizka.api.dto.item.armor.RequestArmorPatternDto;
-import ru.gizka.api.dto.item.armor.ResponseArmorPatternDto;
+import ru.gizka.api.dto.item.armor.ResponseArmorDto;
 import ru.gizka.api.dto.notification.NotificationDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.race.ResponseRaceDto;
@@ -55,15 +55,17 @@ public class DtoConverter {
         this.objectMapper = objectMapper;
     }
 
-    public ResponseArmorPatternDto getResponseDto(ArmorPattern armorPattern) {
-        log.info("Конвертер переводит {} в {}", ArmorPattern.class, ResponseArmorPatternDto.class);
-        return new ResponseArmorPatternDto(armorPattern.getName(), armorPattern.getArmor(), armorPattern.getDexPenalty(), armorPattern.getArmorType());
+    public ResponseArmorDto getResponseDto(ArmorPattern armorPattern) {
+        log.info("Конвертер переводит {} в {}", ArmorPattern.class, ResponseArmorDto.class);
+        return new ResponseArmorDto(armorPattern.getId(), armorPattern.getName(), armorPattern.getWeight(), armorPattern.getValue(), getResponseDto(armorPattern.getProduct()),
+                armorPattern.getArmor(), armorPattern.getDexPenalty(), armorPattern.getArmorType());
     }
 
     public ArmorPattern getModel(RequestArmorPatternDto armorDto) {
         log.info("Конвертер переводит {} в {}", RequestArmorPatternDto.class, ArmorPattern.class);
         ArmorType armorType = ArmorType.valueOf(ArmorType.class, armorDto.getArmorType());
-        return new ArmorPattern(armorDto.getName(), armorDto.getArmor(), armorDto.getDexPenalty(), armorType);
+        return new ArmorPattern(armorDto.getName(), armorDto.getWeight(), armorDto.getValue(),
+                armorDto.getArmor(), armorDto.getDexPenalty(), armorType);
     }
 
     public ResponseItemDto getResponseDto(ItemObject itemObject) {

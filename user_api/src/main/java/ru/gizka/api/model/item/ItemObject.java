@@ -17,14 +17,13 @@ import ru.gizka.api.model.hero.Hero;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class ItemObject {
 
-    public ItemObject(String name, Long weight, Integer value, Product product, Hero hero) {
+    public ItemObject(String name, Long weight, Integer value) {
         this.name = name;
         this.weight = weight;
         this.value = value;
-        this.product = product;
-        this.hero = hero;
     }
 
     @Id

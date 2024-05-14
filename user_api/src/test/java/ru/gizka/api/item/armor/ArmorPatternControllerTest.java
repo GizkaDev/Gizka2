@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.RequestParentTest;
+import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.item.armor.RequestArmorPatternDto;
 import ru.gizka.api.dto.user.RequestAppUserDto;
 import ru.gizka.api.model.item.armor.ArmorType;
@@ -28,14 +29,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
-public class ArmorPatterControllerTest {
+public class ArmorPatternControllerTest {
     private String uri = "/api/armor";
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
     private final Random random;
 
     @Autowired
-    private ArmorPatterControllerTest(MockMvc mockMvc) {
+    private ArmorPatternControllerTest(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
         this.objectMapper = new ObjectMapper();
         this.random = new Random();
@@ -46,6 +47,7 @@ public class ArmorPatterControllerTest {
     class GetByNameTest {
         private RequestAppUserDto userDto;
         private RequestArmorPatternDto armorDto;
+        private RequestProductDto productDto;
         private MockHttpServletRequestBuilder getRequest;
 
         @BeforeEach
@@ -57,9 +59,15 @@ public class ArmorPatterControllerTest {
 
             armorDto = new RequestArmorPatternDto(
                     "Кольчуга",
+                    10000L,
+                    2,
                     3,
                     -2,
                     ArmorType.MEDIUM.toString());
+
+            productDto = new RequestProductDto(
+                    "Доспехи",
+                    10000);
         }
 
         @Test
@@ -69,6 +77,7 @@ public class ArmorPatterControllerTest {
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token);
             RequestParentTest.insertArmorPattern(mockMvc, objectMapper.writeValueAsString(armorDto), token);
             getRequest = MockMvcRequestBuilders
                     .get(uri + "/" + armorDto.getName())

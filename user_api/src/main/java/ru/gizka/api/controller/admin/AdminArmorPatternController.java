@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.gizka.api.dto.item.armor.RequestArmorPatternDto;
-import ru.gizka.api.dto.item.armor.ResponseArmorPatternDto;
+import ru.gizka.api.dto.item.armor.ResponseArmorDto;
 import ru.gizka.api.facade.item.armor.ArmorPatternFacade;
 
 @RestController
@@ -26,10 +26,10 @@ public class AdminArmorPatternController {
     }
 
     @PostMapping()
-    public ResponseEntity<ResponseArmorPatternDto> create(@Valid @RequestBody RequestArmorPatternDto armorDto,
-                                                          BindingResult bindingResult) {
+    public ResponseEntity<ResponseArmorDto> create(@Valid @RequestBody RequestArmorPatternDto armorDto,
+                                                   BindingResult bindingResult) {
         log.info("Контроллер шаблонов доспехов администратора принял запрос POST /armor: {}", armorDto);
-        ResponseArmorPatternDto responseArmorPatternDto = armorPatternFacade.create(armorDto, bindingResult);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseArmorPatternDto);
+        ResponseArmorDto responseArmorDto = armorPatternFacade.create(armorDto, bindingResult);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseArmorDto);
     }
 }

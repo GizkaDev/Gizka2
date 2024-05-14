@@ -19,11 +19,18 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Inheritance(strategy = InheritanceType.JOINED)
 public class ItemPattern {
+
+    public ItemPattern(String name, Long weight, Integer value) {
+        this.name = name;
+        this.weight = weight;
+        this.value = value;
+    }
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name = "name", unique = true)
