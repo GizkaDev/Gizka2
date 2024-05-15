@@ -47,13 +47,13 @@ public class TurnLogicTest {
         hero1 = new Hero(1234L, "TestName", "TestLastName",
                 9, 10, 11, 10,
                 null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null,
+                null, null, null,
                 new Date(), appUser1, Status.ALIVE, Collections.emptyList(), race, null, null, null);
         appUser2 = new AppUser(0L, "testLogin2", null, null, null, null, null);
         hero2 = new Hero(1234L, "TestName2", "TestLastName2",
                 4, 5, 11, 10,
                 null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null,
+                null, null, null,
                 new Date(), appUser2, Status.ALIVE, Collections.emptyList(), race, null, null, null);
         attributeCalculator.calculateForNew(hero1);
         attributeCalculator.calculateForNew(hero2);
@@ -86,7 +86,7 @@ public class TurnLogicTest {
     @Description(value = "Тест на определение атакующего при 0 текущей выносливости у одного из бойцов")
     void testDetermineAttackerWhenCurrentCon0() throws Exception {
         //given
-        heroFighter1.setCurrentCon(0);
+        heroFighter1.setEndurance(0);
         Class<?> clazz = turnLogic.getClass();
         Method method = clazz.getDeclaredMethod("determineAttacker", Fighter.class, Fighter.class);
         method.setAccessible(true);
@@ -147,9 +147,43 @@ public class TurnLogicTest {
                 assertTrue(turn.getPhysDamage() >= 0);
                 assertTrue(turn.getPhysDamage() <= turn.getAttacker().getStr());
                 assertEquals(turn.getCurrentHp(), turn.getDefender().getCurrentHp());
-                assertEquals(turn.getCurrentHp() + turn.getPhysDamage(), hpBeforeTurn);
+                assertEquals(turn.getCurrentHp() + turn.getRealDamage(), hpBeforeTurn);
             } else {
-                assertEquals(0, (int) turn.getPhysDamage());
+                assertEquals(0, (int) turn.getRealDamage());
+                assertEquals(turn.getCurrentHp(), hpBeforeTurn);
+            }
+        }
+    }
+
+    @Test
+    @Description(value = "Тест на учитыванием защиты")
+    void testDetermineHitTest_WithDef() throws Exception {
+        //given
+        Class<?> clazz = turnLogic.getClass();
+        Method method = clazz.getDeclaredMethod("determineHit", Turn.class);
+        method.setAccessible(true);
+        Turn turn = new Turn();
+        turn.setAttacker(heroFighter1);
+        heroFighter2.setDef(10);
+        turn.setDefender(heroFighter2);
+        //when
+        for (int i = 0; i < 1000; i++) {
+            Integer hpBeforeTurn = turn.getDefender().getCurrentHp();
+            method.invoke(turnLogic, turn);
+            assertTrue(turn.getAttack() >= 0);
+            assertTrue(turn.getAttack() <= turn.getAttacker().getDex());
+            assertTrue(turn.getEvasion() >= 0);
+            assertTrue(turn.getEvasion() <= turn.getDefender().getDex());
+            if (turn.getAttack() > turn.getEvasion()) {
+                assertTrue(turn.getPhysDamage() >= 0);
+                assertTrue(turn.getPhysDamage() <= turn.getAttacker().getStr());
+                assertEquals(turn.getCurrentHp(), turn.getDefender().getCurrentHp());
+                assertEquals(turn.getCurrentHp() + turn.getRealDamage(), hpBeforeTurn);
+                assertEquals((int) turn.getRealDamage(), Math.max(0, turn.getPhysDamage() - turn.getDefender().getDef()));
+                assertTrue(turn.getDef() != 0);
+                assertTrue(turn.getDefender().getDef() != 0);
+            } else {
+                assertEquals(0, (int) turn.getRealDamage());
                 assertEquals(turn.getCurrentHp(), hpBeforeTurn);
             }
         }
@@ -167,18 +201,18 @@ public class TurnLogicTest {
         turn.setDefender(heroFighter2);
         //when
         for (int i = 0; i < 50; i++) {
-            int currentConBefore1 = turn.getAttacker().getCurrentCon();
-            int currentConBefore2 = turn.getDefender().getCurrentCon();
+            int currentConBefore1 = turn.getAttacker().getEndurance();
+            int currentConBefore2 = turn.getDefender().getEndurance();
             method.invoke(turnLogic, turn);
             if (currentConBefore1 > 0) {
-                assertEquals(1, currentConBefore1 - turn.getAttacker().getCurrentCon());
+                assertEquals(1, currentConBefore1 - turn.getAttacker().getEndurance());
             } else {
-                assertEquals(0, turn.getAttacker().getCurrentCon());
+                assertEquals(0, turn.getAttacker().getEndurance());
             }
             if (currentConBefore2 > 0) {
-                assertEquals(1, currentConBefore2 - turn.getDefender().getCurrentCon());
+                assertEquals(1, currentConBefore2 - turn.getDefender().getEndurance());
             } else {
-                assertEquals(0, turn.getDefender().getCurrentCon());
+                assertEquals(0, turn.getDefender().getEndurance());
             }
         }
     }
@@ -197,8 +231,10 @@ public class TurnLogicTest {
             assertNotNull(turn.getAttack());
             assertNotNull(turn.getEvasion());
             assertNotNull(turn.getCurrentHp());
+            assertNotNull(turn.getDef());
             if (turn.getAttack() > turn.getEvasion()) {
                 assertNotNull(turn.getPhysDamage());
+                assertNotNull(turn.getRealDamage());
             } else {
                 assertEquals(0, turn.getPhysDamage());
             }

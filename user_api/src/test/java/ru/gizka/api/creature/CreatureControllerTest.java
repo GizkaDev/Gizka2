@@ -66,6 +66,7 @@ public class CreatureControllerTest {
                     .str(4)
                     .dex(10)
                     .con(7)
+                    .def(0)
                     .race(raceDto.getName())
                     .build();
         }
@@ -119,7 +120,9 @@ public class CreatureControllerTest {
                     .andExpect(
                             jsonPath("$.currentHp").value(creatureDto.getCon() * 3))
                     .andExpect(
-                            jsonPath("$.endurance").value(creatureDto.getCon()));
+                            jsonPath("$.endurance").value(creatureDto.getCon()))
+                    .andExpect(
+                            jsonPath("$.def").value(creatureDto.getDef() + raceDto.getDefBonus()));
         }
 
         @Test
@@ -247,6 +250,7 @@ public class CreatureControllerTest {
                     .str(30)
                     .dex(20)
                     .con(10)
+                    .def(0)
                     .race(raceDto.getName())
                     .build();
 
@@ -255,6 +259,7 @@ public class CreatureControllerTest {
                     .str(20)
                     .dex(10)
                     .con(30)
+                    .def(0)
                     .race(raceDto.getName())
                     .build();
 
@@ -263,6 +268,7 @@ public class CreatureControllerTest {
                     .str(10)
                     .dex(30)
                     .con(20)
+                    .def(0)
                     .race(raceDto.getName())
                     .build();
 
@@ -271,6 +277,7 @@ public class CreatureControllerTest {
                     .str(15)
                     .dex(25)
                     .con(20)
+                    .def(0)
                     .race(raceDto.getName())
                     .build();
 
@@ -279,6 +286,7 @@ public class CreatureControllerTest {
                     .str(10)
                     .dex(25)
                     .con(25)
+                    .def(0)
                     .race(raceDto.getName())
                     .build();
         }

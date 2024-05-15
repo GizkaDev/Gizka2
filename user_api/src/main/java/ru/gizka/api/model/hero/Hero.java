@@ -83,6 +83,8 @@ public class Hero {
     private Integer currentHp;
     @Column(name = "current_weight")
     private Long currentWeight;
+    @Column(name = "def")
+    private Integer def;
 
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)

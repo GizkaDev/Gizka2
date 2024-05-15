@@ -98,6 +98,7 @@ public class NotificationControllerTest extends RequestParentTest {
                 .str(5)
                 .dex(5)
                 .con(5)
+                .def(0)
                 .race(raceDto.getName())
                 .build();
 
@@ -106,6 +107,7 @@ public class NotificationControllerTest extends RequestParentTest {
                 .str(1000)
                 .dex(1000)
                 .con(1000)
+                .def(0)
                 .race(raceDto.getName())
                 .build();
 
@@ -200,7 +202,11 @@ public class NotificationControllerTest extends RequestParentTest {
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
             RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(weakCreatureDto));
-            RequestParentTest.insertFight(mockMvc, weakCreatureDto.getName(), token1);
+            int turns = heroDto.getCon();
+            while (turns == heroDto.getCon()) {
+                FightDto dto = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, weakCreatureDto.getName(), token1).andReturn().getResponse().getContentAsString(), FightDto.class);
+                turns = dto.getTurns().size();
+            }
             MockHttpServletRequestBuilder eventRequest1 = MockMvcRequestBuilders
                     .get(uri)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -250,7 +256,7 @@ public class NotificationControllerTest extends RequestParentTest {
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto2), token2);
-            RequestParentTest.insertDuel(mockMvc,userDto2.getLogin(), token1);
+            RequestParentTest.insertDuel(mockMvc, userDto2.getLogin(), token1);
             MockHttpServletRequestBuilder eventRequest1 = MockMvcRequestBuilders
                     .get(uri)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -276,7 +282,7 @@ public class NotificationControllerTest extends RequestParentTest {
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto2), token2);
-            RequestParentTest.insertDuel(mockMvc,userDto2.getLogin(), token1);
+            RequestParentTest.insertDuel(mockMvc, userDto2.getLogin(), token1);
             MockHttpServletRequestBuilder eventRequest1 = MockMvcRequestBuilders
                     .get(uri)
                     .contentType(MediaType.APPLICATION_JSON)

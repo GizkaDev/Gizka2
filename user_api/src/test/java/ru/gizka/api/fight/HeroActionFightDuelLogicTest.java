@@ -127,7 +127,7 @@ public class HeroActionFightDuelLogicTest extends RequestParentTest {
         Hero hero1 = new Hero(1234L, "TestName", "TestLastName",
                 9, 10, 11, 10,
                 null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null,
+                null, null, null,
                 new Date(), appUser, Status.ALIVE, Collections.emptyList(), race, null, null, null);
         attributeCalculator.calculateForNew(hero1);
         heroFighter1 = new Fighter(hero1);
@@ -136,7 +136,7 @@ public class HeroActionFightDuelLogicTest extends RequestParentTest {
         Hero hero2 = new Hero(1234L, "TestName", "TestLastName",
                 9, 10, 9, 10,
                 null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null,
+                null, null, null,
                 new Date(), appUser, Status.ALIVE, Collections.emptyList(), race, null, null, null);
         attributeCalculator.calculateForNew(hero2);
         heroFighter2 = new Fighter(hero2);
@@ -233,7 +233,7 @@ public class HeroActionFightDuelLogicTest extends RequestParentTest {
         String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
         RequestParentTest.setAdminRights(mockMvc, token1);
         RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
-        RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Слабак", 1, 1, 1, raceDto.getName())));
+        RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Слабак", 1, 1, 1, 0,raceDto.getName())));
         RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
         RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Оружие", 50)), token1);
         RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Меч", 2L, 1, "Оружие")), token1);
@@ -268,7 +268,7 @@ public class HeroActionFightDuelLogicTest extends RequestParentTest {
         String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
         RequestParentTest.setAdminRights(mockMvc, token1);
         RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
-        RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Слабак", 1, 1000, 1, raceDto.getName())));
+        RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Слабак", 1, 1000, 1, 1000,raceDto.getName())));
         RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
         RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Оружие", 50)), token1);
         RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Меч", 2L, 1, "Оружие")), token1);
@@ -292,7 +292,7 @@ public class HeroActionFightDuelLogicTest extends RequestParentTest {
         String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
         RequestParentTest.setAdminRights(mockMvc, token1);
         RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
-        RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Слабак", 100, 100, 100, raceDto.getName())));
+        RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Слабак", 100, 100, 100, 0,raceDto.getName())));
         RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
         RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Оружие", 50)), token1);
         RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Меч", 2L, 1, "Оружие")), token1);
@@ -316,7 +316,7 @@ public class HeroActionFightDuelLogicTest extends RequestParentTest {
         String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
         RequestParentTest.setAdminRights(mockMvc, token1);
         RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
-        RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Слабак", 1, 1, 1, raceDto.getName())));
+        RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Слабак", 1, 1, 1, 0,raceDto.getName())));
         RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
         RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Оружие", 50)), token1);
         RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Меч", 2L, 1, "Оружие")), token1);

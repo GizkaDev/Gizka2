@@ -172,7 +172,9 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$[0].search").value(heroDto.getWis()))
                     .andExpect(
-                            jsonPath("$[0].treat").value(heroDto.getWis()));
+                            jsonPath("$[0].treat").value(heroDto.getWis()))
+                    .andExpect(
+                            jsonPath("$[0].def").value(raceDto.getDefBonus()));
         }
 
         @Test
@@ -216,7 +218,7 @@ public class HeroControllerTest {
         void Hero_getCurrentHero_AfterFightWithWeight() throws Exception {
             //given
             RequestParentTest.setAdminRights(mockMvc, token);
-            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(new RequestCreatureDto("Разбойник", 1, 1, 1, raceDto.getName())));
+            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(new RequestCreatureDto("Разбойник", 1, 1, 1, 0, raceDto.getName())));
             RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Инструменты", 1000)), token);
             RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Лопата", 100L, 1, "Инструменты")), token);
             FightDto fightDto1 = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, "Разбойник", token).andReturn().getResponse().getContentAsString(), FightDto.class);
@@ -283,7 +285,9 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$[0].search").value(heroDto.getWis()))
                     .andExpect(
-                            jsonPath("$[0].treat").value(heroDto.getWis()));
+                            jsonPath("$[0].treat").value(heroDto.getWis()))
+                    .andExpect(
+                            jsonPath("$[0].def").value(raceDto.getDefBonus()));
         }
     }
 
@@ -353,7 +357,9 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$.search").value(heroDto.getWis()))
                     .andExpect(
-                            jsonPath("$.treat").value(heroDto.getWis()));
+                            jsonPath("$.treat").value(heroDto.getWis()))
+                    .andExpect(
+                            jsonPath(".def").value(raceDto.getDefBonus()));
         }
 
         @Test
@@ -762,13 +768,13 @@ public class HeroControllerTest {
             String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token1);
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
-            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(RequestCreatureDto.builder()
-                    .name("Примарх")
-                    .str(1000)
-                    .dex(1000)
-                    .con(1000)
-                    .race(raceDto.getName())
-                    .build()));
+            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(new RequestCreatureDto(
+                    "Примарх",
+                    1000,
+                    1000,
+                    1000,
+                    0,
+                    raceDto.getName())));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
             RequestParentTest.insertFight(mockMvc, "Примарх", token1);
 
@@ -792,13 +798,13 @@ public class HeroControllerTest {
             String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token1);
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
-            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(RequestCreatureDto.builder()
-                    .name("Примарх")
-                    .str(1000)
-                    .dex(1000)
-                    .con(1000)
-                    .race(raceDto.getName())
-                    .build()));
+            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(new RequestCreatureDto(
+                    "Примарх",
+                    1000,
+                    1000,
+                    1000,
+                    0,
+                    raceDto.getName())));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
             RequestParentTest.insertFight(mockMvc, "Примарх", token1);
 
@@ -860,7 +866,9 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$.search").value(heroDto.getWis()))
                     .andExpect(
-                            jsonPath("$.treat").value(heroDto.getWis()));
+                            jsonPath("$.treat").value(heroDto.getWis()))
+                    .andExpect(
+                            jsonPath("$.def").value(raceDto.getDefBonus()));
         }
 
         @Test
@@ -870,7 +878,7 @@ public class HeroControllerTest {
             String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token1);
             raceDto = new RequestRaceDto("Мутант", true,
-                    -3, -2, 2, 3,0, RaceSize.GIANT.name());
+                    -3, -2, 2, 3, 0, RaceSize.GIANT.name());
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             heroDto.setRace(raceDto.getName());
             requestBuilder
@@ -928,7 +936,9 @@ public class HeroControllerTest {
                     .andExpect(
                             jsonPath("$.search").value(heroDto.getWis() + raceDto.getWisBonus()))
                     .andExpect(
-                            jsonPath("$.treat").value(heroDto.getWis() + raceDto.getWisBonus()));
+                            jsonPath("$.treat").value(heroDto.getWis() + raceDto.getWisBonus()))
+                    .andExpect(
+                            jsonPath("$.def").value(raceDto.getDefBonus()));
         }
 
         @Test
@@ -939,7 +949,7 @@ public class HeroControllerTest {
             String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token1);
             raceDto = new RequestRaceDto("Мутант", true,
-                    -1, -2, -3, -4,0, RaceSize.BIG.name());
+                    -1, -2, -3, -4, 0, RaceSize.BIG.name());
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             heroDto = new RequestHeroDto("Гуль", "Борисович",
                     5, 6, 7, 22, raceDto.getName());
@@ -1098,13 +1108,7 @@ public class HeroControllerTest {
         @Description(value = "Тест на лечение, если герой DEAD")
         void Hero_treat_Dead() throws Exception {
             //given
-            creatureDto = RequestCreatureDto.builder()
-                    .name("Примарх")
-                    .str(1000)
-                    .con(1000)
-                    .dex(1000)
-                    .race(raceDto.getName())
-                    .build();
+            creatureDto = new RequestCreatureDto("Примарх", 1000, 1000, 1000, 0, raceDto.getName());
 
             RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(creatureDto));
             RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token);
@@ -1213,10 +1217,10 @@ public class HeroControllerTest {
         void Hero_getCurrentHero_AfterFightWithWeight() throws Exception {
             //given
             RequestParentTest.setAdminRights(mockMvc, token);
-            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(new RequestCreatureDto("Разбойник", 1, 1, 1, raceDto.getName())));
+            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(new RequestCreatureDto("Разбойник", 1, 1, 1, 0, raceDto.getName())));
             RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Инструменты", 1000)), token);
             RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Станок", heroDto.getStr() * 4000L, 1, "Инструменты")), token);
-            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(new RequestCreatureDto("Шнырь", 1, 1, 1, raceDto.getName())));
+            RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(new RequestCreatureDto("Шнырь", 1, 1, 1, 0, raceDto.getName())));
             FightDto fightDto8 = null;
             String result = "";
             int currentHp = 100;

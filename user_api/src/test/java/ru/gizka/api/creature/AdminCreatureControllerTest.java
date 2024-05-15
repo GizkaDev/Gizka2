@@ -66,6 +66,7 @@ public class AdminCreatureControllerTest {
                     .str(4)
                     .dex(7)
                     .con(5)
+                    .def(0)
                     .race(raceDto.getName())
                     .build();
 
@@ -121,7 +122,9 @@ public class AdminCreatureControllerTest {
                     .andExpect(
                             jsonPath("$.currentHp").value(creatureDto.getCon() * 3))
                     .andExpect(
-                            jsonPath("$.endurance").value(creatureDto.getCon()));
+                            jsonPath("$.endurance").value(creatureDto.getCon()))
+                    .andExpect(
+                            jsonPath("$.def").value(raceDto.getDefBonus() + creatureDto.getDef()));
         }
 
         @Test
@@ -244,6 +247,7 @@ public class AdminCreatureControllerTest {
                     .str(4)
                     .dex(7)
                     .con(5)
+                    .def(0)
                     .build();
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -294,6 +298,7 @@ public class AdminCreatureControllerTest {
                     .str(0)
                     .dex(0)
                     .con(0)
+                    .def(0)
                     .build();
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -323,6 +328,7 @@ public class AdminCreatureControllerTest {
                     .str(null)
                     .dex(null)
                     .con(null)
+                    .def(null)
                     .build();
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -340,7 +346,9 @@ public class AdminCreatureControllerTest {
                     .andExpect(
                             jsonPath("$.descr").value(matchesPattern(".*Ловкость не должна быть пустой.*")))
                     .andExpect(
-                            jsonPath("$.descr").value(matchesPattern(".*Выносливость не должна быть пустой.*")));
+                            jsonPath("$.descr").value(matchesPattern(".*Выносливость не должна быть пустой.*")))
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Защита должна быть 0 или больше.*")));
         }
 
         @Test
@@ -362,6 +370,32 @@ public class AdminCreatureControllerTest {
                             status().isBadRequest())
                     .andExpect(
                             jsonPath("$.descr").value(matchesPattern(".*Моб с таким названием уже существует.*")));
+        }
+
+        @Test
+        @Description(value = "Тест на создание моба c отрицательной защитой")
+        void Creature_create_NegativeDef() throws Exception {
+            //given
+            creatureDto = RequestCreatureDto.builder()
+                    .name("Безумный гоблин")
+                    .str(1)
+                    .dex(1)
+                    .con(1)
+                    .def(-1)
+                    .build();
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token);
+            createRequest
+                    .content(objectMapper.writeValueAsBytes(creatureDto))
+                    .header("Authorization", "Bearer " + token);
+            //when
+            mockMvc.perform(createRequest)
+                    //then
+                    .andExpect(
+                            status().isBadRequest())
+                    .andExpect(
+                            jsonPath("$.descr").value(matchesPattern(".*Защита должна быть 0 или больше.*")));
         }
     }
 }

@@ -22,4 +22,6 @@ public class Turn {
     private Integer evasion;
     private Integer physDamage;
     private Integer currentHp;
+    private Integer def;
+    private Integer realDamage;
 }

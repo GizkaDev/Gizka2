@@ -84,6 +84,9 @@ public class Creature {
     @Column(name = "endurance")
     private Integer endurance;
 
+    @Column(name = "def")
+    private Integer def;
+
     @OneToMany(mappedBy = "creature",
             fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE)

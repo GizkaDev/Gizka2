@@ -31,8 +31,11 @@ public class Fighter {
     private Integer minPhysDamage;
     private Integer maxPhysDamage;
     private Integer maxHp;
+    private Integer endurance;
+
     private Integer currentHp;
-    private Integer currentCon;
+    private Long currentWeight;
+    private Integer def;
 
     public Fighter(Creature creature) {
         this.name = creature.getName();
@@ -52,8 +55,11 @@ public class Fighter {
         this.minPhysDamage = creature.getMinPhysDamage();
         this.maxPhysDamage = creature.getMaxPhysDamage();
         this.maxHp = creature.getMaxHp();
+        this.endurance = creature.getEndurance();
+
         this.currentHp = creature.getCurrentHp();
-        this.currentCon = creature.getEndurance();
+        this.currentWeight = 0L;
+        this.def = creature.getDef();
     }
 
     public Fighter(Hero hero) {
@@ -74,8 +80,11 @@ public class Fighter {
         this.minPhysDamage = hero.getMinPhysDamage();
         this.maxPhysDamage = hero.getMaxPhysDamage();
         this.maxHp = hero.getMaxHp();
+        this.endurance = hero.getEndurance();
+
         this.currentHp = hero.getCurrentHp();
-        this.currentCon = hero.getEndurance();
+        this.currentWeight = hero.getCurrentWeight();
+        this.def = hero.getDef();
     }
 
     public Fighter(Fighter fighter) {
@@ -96,7 +105,10 @@ public class Fighter {
         this.minPhysDamage = fighter.getMinPhysDamage();
         this.maxPhysDamage = fighter.getMaxPhysDamage();
         this.maxHp = fighter.getMaxHp();
+        this.endurance = fighter.getEndurance();
+
         this.currentHp = fighter.getCurrentHp();
-        this.currentCon = fighter.getCurrentCon();
+        this.currentWeight = fighter.getCurrentWeight();
+        this.def = fighter.getDef();
     }
 }

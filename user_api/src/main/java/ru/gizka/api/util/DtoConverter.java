@@ -136,8 +136,9 @@ public class DtoConverter {
                 .minPhysDamage(creature.getMinPhysDamage())
                 .maxPhysDamage(creature.getMaxPhysDamage())
                 .maxHp(creature.getMaxHp())
-                .currentHp(creature.getCurrentHp())
                 .endurance(creature.getEndurance())
+                .currentHp(creature.getCurrentHp())
+                .def(creature.getDef())
                 .build();
     }
 
@@ -148,6 +149,7 @@ public class DtoConverter {
                 .str(creatureDto.getStr())
                 .dex(creatureDto.getDex())
                 .con(creatureDto.getCon())
+                .def(creatureDto.getDef())
                 .build();
     }
 
@@ -239,6 +241,7 @@ public class DtoConverter {
 
                 .currentHp(hero.getCurrentHp())
                 .currentWeight(hero.getCurrentWeight())
+                .def(hero.getDef())
 
                 .createdAt(hero.getCreatedAt())
                 .userLogin(hero.getAppUser().getLogin())

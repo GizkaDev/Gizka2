@@ -125,6 +125,40 @@ public class DuelControllerTest extends RequestParentTest {
         }
 
         @Test
+        @Description(value = "Тест на симулирование дуэли с защитой")
+        void Duel_simulate_WithDef() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto2));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token2 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto2));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            raceDto.setDefBonus(10);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto2), token2);
+
+            token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+
+            requestBuilder = MockMvcRequestBuilders
+                    .post(String.format("%s?login=%s", uri, userDto2.getLogin()))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", String.format("Bearer %s", token));
+
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isCreated())
+                    .andExpect(
+                            jsonPath("$.result").value(containsString("DRAW")))
+                    .andExpect(
+                            jsonPath("$.heroFighters[0].currentHp").value(heroDto.getCon() * 3))
+                    .andExpect(
+                            jsonPath("$.heroFighters[1].currentHp").value(heroDto2.getCon() * 3));
+        }
+
+        @Test
         @Description(value = "Тест на дуэль, если нет героя")
         void Duel_noOwnHeroTest() throws Exception {
             //given
@@ -409,7 +443,8 @@ public class DuelControllerTest extends RequestParentTest {
                     .andExpect(
                             jsonPath("$[0].search").value(heroDto.getWis() + raceDto.getWisBonus()))
                     .andExpect(
-                            jsonPath("$[0].treat").value(heroDto.getWis() + raceDto.getWisBonus()));;
+                            jsonPath("$[0].treat").value(heroDto.getWis() + raceDto.getWisBonus()));
+            ;
 
             //when
             RequestParentTest.getCurrentHero(mockMvc, token2)
@@ -484,6 +519,7 @@ public class DuelControllerTest extends RequestParentTest {
                             .str(1000)
                             .dex(1000)
                             .con(1000)
+                            .def(0)
                             .race(raceDto.getName())
                             .build()));
 
@@ -523,6 +559,7 @@ public class DuelControllerTest extends RequestParentTest {
                             .str(1000)
                             .dex(1000)
                             .con(1000)
+                            .def(0)
                             .race(raceDto.getName())
                             .build()));
 
@@ -555,7 +592,7 @@ public class DuelControllerTest extends RequestParentTest {
             RequestParentTest.setAdminRights(mockMvc, token1);
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
-            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Разбойник", 1, 1, 1, raceDto.getName())));
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Разбойник", 1, 1, 1, 0, raceDto.getName())));
             RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Роскошь", 1000)), token1);
             RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Золотая гиря", heroDto.getStr() * 4000L, 1, "Роскошь")), token1);
 
@@ -595,7 +632,7 @@ public class DuelControllerTest extends RequestParentTest {
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto2), token2);
-            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Разбойник", 1, 1, 1, raceDto.getName())));
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Разбойник", 1, 1, 1, 0, raceDto.getName())));
             RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Роскошь", 1000)), token1);
             RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Золотая гиря", heroDto.getStr() * 4000L, 1, "Роскошь")), token1);
             RequestParentTest.insertFight(mockMvc, "Разбойник", token);

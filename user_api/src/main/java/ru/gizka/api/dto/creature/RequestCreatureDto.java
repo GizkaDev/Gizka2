@@ -1,9 +1,6 @@
 package ru.gizka.api.dto.creature;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,6 +26,10 @@ public class RequestCreatureDto {
     @NotNull(message = "Выносливость не должна быть пустой")
     @Positive(message = "Выносливость должна быть больше 0")
     private Integer con;
+
+    @NotNull(message = "Защита должна быть 0 или больше")
+    @PositiveOrZero(message = "Защита должна быть 0 или больше")
+    private Integer def;
 
     @NotBlank(message = "Раса не выбрана")
     @Size(min = 1, max = 100, message = "Название расы должно состоять минимум из одного символа")

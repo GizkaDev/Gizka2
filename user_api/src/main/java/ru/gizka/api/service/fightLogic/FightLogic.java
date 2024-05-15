@@ -28,7 +28,7 @@ public class FightLogic {
         while (fighter1.getCurrentHp() > 0 &&
                 fighter2.getCurrentHp() > 0 &&
                 turnNum <= maxTurns &&
-                (fighter1.getCurrentCon() > 0 || fighter2.getCurrentCon() > 0)) {
+                (fighter1.getEndurance() > 0 || fighter2.getEndurance() > 0)) {
             Turn turn = turnLogic.simulate(turnNum, fighter1, fighter2);
             turns.add(turn);
             if (turn.getAttacker().getName().equals(fighter1.getName())) {
@@ -44,7 +44,7 @@ public class FightLogic {
     }
 
     private Integer getMaxTurns(Fighter fighter1, Fighter fighter2) {
-        Integer turns = Math.max(fighter1.getCurrentCon(), fighter2.getCurrentCon());
+        Integer turns = Math.max(fighter1.getEndurance(), fighter2.getEndurance());
         log.info("Сервис логики сражений высчитал количество ходов: {}", turns);
         return turns;
     }

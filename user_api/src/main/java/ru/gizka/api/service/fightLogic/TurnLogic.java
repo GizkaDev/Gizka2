@@ -31,21 +31,21 @@ public class TurnLogic {
     private void determineCurrentCon(Turn turn) {
         Integer attackerCurrentCon;
         Integer defenderCurrentCon;
-        if (turn.getAttacker().getCurrentCon() > 0) {
-            attackerCurrentCon = turn.getAttacker().getCurrentCon() - 1;
+        if (turn.getAttacker().getEndurance() > 0) {
+            attackerCurrentCon = turn.getAttacker().getEndurance() - 1;
         } else {
             attackerCurrentCon = 0;
         }
-        turn.getAttacker().setCurrentCon(attackerCurrentCon);
+        turn.getAttacker().setEndurance(attackerCurrentCon);
 
         log.info("Сервис логики хода рассчитал текущую выносливость: {} для бойца: {}", attackerCurrentCon, turn.getAttacker().getName());
 
-        if (turn.getDefender().getCurrentCon() > 0) {
-            defenderCurrentCon = turn.getDefender().getCurrentCon() - 1;
+        if (turn.getDefender().getEndurance() > 0) {
+            defenderCurrentCon = turn.getDefender().getEndurance() - 1;
         } else {
             defenderCurrentCon = 0;
         }
-        turn.getDefender().setCurrentCon(defenderCurrentCon);
+        turn.getDefender().setEndurance(defenderCurrentCon);
 
         log.info("Сервис логики хода рассчитал текущую выносливость: {} для бойца: {}", defenderCurrentCon, turn.getDefender().getName());
     }
@@ -61,26 +61,30 @@ public class TurnLogic {
 
         turn.setAttack(attack);
         turn.setEvasion(evasion);
+        turn.setDef(turn.getDefender().getDef());
 
         if (attack > evasion) {
             log.info("Сервис логики хода: атакующий боец: {} попал", turn.getAttacker().getName());
 
             Integer physDamage = randomRoller.rollPhysDamage(turn.getAttacker().getMinPhysDamage(), turn.getAttacker().getMaxPhysDamage());
-            log.info("Сервис логики хода: атакующий боец: {} наносит урон: {} из: {}-{}",
-                    turn.getAttacker().getName(), physDamage, turn.getAttacker().getMinPhysDamage(), turn.getAttacker().getMaxPhysDamage());
+            Integer realDamage = Math.max(0, physDamage - turn.getDefender().getDef());
+            log.info("Сервис логики хода: атакующий боец: {} наносит урон: {} - {} = {} из: {}-{}",
+                    turn.getAttacker().getName(), physDamage, turn.getDefender().getDef(), realDamage, turn.getAttacker().getMinPhysDamage(), turn.getAttacker().getMaxPhysDamage());
 
-            Integer defenderRemainingHp = turn.getDefender().getCurrentHp() - physDamage;
+            Integer defenderRemainingHp = turn.getDefender().getCurrentHp() - realDamage;
             turn.getDefender().setCurrentHp(defenderRemainingHp);
             log.info("Сервис логики хода: защищающийся боец: {} сохраняет здоровье: {}/{}",
                     turn.getDefender().getName(), turn.getDefender().getCurrentHp(), turn.getDefender().getMaxHp());
 
             turn.setPhysDamage(physDamage);
             turn.setCurrentHp(defenderRemainingHp);
+            turn.setRealDamage(realDamage);
             return;
         }
 
         log.info("Сервис логики хода: атакующий боец: {} промахнулся", turn.getAttacker().getName());
         turn.setPhysDamage(0);
+        turn.setRealDamage(0);
         turn.setCurrentHp(turn.getDefender().getCurrentHp());
     }
 
@@ -91,7 +95,7 @@ public class TurnLogic {
         Fighter defender;
         Integer attackerInit;
         Integer defenderInit;
-        if (fighter1.getCurrentCon() > 0 && fighter2.getCurrentCon() > 0) {
+        if (fighter1.getEndurance() > 0 && fighter2.getEndurance() > 0) {
             do {
                 init1 = randomRoller.rollInitiative(fighter1.getMinInit(), fighter1.getMaxInit());
                 init2 = randomRoller.rollInitiative(fighter2.getMinInit(), fighter2.getMaxInit());
@@ -114,8 +118,8 @@ public class TurnLogic {
                 defenderInit = init1;
             }
         } else {
-            attacker = fighter1.getCurrentCon() > 0 ? fighter1 : fighter2;
-            defender = fighter2.getCurrentCon() == 0 ? fighter2 : fighter1;
+            attacker = fighter1.getEndurance() > 0 ? fighter1 : fighter2;
+            defender = fighter2.getEndurance() == 0 ? fighter2 : fighter1;
             attackerInit = 0;
             defenderInit = 0;
             log.info("Сервис логики хода: боец: {} имеет запас сил 0", defender.getName());

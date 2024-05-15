@@ -134,6 +134,7 @@ public class ItemObjectControllerTest {
                     .str(1)
                     .dex(1)
                     .con(1)
+                    .def(0)
                     .race(raceDto.getName())
                     .build();
 
@@ -258,7 +259,7 @@ public class ItemObjectControllerTest {
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
             RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
-            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Титан", 100, 100, 100, raceDto.getName())));
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Титан", 100, 100, 100, 0,raceDto.getName())));
             RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
             RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
             FightDto fightDto = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, "Титан", token1)
@@ -452,13 +453,7 @@ public class ItemObjectControllerTest {
                     .race("Человек")
                     .build();
 
-            creatureDto = RequestCreatureDto.builder()
-                    .name("Разбойник")
-                    .str(1)
-                    .dex(1)
-                    .con(1)
-                    .race(raceDto.getName())
-                    .build();
+            creatureDto = new RequestCreatureDto("Разбойник", 1,1,1,0,raceDto.getName());
 
             productDto = new RequestProductDto(
                     "Роскошь", 500);
@@ -548,7 +543,7 @@ public class ItemObjectControllerTest {
             RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
             RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
             RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1);
-            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Титан", 100, 100, 100, raceDto.getName())));
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Титан", 100, 100, 100, 0,raceDto.getName())));
             RequestParentTest.insertFight(mockMvc, "Титан", token1);
 
             RequestBuilder requestBuilder = MockMvcRequestBuilders

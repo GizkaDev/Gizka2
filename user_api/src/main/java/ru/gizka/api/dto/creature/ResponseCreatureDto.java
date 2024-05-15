@@ -31,6 +31,8 @@ public class ResponseCreatureDto {
     private Integer minPhysDamage;
     private Integer maxPhysDamage;
     private Integer maxHp;
-    private Integer currentHp;
     private Integer endurance;
+
+    private Integer currentHp;
+    private Integer def;
 }

@@ -26,6 +26,7 @@ public class AttributeCalculator {
         hero.setMaxWeight(calculateMaxWeight(hero));
         hero.setSearch(calculateSearch(hero));
         hero.setTreat(calculateTreat(hero));
+        hero.setDef(calculateDef(hero));
     }
 
     public void calculateForNew(Creature creature) {
@@ -42,6 +43,14 @@ public class AttributeCalculator {
         creature.setMaxHp(calculateMaxHp(creature));
         creature.setCurrentHp(calculateCurrentHpForNew(creature));
         creature.setEndurance(calculateEndurance(creature));
+        creature.setDef(calculateDef(creature));
+    }
+
+    public Integer calculateDef(Creature creature) {
+        Integer def = creature.getDef() + creature.getRace().getDefBonus();
+        log.info("Калькулятор атрибутов рассчитал защиту: {} для моба: {}",
+                def, creature.getName());
+        return def;
     }
 
     public Integer calculateEndurance(Creature creature) {
@@ -119,6 +128,13 @@ public class AttributeCalculator {
         log.info("Калькулятор атрибутов рассчитал мин. инициативу: {} при ловкости: {} для моба: {}",
                 initiative, creature.getDex(), creature.getName());
         return initiative;
+    }
+
+    public Integer calculateDef(Hero hero) {
+        Integer def = hero.getRace().getDefBonus();
+        log.info("Калькулятор атрибутов рассчитал защиту: {} для героя: {} {}({})",
+                def, hero.getName(), hero.getLastname(), hero.getAppUser().getLogin());
+        return def;
     }
 
     public Integer calculateTreat(Hero hero) {

@@ -37,6 +37,7 @@ public class ResponseHeroDto {
 
     private Integer currentHp;
     private Long currentWeight;
+    private Integer def;
 
     private Date createdAt;
     private String userLogin;

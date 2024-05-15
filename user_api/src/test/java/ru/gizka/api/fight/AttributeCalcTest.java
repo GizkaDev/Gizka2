@@ -35,7 +35,7 @@ public class AttributeCalcTest {
         hero = new Hero(1234L, "TestName", "TestLastName",
                 9, 10, 11, 10,
                 null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null,
+                null, null,null,
                 new Date(), appUser, Status.ALIVE, Collections.emptyList(), race, null, null, null);
 
         // when
@@ -57,6 +57,7 @@ public class AttributeCalcTest {
         assertEquals(27000L, hero.getMaxWeight());
         assertEquals(10, hero.getSearch());
         assertEquals(10, hero.getTreat());
+        assertEquals(0, hero.getDef());
     }
 
     @Test
@@ -68,7 +69,7 @@ public class AttributeCalcTest {
         hero = new Hero(1234L, "TestName", "TestLastName",
                 9, 10, 11, 10,
                 null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null,
+                null, null, null,
                 new Date(), appUser, Status.ALIVE, Collections.emptyList(), race, null, null, null);
 
         // when
@@ -89,6 +90,7 @@ public class AttributeCalcTest {
         assertEquals(hero.getStr() * 3000L, hero.getMaxWeight());
         assertEquals(hero.getTreat(), hero.getWis());
         assertEquals(hero.getSearch(), hero.getWis());
+        assertEquals(hero.getDef(), race.getDefBonus());
     }
 
     @Test
@@ -98,7 +100,7 @@ public class AttributeCalcTest {
         race = new Race(0L, "Человек", null, true, null, null, 0, 0, 0, 0, 0, RaceSize.AVERAGE);
         creature = new Creature(1234L, "TestName",
                 9, 10, 11, new Date(),
-                race, null, null, null, null, null, null, null, null, null, null, null, null);
+                race, null, null, null, null, null, null, null, null, null, null, null, 0,null);
 
         // when
         attributeCalculator.calculateForNew(creature);
@@ -115,5 +117,6 @@ public class AttributeCalcTest {
         assertEquals(creature.getCon() * 3, (int) creature.getMaxHp());
         assertEquals(creature.getCon() * 3, (int) creature.getCurrentHp());
         assertEquals(creature.getCon(), creature.getEndurance());
+        assertEquals(creature.getDef(), creature.getDef() + race.getDefBonus());
     }
 }
