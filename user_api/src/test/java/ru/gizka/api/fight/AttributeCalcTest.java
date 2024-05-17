@@ -36,6 +36,7 @@ public class AttributeCalcTest {
                 9, 10, 11, 10,
                 null, null, null, null, null, null, null, null, null, null, null, null, null,
                 null, null,null,
+                null,
                 new Date(), appUser, Status.ALIVE, Collections.emptyList(), race, null, null, null);
 
         // when
@@ -70,6 +71,7 @@ public class AttributeCalcTest {
                 9, 10, 11, 10,
                 null, null, null, null, null, null, null, null, null, null, null, null, null,
                 null, null, null,
+                null,
                 new Date(), appUser, Status.ALIVE, Collections.emptyList(), race, null, null, null);
 
         // when

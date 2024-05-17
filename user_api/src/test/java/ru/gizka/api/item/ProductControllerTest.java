@@ -57,7 +57,7 @@ public class ProductControllerTest {
 
             productDto = RequestProductDto.builder()
                     .name("Оружие")
-                    .price(50)
+                    .price(50L)
                     .build();
         }
 
@@ -202,27 +202,27 @@ public class ProductControllerTest {
 
             productDto1 = RequestProductDto.builder()
                     .name("Оружие")
-                    .price(50)
+                    .price(50L)
                     .build();
 
             productDto2 = RequestProductDto.builder()
                     .name("Еда")
-                    .price(50)
+                    .price(50L)
                     .build();
 
             productDto3 = RequestProductDto.builder()
                     .name("Роскошь")
-                    .price(50)
+                    .price(50L)
                     .build();
 
             productDto4 = RequestProductDto.builder()
                     .name("Броня")
-                    .price(50)
+                    .price(50L)
                     .build();
 
             productDto5 = RequestProductDto.builder()
                     .name("Одежда")
-                    .price(50)
+                    .price(50L)
                     .build();
         }
 

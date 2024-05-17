@@ -593,7 +593,7 @@ public class DuelControllerTest extends RequestParentTest {
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
             RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Разбойник", 1, 1, 1, 0, raceDto.getName())));
-            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Роскошь", 1000)), token1);
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Роскошь", 1000L)), token1);
             RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Золотая гиря", heroDto.getStr() * 4000L, 1, "Роскошь")), token1);
 
             int lootSize = 0;
@@ -633,7 +633,7 @@ public class DuelControllerTest extends RequestParentTest {
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto2), token2);
             RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Разбойник", 1, 1, 1, 0, raceDto.getName())));
-            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Роскошь", 1000)), token1);
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Роскошь", 1000L)), token1);
             RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Золотая гиря", heroDto.getStr() * 4000L, 1, "Роскошь")), token1);
             RequestParentTest.insertFight(mockMvc, "Разбойник", token);
 

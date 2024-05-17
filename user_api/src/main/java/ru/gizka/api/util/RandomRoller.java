@@ -29,4 +29,8 @@ public class RandomRoller {
     public Integer rollPhysDamage(Integer minPhysDamage, Integer maxPhysDamage) {
         return random.nextInt(minPhysDamage, maxPhysDamage + 1);
     }
+
+    public Integer rollSearch(Integer minSearch, Integer maxSearch) {
+        return random.nextInt(minSearch, maxSearch + 1);
+    }
 }

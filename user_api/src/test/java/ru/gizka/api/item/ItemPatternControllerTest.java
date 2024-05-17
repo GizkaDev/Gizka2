@@ -58,7 +58,7 @@ public class ItemPatternControllerTest {
 
             productDto = RequestProductDto.builder()
                     .name("Оружие")
-                    .price(50)
+                    .price(50L)
                     .build();
 
             itemDto = RequestItemPatternDto.builder()

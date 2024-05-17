@@ -33,6 +33,7 @@ import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.item.ItemObject;
 import ru.gizka.api.model.item.ItemPattern;
 import ru.gizka.api.model.item.Product;
+import ru.gizka.api.model.item.armor.ArmorObject;
 import ru.gizka.api.model.item.armor.ArmorPattern;
 import ru.gizka.api.model.item.armor.ArmorType;
 import ru.gizka.api.model.notification.Notification;
@@ -54,6 +55,19 @@ public class DtoConverter {
                         ObjectMapper objectMapper) {
         this.modelMapper = modelMapper;
         this.objectMapper = objectMapper;
+    }
+
+    public ResponseArmorDto getResponseDto(ArmorObject armorObject) {
+        log.info("Конвертер переводит {} в {}", ArmorObject.class, ResponseArmorDto.class);
+        return new ResponseArmorDto(
+                armorObject.getId(),
+                armorObject.getName(),
+                armorObject.getWeight(),
+                armorObject.getValue(),
+                getResponseDto(armorObject.getProduct() == null?new Product(0L,"Тряпье", 0L, null, null):armorObject.getProduct()),
+                armorObject.getArmor(),
+                armorObject.getDexPenalty(),
+                armorObject.getArmorType());
     }
 
     public ResponseArmorDto getResponseDto(ArmorPattern armorPattern) {
@@ -242,6 +256,14 @@ public class DtoConverter {
                 .currentHp(hero.getCurrentHp())
                 .currentWeight(hero.getCurrentWeight())
                 .def(hero.getDef())
+
+                .equippedArmor(getResponseDto(hero.getEquippedArmor() == null ? new ArmorObject(
+                        "Без доспеха",
+                        0L,
+                        0,
+                        0,
+                        0,
+                        ArmorType.CLOTHES) : hero.getEquippedArmor()))
 
                 .createdAt(hero.getCreatedAt())
                 .userLogin(hero.getAppUser().getLogin())

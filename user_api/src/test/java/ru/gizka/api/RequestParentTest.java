@@ -147,4 +147,20 @@ public class RequestParentTest {
                 .header("Authorization", "Bearer " + token);
         return mockMvc.perform(productRequest);
     }
+
+    public static ResultActions equipArmor(MockMvc mockMvc, String id, String token) throws Exception {
+        RequestBuilder equipRequest = MockMvcRequestBuilders
+                .put("/api/user/hero/inventory/armor/" + id)
+                .header("Authorization", String.format("Bearer %s", token))
+                .contentType(MediaType.APPLICATION_JSON);
+        return mockMvc.perform(equipRequest);
+    }
+
+    public static ResultActions dropItem(MockMvc mockMvc, String id, String token) throws Exception {
+        RequestBuilder dropBuilder = MockMvcRequestBuilders
+                .delete("/api/user/hero/inventory/" + id)
+                .header("Authorization", String.format("Bearer %s", token))
+                .contentType(MediaType.APPLICATION_JSON);
+        return mockMvc.perform(dropBuilder);
+    }
 }

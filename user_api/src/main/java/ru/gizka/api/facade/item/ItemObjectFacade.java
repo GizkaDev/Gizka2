@@ -9,6 +9,7 @@ import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.item.ItemObject;
 import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.service.HeroService;
+import ru.gizka.api.service.actionLogic.HeroActionLogic;
 import ru.gizka.api.service.item.ItemObjectService;
 import ru.gizka.api.util.DtoConverter;
 
@@ -20,14 +21,17 @@ public class ItemObjectFacade {
     private final HeroService heroService;
     private final ItemObjectService itemObjectService;
     private final DtoConverter dtoConverter;
+    private final HeroActionLogic heroActionLogic;
 
     @Autowired
     public ItemObjectFacade(HeroService heroService,
                             ItemObjectService itemObjectService,
-                            DtoConverter dtoConverter) {
+                            DtoConverter dtoConverter,
+                            HeroActionLogic heroActionLogic) {
         this.heroService = heroService;
         this.itemObjectService = itemObjectService;
         this.dtoConverter = dtoConverter;
+        this.heroActionLogic = heroActionLogic;
     }
 
     public List<ResponseItemDto> getInventory(AppUser appUser) {
@@ -42,22 +46,17 @@ public class ItemObjectFacade {
                 .toList();
     }
 
-    public void deleteFromInventory(AppUser appUser, String name) {
-        log.info("Сервис предметов начинает удаление предмета: {} из  инвентаря текущего героя для пользователя: {}", name, appUser.getLogin());
+    public void deleteFromInventory(AppUser appUser, Long id) {
+        log.info("Сервис предметов начинает удаление предмета: {} из  инвентаря текущего героя для пользователя: {}", id, appUser.getLogin());
         List<Hero> heroes = heroService.getAliveByUser(appUser);
         if (heroes.isEmpty()) {
             throw new EntityNotFoundException("У пользователя нет героя со статусом ALIVE.");
         }
-        List<ItemObject> inventory = itemObjectService.getByHero(heroes.get(0));
-        ItemObject itemToDelete = null;
-        for (ItemObject item : inventory) {
-            if (item.getName().equals(name)) {
-                itemToDelete = item;
-            }
+        ItemObject itemToDrop = itemObjectService.getById(id)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Предмет не найден"));
+        if (itemToDrop.getHero().getId().equals(heroes.get(0).getId())) {
+            heroActionLogic.dropItem(itemToDrop);
         }
-        if (itemToDelete == null) {
-            throw new EntityNotFoundException(String.format("Предмет: %s не найден в инвентаре", name));
-        }
-        itemObjectService.delete(itemToDelete);
     }
 }

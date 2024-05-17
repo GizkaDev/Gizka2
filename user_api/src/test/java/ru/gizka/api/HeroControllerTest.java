@@ -219,7 +219,7 @@ public class HeroControllerTest {
             //given
             RequestParentTest.setAdminRights(mockMvc, token);
             RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(new RequestCreatureDto("Разбойник", 1, 1, 1, 0, raceDto.getName())));
-            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Инструменты", 1000)), token);
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Инструменты", 1000L)), token);
             RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Лопата", 100L, 1, "Инструменты")), token);
             FightDto fightDto1 = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, "Разбойник", token).andReturn().getResponse().getContentAsString(), FightDto.class);
             FightDto fightDto2 = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, "Разбойник", token).andReturn().getResponse().getContentAsString(), FightDto.class);
@@ -1218,7 +1218,7 @@ public class HeroControllerTest {
             //given
             RequestParentTest.setAdminRights(mockMvc, token);
             RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(new RequestCreatureDto("Разбойник", 1, 1, 1, 0, raceDto.getName())));
-            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Инструменты", 1000)), token);
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Инструменты", 1000L)), token);
             RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Станок", heroDto.getStr() * 4000L, 1, "Инструменты")), token);
             RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(new RequestCreatureDto("Шнырь", 1, 1, 1, 0, raceDto.getName())));
             FightDto fightDto8 = null;

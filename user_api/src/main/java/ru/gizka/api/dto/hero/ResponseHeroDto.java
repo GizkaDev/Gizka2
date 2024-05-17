@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.gizka.api.dto.item.armor.ResponseArmorDto;
 
 import java.util.Date;
 
@@ -38,6 +39,8 @@ public class ResponseHeroDto {
     private Integer currentHp;
     private Long currentWeight;
     private Integer def;
+
+    private ResponseArmorDto equippedArmor;
 
     private Date createdAt;
     private String userLogin;

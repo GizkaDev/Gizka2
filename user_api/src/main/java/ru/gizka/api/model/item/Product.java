@@ -31,7 +31,7 @@ public class Product {
 
     @Column(name = "price")
     @PositiveOrZero
-    private Integer price;
+    private Long price;
 
     @OneToMany(mappedBy = "product",
             fetch = FetchType.LAZY,

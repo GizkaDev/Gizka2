@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.gizka.api.model.creature.Creature;
 import ru.gizka.api.model.hero.Hero;
+import ru.gizka.api.model.item.armor.ArmorObject;
 
 import java.util.Date;
 
@@ -84,7 +85,7 @@ public class Fighter {
 
         this.currentHp = hero.getCurrentHp();
         this.currentWeight = hero.getCurrentWeight();
-        this.def = hero.getDef();
+        this.def = hero.getDef() + (hero.getEquippedArmor() == null ? 0 : hero.getEquippedArmor().getArmor());
     }
 
     public Fighter(Fighter fighter) {

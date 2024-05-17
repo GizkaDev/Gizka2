@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 public class ResponseProductDto {
     private Long id;
     private String name;
-    private Integer price;
+    private Long price;
 }

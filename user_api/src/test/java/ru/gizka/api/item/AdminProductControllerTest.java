@@ -60,7 +60,7 @@ public class AdminProductControllerTest {
 
             productDto = RequestProductDto.builder()
                     .name("Роскошь")
-                    .price(500)
+                    .price(500L)
                     .build();
         }
 
@@ -134,7 +134,7 @@ public class AdminProductControllerTest {
         void Product_create_NoName() throws Exception {
             //given
             productDto = RequestProductDto.builder()
-                    .price(100)
+                    .price(100L)
                     .build();
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
@@ -218,7 +218,7 @@ public class AdminProductControllerTest {
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
-            productDto.setPrice(-1);
+            productDto.setPrice(-1L);
             createRequest
                     .content(objectMapper.writeValueAsString(productDto))
                     .header("Authorization", "Bearer " + token);

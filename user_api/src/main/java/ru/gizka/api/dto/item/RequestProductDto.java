@@ -20,5 +20,5 @@ public class RequestProductDto {
 
     @PositiveOrZero(message = "Цена товара должна быть больше или равна 0")
     @NotNull(message = "Цена товара должна быть больше или равна 0")
-    private Integer price;
+    private Long price;
 }

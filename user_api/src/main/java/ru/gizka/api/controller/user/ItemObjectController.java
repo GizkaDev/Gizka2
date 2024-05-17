@@ -31,11 +31,11 @@ public class ItemObjectController {
         return ResponseEntity.ok(itemObjectFacade.getInventory(authUser.getUser()));
     }
 
-    @DeleteMapping("/{name}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> drop(@AuthenticationPrincipal AuthUser authUser,
-                                           @PathVariable @NotNull @Size(min = 1, max = 200) String name) {
-        log.info("Контроллер предметов принял запрос DELETE /inventory/{} текущего героя для пользователя: {}", name, authUser.login());
-        itemObjectFacade.deleteFromInventory(authUser.getUser(), name);
+                                           @PathVariable @NotNull @Size(min = 1, max = 200) String id) {
+        log.info("Контроллер предметов принял запрос DELETE /inventory/{} текущего героя для пользователя: {}", id, authUser.login());
+        itemObjectFacade.deleteFromInventory(authUser.getUser(), Long.parseLong(id));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

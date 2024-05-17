@@ -10,6 +10,7 @@ import ru.gizka.api.model.item.ItemPattern;
 import ru.gizka.api.repo.ItemObjectRepo;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -48,6 +49,11 @@ public class ItemObjectService {
     @Transactional
     public void delete(ItemObject itemObject) {
         log.info("Сервис предметов удаляет предмет: {} с id: {}", itemObject.getName(), itemObject.getId());
-        itemObjectRepo.delete(itemObject);
+        itemObjectRepo.deleteById(itemObject.getId());
+    }
+
+    public Optional<ItemObject> getById(Long id) {
+        log.info("Сервис предметов ищет предмет с id: {}", id);
+        return itemObjectRepo.findById(id);
     }
 }

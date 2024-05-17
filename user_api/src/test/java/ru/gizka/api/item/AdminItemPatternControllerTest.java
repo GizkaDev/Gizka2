@@ -62,7 +62,7 @@ public class AdminItemPatternControllerTest {
 
             productDto = RequestProductDto.builder()
                     .name("Роскошь")
-                    .price(500)
+                    .price(500L)
                     .build();
 
             itemDto = RequestItemPatternDto.builder()

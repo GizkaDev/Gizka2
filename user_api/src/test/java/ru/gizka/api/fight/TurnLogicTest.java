@@ -48,12 +48,14 @@ public class TurnLogicTest {
                 9, 10, 11, 10,
                 null, null, null, null, null, null, null, null, null, null, null, null, null,
                 null, null, null,
+                null,
                 new Date(), appUser1, Status.ALIVE, Collections.emptyList(), race, null, null, null);
         appUser2 = new AppUser(0L, "testLogin2", null, null, null, null, null);
         hero2 = new Hero(1234L, "TestName2", "TestLastName2",
                 4, 5, 11, 10,
                 null, null, null, null, null, null, null, null, null, null, null, null, null,
                 null, null, null,
+                null,
                 new Date(), appUser2, Status.ALIVE, Collections.emptyList(), race, null, null, null);
         attributeCalculator.calculateForNew(hero1);
         attributeCalculator.calculateForNew(hero2);

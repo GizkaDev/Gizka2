@@ -112,7 +112,7 @@ public class NotificationControllerTest extends RequestParentTest {
                 .build();
 
         productDto = new RequestProductDto(
-                "Роскошь", 500);
+                "Роскошь", 500L);
 
         itemPatternDto = new RequestItemPatternDto(
                 "Медаль", 1L, 1, productDto.getName());
@@ -386,7 +386,7 @@ public class NotificationControllerTest extends RequestParentTest {
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
             weakCreatureDto.setDex(100);
             RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(weakCreatureDto));
-            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Броня", 30)), token1);
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Броня", 30L)), token1);
             RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Кольчуга", 5L, 30, "Броня")), token1);
             RequestParentTest.insertFight(mockMvc, weakCreatureDto.getName(), token1);
             MockHttpServletRequestBuilder eventRequest1 = MockMvcRequestBuilders

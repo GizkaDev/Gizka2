@@ -86,6 +86,11 @@ public class Hero {
     @Column(name = "def")
     private Integer def;
 
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "equipped_armor_id", referencedColumnName = "id")
+    private ArmorObject equippedArmor;
+
+
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;

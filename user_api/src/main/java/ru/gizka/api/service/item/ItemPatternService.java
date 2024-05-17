@@ -10,6 +10,7 @@ import ru.gizka.api.model.fight.Result;
 import ru.gizka.api.model.item.ItemPattern;
 import ru.gizka.api.model.item.Product;
 import ru.gizka.api.repo.ItemPatternRepo;
+import ru.gizka.api.util.RandomRoller;
 
 import java.util.*;
 
@@ -18,13 +19,13 @@ import java.util.*;
 @Slf4j
 public class ItemPatternService {
     private final ItemPatternRepo itemPatternRepo;
-    private final Random random;
+    private final RandomRoller randomRoller;
 
     @Autowired
     public ItemPatternService(ItemPatternRepo itemPatternRepo,
-                              Random random) {
+                              RandomRoller randomRoller) {
         this.itemPatternRepo = itemPatternRepo;
-        this.random = random;
+        this.randomRoller = randomRoller;
     }
 
     @Transactional
@@ -46,7 +47,7 @@ public class ItemPatternService {
     }
 
     public List<ItemPattern> getRandomLootPattern(Fight fight) {
-        int num = random.nextInt(0, (int) (Math.round(fight.getHero().getSearch().doubleValue() / 4.0) + 1));
+        int num = randomRoller.rollSearch(0, fight.getHero().getSearch()) / 4;
         if (Objects.requireNonNull(fight.getResult()) == Result.ATTACKER || num == 0) {
             List<ItemPattern> loot = new ArrayList<>();
             for (int i = 1; i <= num; i++) {

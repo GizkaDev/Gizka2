@@ -139,7 +139,7 @@ public class ItemObjectControllerTest {
                     .build();
 
             productDto = new RequestProductDto(
-                    "Роскошь", 500);
+                    "Роскошь", 500L);
 
             itemPatternDto = new RequestItemPatternDto(
                     "Медаль", 1L, 1, productDto.getName());
@@ -259,7 +259,7 @@ public class ItemObjectControllerTest {
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
             RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
-            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Титан", 100, 100, 100, 0,raceDto.getName())));
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Титан", 100, 100, 100, 0, raceDto.getName())));
             RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
             RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
             FightDto fightDto = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, "Титан", token1)
@@ -352,7 +352,7 @@ public class ItemObjectControllerTest {
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
             RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
-            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Доспехи", 10000)), token1);
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Доспехи", 10000L)), token1);
             RequestParentTest.insertArmorPattern(mockMvc, objectMapper.writeValueAsString(new RequestArmorPatternDto("Кольчуга", 10000L, 2, 4, -2, ArmorType.MEDIUM.toString())), token1);
             RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
             RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
@@ -398,7 +398,7 @@ public class ItemObjectControllerTest {
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
             RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
-            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Доспехи", 10000)), token1);
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Доспехи", 10000L)), token1);
             RequestParentTest.insertArmorPattern(mockMvc, objectMapper.writeValueAsString(new RequestArmorPatternDto("Кольчуга", 10000L, 2, 4, -2, ArmorType.MEDIUM.toString())), token1);
             int lootSize = 0;
             FightDto fightDto = null;
@@ -453,10 +453,10 @@ public class ItemObjectControllerTest {
                     .race("Человек")
                     .build();
 
-            creatureDto = new RequestCreatureDto("Разбойник", 1,1,1,0,raceDto.getName());
+            creatureDto = new RequestCreatureDto("Разбойник", 1, 1, 1, 0, raceDto.getName());
 
             productDto = new RequestProductDto(
-                    "Роскошь", 500);
+                    "Роскошь", 500L);
 
             itemPatternDto = new RequestItemPatternDto(
                     "Медаль", 100L, 1, productDto.getName());
@@ -483,7 +483,7 @@ public class ItemObjectControllerTest {
                     .andReturn().getResponse().getContentAsString(), ResponseItemDto[].class);
 
             RequestBuilder requestBuilder = MockMvcRequestBuilders
-                    .delete(uri + "/" + itemPatternDto.getName())
+                    .delete(uri + "/" + beforeDrop[0].getId())
                     .header("Authorization", String.format("Bearer %s", token1))
                     .contentType(MediaType.APPLICATION_JSON);
 
@@ -517,7 +517,7 @@ public class ItemObjectControllerTest {
                     .andReturn().getResponse().getContentAsString(), ResponseItemDto[].class);
 
             RequestBuilder requestBuilder = MockMvcRequestBuilders
-                    .delete(uri + "/" + "Другой предмет")
+                    .delete(uri + "/" + "123456789")
                     .header("Authorization", String.format("Bearer %s", token1))
                     .contentType(MediaType.APPLICATION_JSON);
 
@@ -527,7 +527,7 @@ public class ItemObjectControllerTest {
                     .andExpect(
                             status().isNotFound())
                     .andExpect(
-                            jsonPath("$.descr").value(containsString("не найден в инвентаре")));
+                            jsonPath("$.descr").value(containsString("Предмет не найден")));
         }
 
         @Test
@@ -543,11 +543,11 @@ public class ItemObjectControllerTest {
             RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
             RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
             RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1);
-            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Титан", 100, 100, 100, 0,raceDto.getName())));
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Титан", 100, 100, 100, 0, raceDto.getName())));
             RequestParentTest.insertFight(mockMvc, "Титан", token1);
 
             RequestBuilder requestBuilder = MockMvcRequestBuilders
-                    .delete(uri + "/" + itemPatternDto.getName())
+                    .delete(uri + "/" + "1")
                     .header("Authorization", String.format("Bearer %s", token1))
                     .contentType(MediaType.APPLICATION_JSON);
 
@@ -586,9 +586,7 @@ public class ItemObjectControllerTest {
             mockMvc.perform(requestBuilder)
                     //then
                     .andExpect(
-                            status().isNotFound())
-                    .andExpect(
-                            jsonPath("$.descr").value(containsString("не найден в инвентаре")));
+                            status().isBadRequest());
         }
 
         @Test

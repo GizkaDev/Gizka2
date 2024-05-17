@@ -13,6 +13,8 @@ import ru.gizka.api.model.fight.Fight;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.hero.Status;
 import ru.gizka.api.model.item.ItemPattern;
+import ru.gizka.api.model.item.armor.ArmorObject;
+import ru.gizka.api.model.item.armor.ArmorPattern;
 import ru.gizka.api.model.user.AppUser;
 import ru.gizka.api.service.CreatureService;
 import ru.gizka.api.service.FightService;
@@ -20,6 +22,7 @@ import ru.gizka.api.service.HeroService;
 import ru.gizka.api.service.actionLogic.HeroActionLogic;
 import ru.gizka.api.service.item.ItemObjectService;
 import ru.gizka.api.service.item.ItemPatternService;
+import ru.gizka.api.service.item.armor.ArmorObjectService;
 import ru.gizka.api.service.notification.NotificationBuilder;
 import ru.gizka.api.service.notification.NotificationService;
 import ru.gizka.api.util.DtoConverter;
@@ -38,6 +41,7 @@ public class FightFacade {
     private final HeroActionLogic heroActionLogic;
     private final ItemPatternService itemPatternService;
     private final ItemObjectService itemObjectService;
+    private final ArmorObjectService armorObjectService;
 
     @Autowired
     public FightFacade(HeroService heroService,
@@ -48,7 +52,8 @@ public class FightFacade {
                        NotificationBuilder notificationBuilder,
                        HeroActionLogic heroActionLogic,
                        ItemPatternService itemPatternService,
-                       ItemObjectService itemObjectService) {
+                       ItemObjectService itemObjectService,
+                       ArmorObjectService armorObjectService) {
         this.heroService = heroService;
         this.creatureService = creatureService;
         this.dtoConverter = dtoConverter;
@@ -58,6 +63,7 @@ public class FightFacade {
         this.heroActionLogic = heroActionLogic;
         this.itemPatternService = itemPatternService;
         this.itemObjectService = itemObjectService;
+        this.armorObjectService = armorObjectService;
     }
 
     public ResponseEntity<FightDto> simulate(AppUser appUser, String name) {
@@ -117,7 +123,12 @@ public class FightFacade {
                 ItemPattern ip = itemPatternService.getByNameWithFights(itemPattern.getName());
                 ip.getFights().add(savedFight);
                 itemPatternService.save(ip); //сохраняем инф. о добыче в сражении
-                weightForAdd += itemObjectService.save(ip, savedHero).getWeight(); //добавляем объект добычи в инвентарь и складываем вес
+                if (itemPattern instanceof ArmorPattern) {
+                    ArmorObject ao = armorObjectService.save((ArmorPattern) ip, savedHero);
+                    weightForAdd += ao.getWeight(); //добавляем объект добычи в инвентарь и складываем вес
+                } else {
+                    weightForAdd += itemObjectService.save(ip, savedHero).getWeight(); //добавляем объект добычи в инвентарь и складываем вес
+                }
             }
             savedHero.setCurrentWeight(savedHero.getCurrentWeight() + weightForAdd);
             heroService.save(savedHero); //сохраняем героя с весом

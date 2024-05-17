@@ -81,7 +81,7 @@ public class FightControllerTest {
                 .build();
 
         productDto = new RequestProductDto(
-                "Роскошь", 500);
+                "Роскошь", 500L);
 
         itemPatternDto = new RequestItemPatternDto(
                 "Медаль", 1L, 1, productDto.getName());

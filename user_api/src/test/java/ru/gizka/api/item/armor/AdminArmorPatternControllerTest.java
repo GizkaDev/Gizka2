@@ -71,7 +71,7 @@ public class AdminArmorPatternControllerTest {
 
             productDto = new RequestProductDto(
                     "Доспехи",
-                    10000);
+                    10000L);
         }
 
         @Test

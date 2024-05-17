@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.dto.fight.Fighter;
 import ru.gizka.api.dto.fight.Turn;
 import ru.gizka.api.model.creature.Creature;
@@ -12,7 +13,10 @@ import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.model.fight.Fight;
 import ru.gizka.api.model.fight.Result;
 import ru.gizka.api.model.hero.Hero;
+import ru.gizka.api.model.item.ItemObject;
+import ru.gizka.api.model.item.armor.ArmorObject;
 import ru.gizka.api.service.fightLogic.FightLogic;
+import ru.gizka.api.service.item.ItemObjectService;
 
 import java.util.Date;
 import java.util.List;
@@ -22,12 +26,30 @@ import java.util.List;
 public class HeroActionLogic {
     private final ObjectMapper objectMapper;
     private final FightLogic fightLogic;
+    private final ItemObjectService itemObjectService;
 
     @Autowired
     public HeroActionLogic(ObjectMapper objectMapper,
-                           FightLogic fightLogic) {
+                           FightLogic fightLogic,
+                           ItemObjectService itemObjectService) {
         this.objectMapper = objectMapper;
         this.fightLogic = fightLogic;
+        this.itemObjectService = itemObjectService;
+    }
+
+    @Transactional
+    public Hero equipArmor(Hero hero, ArmorObject armorObject, List<ItemObject> inventory) {
+        log.info("Сервис действий надевает доспех id: {}", armorObject.getId());
+        armorObject.setHero(null);
+        armorObject.setCarrierId(hero.getId());
+        hero.setEquippedArmor(armorObject);
+        return hero;
+    }
+
+    @Transactional
+    public void dropItem(ItemObject itemObject) {
+        log.info("Сервис действий выбрасывает предмет id: {}", itemObject);
+        itemObjectService.delete(itemObject);
     }
 
     public Hero treat(Hero hero) {

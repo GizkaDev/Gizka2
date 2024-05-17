@@ -9,7 +9,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import ru.gizka.api.model.item.ItemObject;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "armor_object")
 @Data
@@ -18,7 +17,7 @@ import ru.gizka.api.model.item.ItemObject;
 public class ArmorObject extends ItemObject {
 
     public ArmorObject(String name, Long weight, Integer value,
-                        Integer armor, Integer dexPenalty, ArmorType armorType) {
+                       Integer armor, Integer dexPenalty, ArmorType armorType) {
         super(name, weight, value);
         this.armor = armor;
         this.dexPenalty = dexPenalty;
@@ -36,4 +35,7 @@ public class ArmorObject extends ItemObject {
     @Enumerated(EnumType.STRING)
     @Column(name = "armor_type")
     private ArmorType armorType;
+
+    @Column(name = "carrier_id")
+    private Long carrierId;
 }
