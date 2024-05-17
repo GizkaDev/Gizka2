@@ -30,6 +30,9 @@ import ru.gizka.api.dto.user.RequestAppUserDto;
 import ru.gizka.api.model.item.armor.ArmorType;
 import ru.gizka.api.model.race.RaceSize;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -183,6 +186,10 @@ public class ArmorObjectControllerTest {
                             jsonPath("$.currentWeight").value(beforeEquipHero[0].getCurrentWeight()))
                     .andExpect(
                             jsonPath("$.def").value(beforeEquipHero[0].getDef()));
+
+            ResponseHeroDto[] afterEquipHero = objectMapper.readValue(RequestParentTest.getCurrentHero(mockMvc, token1)
+                    .andReturn().getResponse().getContentAsString(), ResponseHeroDto[].class);
+            assertEquals(afterEquipHero[0].getEquippedArmor().getId(), beforeEquip[0].getId());
         }
 
         @Test
@@ -289,7 +296,7 @@ public class ArmorObjectControllerTest {
             ResponseItemDto[] beforeEquip = objectMapper.readValue(RequestParentTest.getInventory(mockMvc, token1)
                     .andReturn().getResponse().getContentAsString(), ResponseItemDto[].class);
 
-            RequestParentTest.equipArmor(mockMvc, "1", token1);
+            RequestParentTest.equipArmor(mockMvc, beforeEquip[0].getId().toString(), token1);
 
             ResponseItemDto[] afterEquip = objectMapper.readValue(RequestParentTest.getInventory(mockMvc, token1)
                     .andReturn().getResponse().getContentAsString(), ResponseItemDto[].class);
@@ -321,15 +328,62 @@ public class ArmorObjectControllerTest {
             ResponseItemDto[] beforeEquip = objectMapper.readValue(RequestParentTest.getInventory(mockMvc, token1)
                     .andReturn().getResponse().getContentAsString(), ResponseItemDto[].class);
 
-            RequestParentTest.equipArmor(mockMvc, "1", token1);
+            RequestParentTest.equipArmor(mockMvc, beforeEquip[0].getId().toString(), token1);
 
             ResponseItemDto[] afterEquip = objectMapper.readValue(RequestParentTest.getInventory(mockMvc, token1)
                     .andReturn().getResponse().getContentAsString(), ResponseItemDto[].class);
 
-            RequestParentTest.dropItem(mockMvc, "1", token1);
-            RequestParentTest.getCurrentHero(mockMvc, token1)
+            RequestParentTest.dropItem(mockMvc, beforeEquip[0].getId().toString(), token1)
                     .andExpect(
-                            jsonPath("$.equippedArmor").value(""));
+                            status().isNotFound())
+                    .andExpect(
+                            jsonPath("$.descr").value("Предмет не найден в инвентаре"));
+        }
+
+        @Test
+        @Description(value = "Тест на надевание брони текущего героя пользователя, если уже были надеты доспехи")
+        void ArmorObject_equipArmor_ChangeArmor() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(new RequestCreatureDto("Слабак", 1, 1, 1, 0, raceDto.getName())));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Доспехи", 10000L)), token1);
+            RequestParentTest.insertArmorPattern(mockMvc, objectMapper.writeValueAsString(new RequestArmorPatternDto("Кольчуга", 10000L, 2, 4, -2, ArmorType.MEDIUM.toString())), token1);
+            int lootSize = 0;
+            FightDto fightDto = null;
+            while (lootSize < 2) {
+                fightDto = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, "Слабак", token1)
+                        .andReturn().getResponse().getContentAsString(), FightDto.class);
+                lootSize = fightDto.getLoot().size();
+            }
+
+            ResponseItemDto[] beforeEquip = objectMapper.readValue(RequestParentTest.getInventory(mockMvc, token1)
+                    .andReturn().getResponse().getContentAsString(), ResponseItemDto[].class);
+
+            ResponseHeroDto[] beforeEquipHero = objectMapper.readValue(RequestParentTest.getCurrentHero(mockMvc, token1)
+                    .andReturn().getResponse().getContentAsString(), ResponseHeroDto[].class);
+
+            RequestParentTest.equipArmor(mockMvc, beforeEquip[0].getId().toString(), token1);
+            //when
+            RequestParentTest.equipArmor(mockMvc, beforeEquip[1].getId().toString(), token1)
+                    //then
+                    .andExpect(
+                            status().isOk())
+                    .andExpect(
+                            jsonPath("$.equippedArmor.id").value(beforeEquip[1].getId()))
+                    .andExpect(
+                            jsonPath("$.currentWeight").value(beforeEquipHero[0].getCurrentWeight()))
+                    .andExpect(
+                            jsonPath("$.def").value(beforeEquipHero[0].getDef()));
+
+            ResponseItemDto[] afterEquip = objectMapper.readValue(RequestParentTest.getInventory(mockMvc, token1)
+                    .andReturn().getResponse().getContentAsString(), ResponseItemDto[].class);
+            assertEquals(afterEquip.length, beforeEquip.length - 1);
+            assertTrue(List.of(afterEquip).contains(beforeEquip[0]));
         }
     }
 }

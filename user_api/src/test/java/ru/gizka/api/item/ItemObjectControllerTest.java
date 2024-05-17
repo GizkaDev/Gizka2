@@ -19,6 +19,7 @@ import ru.gizka.api.RequestParentTest;
 import ru.gizka.api.dto.creature.RequestCreatureDto;
 import ru.gizka.api.dto.fight.FightDto;
 import ru.gizka.api.dto.hero.RequestHeroDto;
+import ru.gizka.api.dto.hero.ResponseHeroDto;
 import ru.gizka.api.dto.item.RequestItemPatternDto;
 import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.item.ResponseItemDto;
@@ -497,6 +498,93 @@ public class ItemObjectControllerTest {
                     .andReturn().getResponse().getContentAsString(), ResponseItemDto[].class);
 
             assertEquals(beforeDrop.length, afterDrop.length + 1);
+        }
+
+        @Test
+        @Description(value = "Тест на сброс предмета из инвентаря текущего героя пользователя, изменение веса")
+        void ItemObject_Drop_WeightChange() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
+            int lootsize = 0;
+            while (lootsize == 0) {
+                FightDto fightDto = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1).andReturn().getResponse().getContentAsString(), FightDto.class);
+                lootsize = fightDto.getLoot().size();
+            }
+            ResponseItemDto[] beforeDrop = objectMapper.readValue(RequestParentTest.getInventory(mockMvc, token1)
+                    .andReturn().getResponse().getContentAsString(), ResponseItemDto[].class);
+
+            RequestBuilder requestBuilder = MockMvcRequestBuilders
+                    .delete(uri + "/" + beforeDrop[0].getId())
+                    .header("Authorization", String.format("Bearer %s", token1))
+                    .contentType(MediaType.APPLICATION_JSON);
+
+            ResponseHeroDto[] beforeDropHero = objectMapper.readValue(RequestParentTest.getCurrentHero(mockMvc, token1)
+                    .andReturn().getResponse().getContentAsString(), ResponseHeroDto[].class);
+
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isNoContent());
+
+            ResponseItemDto[] afterDrop = objectMapper.readValue(RequestParentTest.getInventory(mockMvc, token1)
+                    .andReturn().getResponse().getContentAsString(), ResponseItemDto[].class);
+
+            assertEquals(beforeDrop.length, afterDrop.length + 1);
+
+            ResponseHeroDto[] afterDropHero = objectMapper.readValue(RequestParentTest.getCurrentHero(mockMvc, token1)
+                    .andReturn().getResponse().getContentAsString(), ResponseHeroDto[].class);
+
+            assertEquals(beforeDropHero[0].getCurrentWeight(), afterDropHero[0].getCurrentWeight() + beforeDrop[0].getWeight());
+        }
+
+        @Test
+        @Description(value = "Тест на сброс предмета из чужого инвентаря")
+        void ItemObject_Drop_WrongInventory() throws Exception {
+            //given
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
+            RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(new RequestAppUserDto("Boba", "Qwerty12345!")));
+            String token1 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
+            String token2 = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(new RequestAppUserDto("Boba", "Qwerty12345!")));
+            RequestParentTest.setAdminRights(mockMvc, token1);
+            RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
+            RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token2);
+            RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(creatureDto));
+            RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(productDto), token1);
+            RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(itemPatternDto), token1);
+            int lootsize = 0;
+            while (lootsize == 0) {
+                FightDto fightDto = objectMapper.readValue(RequestParentTest.insertFight(mockMvc, creatureDto.getName(), token1).andReturn().getResponse().getContentAsString(), FightDto.class);
+                lootsize = fightDto.getLoot().size();
+            }
+            ResponseItemDto[] beforeDrop = objectMapper.readValue(RequestParentTest.getInventory(mockMvc, token1)
+                    .andReturn().getResponse().getContentAsString(), ResponseItemDto[].class);
+
+            RequestBuilder requestBuilder = MockMvcRequestBuilders
+                    .delete(uri + "/" + beforeDrop[0].getId())
+                    .header("Authorization", String.format("Bearer %s", token2))
+                    .contentType(MediaType.APPLICATION_JSON);
+
+            //when
+            mockMvc.perform(requestBuilder)
+                    //then
+                    .andExpect(
+                            status().isNotFound())
+                    .andExpect(
+                            jsonPath("$.descr").value("Предмет не найден в инвентаре"));
+
+            ResponseItemDto[] afterDrop = objectMapper.readValue(RequestParentTest.getInventory(mockMvc, token1)
+                    .andReturn().getResponse().getContentAsString(), ResponseItemDto[].class);
+
+            assertEquals(beforeDrop.length, afterDrop.length);
         }
 
         @Test

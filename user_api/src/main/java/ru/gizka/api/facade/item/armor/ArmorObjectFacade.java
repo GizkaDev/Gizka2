@@ -49,9 +49,8 @@ public class ArmorObjectFacade {
                 .orElseThrow(() ->
                         new EntityNotFoundException("Предмет не найден"));
         if (armorToEquip.getHero().getId().equals(heroes.get(0).getId())) {
-            List<ItemObject> inventory = itemObjectService.getByHero(heroes.get(0));
-            Hero hero = heroService.save(heroActionLogic.equipArmor(heroes.get(0), armorToEquip, inventory));
-            armorObjectService.save(armorToEquip);
+            Hero heroToSave = heroActionLogic.equipArmor(heroes.get(0), armorToEquip);
+            Hero hero = heroService.save(heroToSave);
            return dtoConverter.getResponseDto(hero);
         }
         throw new IllegalArgumentException("Такого предмета нет в инвентаре");

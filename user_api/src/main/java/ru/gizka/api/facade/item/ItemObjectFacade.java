@@ -55,8 +55,13 @@ public class ItemObjectFacade {
         ItemObject itemToDrop = itemObjectService.getById(id)
                 .orElseThrow(() ->
                         new EntityNotFoundException("Предмет не найден"));
+        if (itemToDrop.getHero() == null) {
+            throw new EntityNotFoundException("Предмет не найден в инвентаре");
+        }
         if (itemToDrop.getHero().getId().equals(heroes.get(0).getId())) {
-            heroActionLogic.dropItem(itemToDrop);
+            heroActionLogic.dropItem(heroes.get(0), itemToDrop);
+        } else {
+            throw new EntityNotFoundException("Предмет не найден в инвентаре");
         }
     }
 }

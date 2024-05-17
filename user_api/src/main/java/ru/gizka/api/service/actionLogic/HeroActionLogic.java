@@ -38,17 +38,27 @@ public class HeroActionLogic {
     }
 
     @Transactional
-    public Hero equipArmor(Hero hero, ArmorObject armorObject, List<ItemObject> inventory) {
+    public Hero equipArmor(Hero hero, ArmorObject armorObject) {
+        if (hero.getEquippedArmor() != null) {
+            log.info("Сервис действий возвращает доспех в инвентарь доспех id: {}", armorObject.getId());
+            ArmorObject equippedArmor = hero.getEquippedArmor();
+            equippedArmor.setHero(hero);
+            equippedArmor.setCarrierId(null);
+            hero.getInventory().add(equippedArmor);
+        }
+
         log.info("Сервис действий надевает доспех id: {}", armorObject.getId());
         armorObject.setHero(null);
         armorObject.setCarrierId(hero.getId());
+        hero.getInventory().remove(armorObject);
         hero.setEquippedArmor(armorObject);
         return hero;
     }
 
     @Transactional
-    public void dropItem(ItemObject itemObject) {
+    public void dropItem(Hero hero, ItemObject itemObject) {
         log.info("Сервис действий выбрасывает предмет id: {}", itemObject);
+        hero.setCurrentWeight(hero.getCurrentWeight() - itemObject.getWeight());
         itemObjectService.delete(itemObject);
     }
 
