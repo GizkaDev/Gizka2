@@ -40,7 +40,7 @@ public class ArmorObjectFacade {
     }
 
     public ResponseHeroDto equipArmor(AppUser appUser, Long id) {
-        log.info("Сервис героев начинает поиск текущего героя для пользователя: {}", appUser.getLogin());
+        log.info("Сервис доспехов начинает поиск текущего героя для пользователя: {}", appUser.getLogin());
         List<Hero> heroes = heroService.getAliveByUser(appUser);
         if (heroes.isEmpty()) {
             throw new EntityNotFoundException("У пользователя нет героя со статусом ALIVE.");
@@ -51,8 +51,20 @@ public class ArmorObjectFacade {
         if (armorToEquip.getHero().getId().equals(heroes.get(0).getId())) {
             Hero heroToSave = heroActionLogic.equipArmor(heroes.get(0), armorToEquip);
             Hero hero = heroService.save(heroToSave);
-           return dtoConverter.getResponseDto(hero);
+            return dtoConverter.getResponseDto(hero);
         }
         throw new IllegalArgumentException("Такого предмета нет в инвентаре");
+    }
+
+    public ResponseHeroDto takeOffArmor(AppUser appUser) {
+        log.info("Сервис доспехов начинает поиск текущего героя для пользователя: {}", appUser.getLogin());
+        List<Hero> heroes = heroService.getAliveByUser(appUser);
+        if (heroes.isEmpty()) {
+            throw new EntityNotFoundException("У пользователя нет героя со статусом ALIVE.");
+        }
+        if (heroes.get(0).getEquippedArmor() == null) {
+            throw new EntityNotFoundException("У героя не экипирован доспех");
+        }
+        return dtoConverter.getResponseDto(heroService.save(heroActionLogic.takeOffArmor(heroes.get(0))));
     }
 }

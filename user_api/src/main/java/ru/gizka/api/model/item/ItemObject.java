@@ -17,7 +17,7 @@ import ru.gizka.api.model.hero.Hero;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class ItemObject {
 
     public ItemObject(String name, Long weight, Integer value) {

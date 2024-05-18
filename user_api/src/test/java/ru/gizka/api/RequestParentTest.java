@@ -163,4 +163,12 @@ public class RequestParentTest {
                 .contentType(MediaType.APPLICATION_JSON);
         return mockMvc.perform(dropBuilder);
     }
+
+    public static ResultActions takeOffArmor(MockMvc mockMvc, String token) throws Exception {
+        RequestBuilder equipRequest = MockMvcRequestBuilders
+                .delete("/api/user/hero/inventory/armor")
+                .header("Authorization", String.format("Bearer %s", token))
+                .contentType(MediaType.APPLICATION_JSON);
+        return mockMvc.perform(equipRequest);
+    }
 }

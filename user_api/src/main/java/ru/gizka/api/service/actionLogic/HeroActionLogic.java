@@ -40,7 +40,7 @@ public class HeroActionLogic {
     @Transactional
     public Hero equipArmor(Hero hero, ArmorObject armorObject) {
         if (hero.getEquippedArmor() != null) {
-            log.info("Сервис действий возвращает доспех в инвентарь доспех id: {}", armorObject.getId());
+            log.info("Сервис действий возвращает доспех id: {} в инвентарь героя", hero.getEquippedArmor().getId());
             ArmorObject equippedArmor = hero.getEquippedArmor();
             equippedArmor.setHero(hero);
             equippedArmor.setCarrierId(null);
@@ -52,6 +52,19 @@ public class HeroActionLogic {
         armorObject.setCarrierId(hero.getId());
         hero.getInventory().remove(armorObject);
         hero.setEquippedArmor(armorObject);
+        return hero;
+    }
+
+    @Transactional
+    public Hero takeOffArmor(Hero hero){
+        if (hero.getEquippedArmor() != null) {
+            log.info("Сервис действий возвращает доспех id: {} в инвентарь героя",hero.getEquippedArmor().getId());
+            ArmorObject equippedArmor = hero.getEquippedArmor();
+            equippedArmor.setHero(hero);
+            equippedArmor.setCarrierId(null);
+            hero.getInventory().add(equippedArmor);
+        }
+        hero.setEquippedArmor(null);
         return hero;
     }
 
