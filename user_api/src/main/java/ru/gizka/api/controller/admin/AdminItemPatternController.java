@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.gizka.api.dto.item.RequestItemPatternDto;
 import ru.gizka.api.dto.item.ResponseItemDto;
+import ru.gizka.api.dto.item.weapon.RequestWeaponPatternDto;
+import ru.gizka.api.dto.item.weapon.ResponseWeaponDto;
 import ru.gizka.api.facade.item.ItemPatternFacade;
 
 @RestController
@@ -21,7 +23,7 @@ public class AdminItemPatternController {
     private final ItemPatternFacade itemPatternFacade;
 
     @Autowired
-    public AdminItemPatternController(ItemPatternFacade itemPatternFacade){
+    public AdminItemPatternController(ItemPatternFacade itemPatternFacade) {
         this.itemPatternFacade = itemPatternFacade;
     }
 
@@ -31,5 +33,13 @@ public class AdminItemPatternController {
         log.info("Контроллер шаблонов предметов администратора принял запрос POST /item: {}", itemDto);
         ResponseItemDto responseItem = itemPatternFacade.create(itemDto, bindingResult);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseItem);
+    }
+
+    @PostMapping("/weapon")
+    public ResponseEntity<ResponseWeaponDto> create(@Valid @RequestBody RequestWeaponPatternDto weaponDto,
+                                                    BindingResult bindingResult) {
+        log.info("Контроллер шаблонов предметов администратора принял запрос POST /item/weapon: {}", weaponDto);
+        ResponseWeaponDto responseWeapon = itemPatternFacade.create(weaponDto, bindingResult);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseWeapon);
     }
 }

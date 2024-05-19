@@ -9,8 +9,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import ru.gizka.api.dto.item.RequestItemPatternDto;
 import ru.gizka.api.dto.item.ResponseItemDto;
+import ru.gizka.api.dto.item.weapon.RequestWeaponPatternDto;
+import ru.gizka.api.dto.item.weapon.ResponseWeaponDto;
 import ru.gizka.api.model.item.ItemPattern;
 import ru.gizka.api.model.item.Product;
+import ru.gizka.api.model.item.weapon.WeaponPattern;
 import ru.gizka.api.service.item.ItemPatternService;
 import ru.gizka.api.service.item.ProductService;
 import ru.gizka.api.util.DtoConverter;
@@ -44,6 +47,13 @@ public class ItemPatternFacade {
         checkValues(itemDto, bindingResult, mbProduct);
         ItemPattern itemPattern = itemPatternService.create(dtoConverter.getModel(itemDto), mbProduct.get());
         return dtoConverter.getResponseDto(itemPattern);
+    }
+
+    public ResponseWeaponDto create(RequestWeaponPatternDto weaponDto, BindingResult bindingResult) {
+        Optional<Product> mbProduct = productService.getByName("Оружие");
+        checkValues(weaponDto, bindingResult, mbProduct);
+        WeaponPattern weaponPattern = itemPatternService.create(dtoConverter.getModel(weaponDto, mbProduct.get()));
+        return dtoConverter.getResponseDto(weaponPattern);
     }
 
     public ResponseItemDto getByName(String name) {

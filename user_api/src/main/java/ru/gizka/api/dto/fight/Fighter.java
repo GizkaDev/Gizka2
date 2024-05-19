@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.gizka.api.model.creature.Creature;
 import ru.gizka.api.model.hero.Hero;
-import ru.gizka.api.model.item.armor.ArmorObject;
 
 import java.util.Date;
 
@@ -69,15 +68,15 @@ public class Fighter {
         this.race = hero.getRace().getName();
 
         this.str = hero.getStr();
-        this.dex = hero.getDex();
+        this.dex = Math.max(0, hero.getDex() + (hero.getEquippedArmor() == null ? 0 : hero.getEquippedArmor().getDexPenalty()));
         this.con = hero.getCon();
 
-        this.minInit = hero.getMinInit();
-        this.maxInit = hero.getMaxInit();
-        this.minAttack = hero.getMinAttack();
-        this.maxAttack = hero.getMaxAttack();
-        this.minEvasion = hero.getMinEvasion();
-        this.maxEvasion = hero.getMaxEvasion();
+        this.minInit = Math.max(0, hero.getMinInit() + (hero.getEquippedArmor() == null ? 0 : hero.getEquippedArmor().getDexPenalty()));
+        this.maxInit = Math.max(0, hero.getMaxInit() + (hero.getEquippedArmor() == null ? 0 : hero.getEquippedArmor().getDexPenalty()));
+        this.minAttack = Math.max(0, hero.getMinAttack() + (hero.getEquippedArmor() == null ? 0 : hero.getEquippedArmor().getDexPenalty()));
+        this.maxAttack = Math.max(0, hero.getMaxAttack() + (hero.getEquippedArmor() == null ? 0 : hero.getEquippedArmor().getDexPenalty()));
+        this.minEvasion = Math.max(0, hero.getMinEvasion() + (hero.getEquippedArmor() == null ? 0 : hero.getEquippedArmor().getDexPenalty()));
+        this.maxEvasion = Math.max(0, hero.getMaxEvasion() + (hero.getEquippedArmor() == null ? 0 : hero.getEquippedArmor().getDexPenalty()));
         this.minPhysDamage = hero.getMinPhysDamage();
         this.maxPhysDamage = hero.getMaxPhysDamage();
         this.maxHp = hero.getMaxHp();

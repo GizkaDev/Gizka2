@@ -9,6 +9,7 @@ import ru.gizka.api.model.fight.Fight;
 import ru.gizka.api.model.fight.Result;
 import ru.gizka.api.model.item.ItemPattern;
 import ru.gizka.api.model.item.Product;
+import ru.gizka.api.model.item.weapon.WeaponPattern;
 import ru.gizka.api.repo.ItemPatternRepo;
 import ru.gizka.api.util.RandomRoller;
 
@@ -34,6 +35,12 @@ public class ItemPatternService {
         itemPattern.setProduct(product);
         itemPattern.setFights(new ArrayList<>());
         return itemPatternRepo.save(itemPattern);
+    }
+
+    @Transactional
+    public WeaponPattern create(WeaponPattern weaponPattern) {
+        log.info("Сервис шаблонов предметов сохраняет новый предмет: {}", weaponPattern.getName());
+        return itemPatternRepo.save(weaponPattern);
     }
 
     public Optional<ItemPattern> getByName(String name) {

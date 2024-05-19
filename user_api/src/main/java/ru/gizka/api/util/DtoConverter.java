@@ -21,6 +21,8 @@ import ru.gizka.api.dto.item.ResponseItemDto;
 import ru.gizka.api.dto.item.ResponseProductDto;
 import ru.gizka.api.dto.item.armor.RequestArmorPatternDto;
 import ru.gizka.api.dto.item.armor.ResponseArmorDto;
+import ru.gizka.api.dto.item.weapon.RequestWeaponPatternDto;
+import ru.gizka.api.dto.item.weapon.ResponseWeaponDto;
 import ru.gizka.api.dto.notification.NotificationDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.race.ResponseRaceDto;
@@ -36,11 +38,13 @@ import ru.gizka.api.model.item.Product;
 import ru.gizka.api.model.item.armor.ArmorObject;
 import ru.gizka.api.model.item.armor.ArmorPattern;
 import ru.gizka.api.model.item.armor.ArmorType;
+import ru.gizka.api.model.item.weapon.WeaponPattern;
 import ru.gizka.api.model.notification.Notification;
 import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.race.RaceSize;
 import ru.gizka.api.model.user.AppUser;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -55,6 +59,34 @@ public class DtoConverter {
                         ObjectMapper objectMapper) {
         this.modelMapper = modelMapper;
         this.objectMapper = objectMapper;
+    }
+
+    public ResponseWeaponDto getResponseDto(WeaponPattern weaponPattern) {
+        log.info("Конвертер переводит {} в {}", WeaponPattern.class, ResponseWeaponDto.class);
+        return new ResponseWeaponDto(
+                weaponPattern.getId(),
+                weaponPattern.getName(),
+                weaponPattern.getWeight(),
+                weaponPattern.getValue(),
+                getResponseDto(weaponPattern.getProduct()),
+                weaponPattern.getDamageMult(),
+                weaponPattern.getIsTwoHanded(),
+                weaponPattern.getDamageTypes()
+                );
+    }
+
+    public WeaponPattern getModel(RequestWeaponPatternDto weaponDto, Product product) {
+        log.info("Конвертер переводит {} в {}", RequestWeaponPatternDto.class, WeaponPattern.class);
+        return new WeaponPattern(
+                weaponDto.getName(),
+                weaponDto.getWeight(),
+                weaponDto.getValue(),
+                product,
+                new ArrayList<Fight>(),
+                weaponDto.getDamageMult(),
+                weaponDto.getIsTwoHanded(),
+                weaponDto.getDamageTypes()
+                );
     }
 
     public ResponseArmorDto getResponseDto(ArmorObject armorObject) {

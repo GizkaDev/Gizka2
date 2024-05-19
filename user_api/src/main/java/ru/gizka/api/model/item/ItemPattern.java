@@ -28,6 +28,14 @@ public class ItemPattern {
         this.value = value;
     }
 
+    public ItemPattern(String name, Long weight, Integer value, Product product, List<Fight> fights) {
+        this.name = name;
+        this.weight = weight;
+        this.value = value;
+        this.product = product;
+        this.fights = fights;
+    }
+
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
