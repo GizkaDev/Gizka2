@@ -15,7 +15,7 @@ import ru.gizka.api.model.hero.Status;
 import ru.gizka.api.model.item.ItemPattern;
 import ru.gizka.api.model.item.armor.ArmorObject;
 import ru.gizka.api.model.item.armor.ArmorPattern;
-import ru.gizka.api.model.user.AppUser;
+import ru.gizka.api.model.appUser.AppUser;
 import ru.gizka.api.service.CreatureService;
 import ru.gizka.api.service.FightService;
 import ru.gizka.api.service.HeroService;

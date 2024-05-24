@@ -4,11 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.gizka.api.model.fight.Duel;
-import ru.gizka.api.model.fight.Fight;
-import ru.gizka.api.model.fight.Result;
 import ru.gizka.api.model.notification.Notification;
-import ru.gizka.api.model.user.AppUser;
+import ru.gizka.api.model.appUser.AppUser;
 import ru.gizka.api.repo.NotificationRepo;
 
 import java.util.Date;

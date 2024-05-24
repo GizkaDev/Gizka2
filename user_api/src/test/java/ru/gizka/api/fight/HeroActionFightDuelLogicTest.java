@@ -24,13 +24,13 @@ import ru.gizka.api.dto.hero.RequestHeroDto;
 import ru.gizka.api.dto.item.RequestItemPatternDto;
 import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
-import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.dto.appUser.RequestAppUserDto;
 import ru.gizka.api.model.fight.Result;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.hero.Status;
 import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.race.RaceSize;
-import ru.gizka.api.model.user.AppUser;
+import ru.gizka.api.model.appUser.AppUser;
 import ru.gizka.api.service.AttributeCalculator;
 import ru.gizka.api.service.fightLogic.FightLogic;
 
@@ -87,35 +87,31 @@ public class HeroActionFightDuelLogicTest extends RequestParentTest {
         raceDto = new RequestRaceDto("Человек", true,
                 0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
-        userDto = RequestAppUserDto.builder()
-                .login("Biba")
-                .password("Qwerty12345!")
-                .build();
+        userDto = new RequestAppUserDto(
+                "Biba",
+                "Qwerty12345!");
 
-        userDto2 = RequestAppUserDto.builder()
-                .login("Boba")
-                .password("Qwerty12345!")
-                .build();
+        userDto2 = new RequestAppUserDto(
+                "Boba",
+                "Qwerty12345!");
 
-        heroDto = RequestHeroDto.builder()
-                .name("Gizka")
-                .lastName("Green")
-                .str(10)
-                .dex(8)
-                .con(12)
-                .wis(10)
-                .race(raceDto.getName())
-                .build();
+        heroDto = new RequestHeroDto(
+                "Gizka",
+                "Green",
+                10,
+                8,
+                12,
+                10,
+                "Человек");
 
-        heroDto2 = RequestHeroDto.builder()
-                .name("Lyakusha")
-                .lastName("Swamp")
-                .str(10)
-                .dex(12)
-                .con(8)
-                .wis(10)
-                .race(raceDto.getName())
-                .build();
+        heroDto2 = new RequestHeroDto(
+                "Lyakusha",
+                "Swamp",
+                10,
+                12,
+                8,
+                10,
+                "Человек");
     }
 
     @Test

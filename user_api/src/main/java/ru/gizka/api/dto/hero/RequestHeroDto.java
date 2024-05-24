@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class RequestHeroDto {
 
     @Size(min = 1, max = 50, message = "Имя героя должно состоять минимум из одного символа")

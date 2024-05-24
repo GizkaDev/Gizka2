@@ -23,7 +23,7 @@ import ru.gizka.api.dto.hero.ResponseHeroDto;
 import ru.gizka.api.dto.item.RequestItemPatternDto;
 import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
-import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.dto.appUser.RequestAppUserDto;
 import ru.gizka.api.model.race.RaceSize;
 
 import java.util.Random;
@@ -58,29 +58,27 @@ public class HeroControllerTest {
         raceDto = new RequestRaceDto("Человек", true,
                 0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
-        heroDto = RequestHeroDto.builder()
-                .name("NameЯ")
-                .lastName("LastnameБ")
-                .str(10)
-                .dex(10)
-                .con(10)
-                .wis(10)
-                .race(raceDto.getName())
-                .build();
+        heroDto = new RequestHeroDto(
+                "NameЯ",
+                "LastnameБ",
+                10,
+                10,
+                10,
+                10,
+                raceDto.getName());
 
-        userDto = RequestAppUserDto.builder()
-                .login("Login123_.-")
-                .password("Qwerty12345!")
-                .build();
+        userDto = new RequestAppUserDto(
+                "Login123_.-",
+                "Qwerty12345!");
 
         RequestBuilder userCreationBuilder =
                 MockMvcRequestBuilders
-                        .post("/api/auth/registration")
+                        .post("/api/user/registration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(userDto));
         mockMvc.perform(userCreationBuilder);
 
-        RequestBuilder tokenRequestBuilder = MockMvcRequestBuilders.post("/api/auth/token")
+        RequestBuilder tokenRequestBuilder = MockMvcRequestBuilders.post("/api/user/token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(userDto));
 
@@ -187,7 +185,7 @@ public class HeroControllerTest {
                 wrongToken.append(Character.toString('A' + random.nextInt(26)));
             }
             requestBuilder = MockMvcRequestBuilders
-                    .get("/game/user/hero")
+                    .get("/api/user/hero")
                     .contentType(MediaType.APPLICATION_JSON)
                     .header("Authorization", String.format("Bearer %s", wrongToken));
             //when
@@ -204,7 +202,7 @@ public class HeroControllerTest {
         void Hero_getById_Unauthorized() throws Exception {
             //given
             requestBuilder = MockMvcRequestBuilders
-                    .get("/game/user/hero")
+                    .get("/api/user/hero")
                     .contentType(MediaType.APPLICATION_JSON);
             //when
             mockMvc.perform(requestBuilder)
@@ -992,13 +990,13 @@ public class HeroControllerTest {
         @Description(value = "Тест на лечение")
         void Hero_treat_Success() throws Exception {
             //given
-            creatureDto = RequestCreatureDto.builder()
-                    .name("Ниндзя")
-                    .str(10)
-                    .con(2)
-                    .dex(100)
-                    .race(raceDto.getName())
-                    .build();
+            creatureDto = new RequestCreatureDto(
+                    "Ниндзя",
+                    10,
+                    100,
+                    1,
+                    0,
+                    raceDto.getName());
 
             RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(creatureDto));
             RequestParentTest.insertFight(mockMvc, "Ниндзя", token);
@@ -1023,13 +1021,13 @@ public class HeroControllerTest {
         @Description(value = "Тест на лечение, если лечение может превысить maxHp")
         void Hero_treat_OverTreat() throws Exception {
             //given
-            creatureDto = RequestCreatureDto.builder()
-                    .name("Ниндзя")
-                    .str(1)
-                    .con(1)
-                    .dex(100)
-                    .race(raceDto.getName())
-                    .build();
+            creatureDto = new RequestCreatureDto(
+                    "Ниндзя",
+                    1,
+                    1,
+                    100,
+                    0,
+                    raceDto.getName());
 
             RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(creatureDto));
             RequestParentTest.insertFight(mockMvc, "Ниндзя", token);
@@ -1055,13 +1053,13 @@ public class HeroControllerTest {
         @Description(value = "Тест на лечение, если урон больше лечения")
         void Hero_treat_OverHit() throws Exception {
             //given
-            creatureDto = RequestCreatureDto.builder()
-                    .name("Ниндзя")
-                    .str(29)
-                    .con(1)
-                    .dex(100)
-                    .race(raceDto.getName())
-                    .build();
+            creatureDto = new RequestCreatureDto(
+                    "Ниндзя",
+                    29,
+                    100,
+                    1,
+                    0,
+                    raceDto.getName());
 
             RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(creatureDto));
             RequestParentTest.insertFight(mockMvc, "Ниндзя", token);
@@ -1151,13 +1149,13 @@ public class HeroControllerTest {
         @Description(value = "Тест на лечение, если лечение уже было")
         void Hero_treat_Repeat() throws Exception {
             //given
-            creatureDto = RequestCreatureDto.builder()
-                    .name("Ниндзя")
-                    .str(29)
-                    .con(1)
-                    .dex(100)
-                    .race(raceDto.getName())
-                    .build();
+            creatureDto = new RequestCreatureDto(
+                    "Ниндзя",
+                    29,
+                    100,
+                    1,
+                    0,
+                    raceDto.getName());
 
             RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(creatureDto));
             RequestParentTest.insertFight(mockMvc, "Ниндзя", token);
@@ -1181,13 +1179,13 @@ public class HeroControllerTest {
         @Description(value = "Тест на лечение, если лечение уже было после истечения срока")
         void Hero_treat_RepeatAfterTimer() throws Exception {
             //given
-            creatureDto = RequestCreatureDto.builder()
-                    .name("Ниндзя")
-                    .str(29)
-                    .con(1)
-                    .dex(100)
-                    .race(raceDto.getName())
-                    .build();
+            creatureDto = new RequestCreatureDto(
+                    "Ниндзя",
+                    29,
+                    100,
+                    1,
+                    0,
+                    raceDto.getName());
 
             RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(creatureDto));
             RequestParentTest.insertFight(mockMvc, "Ниндзя", token);

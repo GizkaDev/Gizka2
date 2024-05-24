@@ -9,7 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.gizka.api.dto.fight.FightDto;
 import ru.gizka.api.facade.FightFacade;
-import ru.gizka.api.model.user.AuthUser;
+import ru.gizka.api.model.appUser.AuthUser;
 
 @RestController
 @RequestMapping("/api/user/hero/fight")

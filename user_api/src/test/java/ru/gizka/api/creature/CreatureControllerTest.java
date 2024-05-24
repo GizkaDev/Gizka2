@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.RequestParentTest;
 import ru.gizka.api.dto.creature.RequestCreatureDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
-import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.dto.appUser.RequestAppUserDto;
 import ru.gizka.api.model.race.RaceSize;
 
 import java.util.Random;
@@ -37,7 +37,7 @@ public class CreatureControllerTest {
     private final Random random;
 
     @Autowired
-    private CreatureControllerTest(MockMvc mockMvc){
+    private CreatureControllerTest(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
         this.objectMapper = new ObjectMapper();
         this.random = new Random();
@@ -52,23 +52,21 @@ public class CreatureControllerTest {
         private MockHttpServletRequestBuilder getRequest;
 
         @BeforeEach
-        void setUp(){
-            userDto = RequestAppUserDto.builder()
-                    .login("Biba")
-                    .password("Qwerty12345!")
-                    .build();
+        void setUp() {
+            userDto = new RequestAppUserDto(
+                    "Biba",
+                    "Qwerty12345!");
 
             raceDto = new RequestRaceDto("Монстр", true,
                     0, 0, 0, 0, 0, RaceSize.GIANT.name());
 
-            creatureDto = RequestCreatureDto.builder()
-                    .name("Злобоглаз")
-                    .str(4)
-                    .dex(10)
-                    .con(7)
-                    .def(0)
-                    .race(raceDto.getName())
-                    .build();
+            creatureDto = new RequestCreatureDto(
+                    "Злобоглаз",
+                    4,
+                    10,
+                    7,
+                    0,
+                    raceDto.getName());
         }
 
         @Test
@@ -86,7 +84,7 @@ public class CreatureControllerTest {
                     .header("Authorization", "Bearer " + token);
             //when
             mockMvc.perform(getRequest)
-            //then
+                    //then
                     .andExpect(
                             status().isOk())
                     .andExpect(
@@ -237,58 +235,52 @@ public class CreatureControllerTest {
 
         @BeforeEach
         void setUp() {
-            userDto = RequestAppUserDto.builder()
-                    .login("Biba")
-                    .password("Qwerty12345!")
-                    .build();
+            userDto = new RequestAppUserDto(
+                    "Biba",
+                    "Qwerty12345!");
 
             raceDto = new RequestRaceDto("Дракон", false,
                     0, 0, 0, 0, 0, RaceSize.GIANT.name());
 
-            creatureDto1 = RequestCreatureDto.builder()
-                    .name("Черный дракон")
-                    .str(30)
-                    .dex(20)
-                    .con(10)
-                    .def(0)
-                    .race(raceDto.getName())
-                    .build();
+            creatureDto1 = new RequestCreatureDto(
+                    "Черный дракон",
+                    30,
+                    20,
+                    10,
+                    0,
+                    raceDto.getName());
 
-            creatureDto2 = RequestCreatureDto.builder()
-                    .name("Зеленый дракон")
-                    .str(20)
-                    .dex(10)
-                    .con(30)
-                    .def(0)
-                    .race(raceDto.getName())
-                    .build();
+            creatureDto2 = new RequestCreatureDto(
+                    "Зеленый дракон",
+                    20,
+                    10,
+                    30,
+                    0,
+                    raceDto.getName());
 
-            creatureDto3 = RequestCreatureDto.builder()
-                    .name("Красный дракон")
-                    .str(10)
-                    .dex(30)
-                    .con(20)
-                    .def(0)
-                    .race(raceDto.getName())
-                    .build();
+            creatureDto3 = new RequestCreatureDto(
+                    "Красный дракон",
+                    10,
+                    30,
+                    20,
+                    0,
+                    raceDto.getName());
 
-            creatureDto4 = RequestCreatureDto.builder()
-                    .name("Синий дракон")
-                    .str(15)
-                    .dex(25)
-                    .con(20)
-                    .def(0)
-                    .race(raceDto.getName())
-                    .build();
+            creatureDto4 = new RequestCreatureDto(
+                    "Синий дракон",
+                    15,
+                    25,
+                    20,
+                    0,
+                    raceDto.getName());
 
-            creatureDto5 = RequestCreatureDto.builder()
-                    .name("Ржавый дракон")
-                    .str(10)
-                    .dex(25)
-                    .con(25)
-                    .def(0)
-                    .race(raceDto.getName())
-                    .build();
+            creatureDto5 = new RequestCreatureDto(
+                    "Ржавый дракон",
+                    10,
+                    25,
+                    25,
+                    0,
+                    raceDto.getName());
         }
 
         @Test
@@ -305,12 +297,12 @@ public class CreatureControllerTest {
             RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(creatureDto4));
             RequestParentTest.insertCreature(mockMvc, token, objectMapper.writeValueAsString(creatureDto5));
             getRequest = MockMvcRequestBuilders
-                    .get(uri+ "/all")
+                    .get(uri + "/all")
                     .contentType(MediaType.APPLICATION_JSON)
                     .header("Authorization", "Bearer " + token);
             //when
             mockMvc.perform(getRequest)
-            //then
+                    //then
                     .andExpect(
                             status().isOk())
                     .andExpect(

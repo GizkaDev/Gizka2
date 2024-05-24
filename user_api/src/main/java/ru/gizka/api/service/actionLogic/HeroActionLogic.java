@@ -56,9 +56,9 @@ public class HeroActionLogic {
     }
 
     @Transactional
-    public Hero takeOffArmor(Hero hero){
+    public Hero takeOffArmor(Hero hero) {
         if (hero.getEquippedArmor() != null) {
-            log.info("Сервис действий возвращает доспех id: {} в инвентарь героя",hero.getEquippedArmor().getId());
+            log.info("Сервис действий возвращает доспех id: {} в инвентарь героя", hero.getEquippedArmor().getId());
             ArmorObject equippedArmor = hero.getEquippedArmor();
             equippedArmor.setHero(hero);
             equippedArmor.setCarrierId(null);
@@ -111,13 +111,12 @@ public class HeroActionLogic {
         } else {
             hero.setCurrentHp(turns.get(turns.size() - 1).getDefender().getCurrentHp());
         }
-        return Fight.builder()
-                .hero(hero)
-                .creature(creature)
-                .turns(turnsAsString)
-                .result(getResult(turns, fighter1.getName()))
-                .createdAt(new Date())
-                .build();
+        return new Fight(
+                hero,
+                creature,
+                turnsAsString,
+                getResult(turns, fighter1.getName()),
+                new Date());
     }
 
     public Duel simulateDuel(Hero hero1, Hero hero2) {
@@ -136,12 +135,11 @@ public class HeroActionLogic {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        return Duel.builder()
-                .heroes(List.of(hero1, hero2))
-                .turns(turnsAsString)
-                .result(getResult(turns, fighter1.getName()))
-                .createdAt(new Date())
-                .build();
+        return new Duel(
+                List.of(hero1, hero2),
+                turnsAsString,
+                getResult(turns, fighter1.getName()),
+                new Date());
     }
 
     //Если хп ни у кого не опустилось до нуля и ниже, то ничья

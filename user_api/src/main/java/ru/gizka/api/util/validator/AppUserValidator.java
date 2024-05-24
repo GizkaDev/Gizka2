@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import ru.gizka.api.dto.user.RequestAppUserDto;
-import ru.gizka.api.service.AppUserService;
+import ru.gizka.api.dto.appUser.RequestAppUserDto;
+import ru.gizka.api.service.appUser.AppUserService;
 
 @Component
 @Slf4j
@@ -27,19 +27,19 @@ public class AppUserValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         RequestAppUserDto userDto = (RequestAppUserDto) target;
-        log.info("Валидатор пользователей проверяет нового пользователя: {}", userDto.getLogin());
+        log.info("Проверяем нового пользователя: {}", userDto.getLogin());
         validateCreate(userDto, errors);
     }
 
     private void validateCreate(RequestAppUserDto userDto, Errors errors) {
-        if (appUserService.getByLogin(userDto.getLogin()).isPresent()) {
+        if (appUserService.getByLoginOptional(userDto.getLogin()).isPresent()) {
             errors.rejectValue("login", "", "Логин занят");
-            log.info("Валидатор пользователей сообщает, что логин занят: {}", userDto.getLogin());
+            log.info("Логин занят");
         }
 
         if(userDto.getLogin() == null || userDto.getLogin().equals("null")){
             errors.rejectValue("login", "", "Недопустимый логин");
-            log.info("Валидатор пользователей сообщает, что логин недопустим: {}", userDto.getLogin());
+            log.info("Недопустимый логин");
         }
     }
 }

@@ -16,7 +16,6 @@ import java.util.List;
 @Entity
 @Table(name = "race")
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Race {
@@ -72,4 +71,15 @@ public class Race {
     @Enumerated(EnumType.STRING)
     @Column(name = "race_size")
     private RaceSize raceSize;
+
+    public Race(String name, Boolean isPlayable, Integer strBonus, Integer dexBonus, Integer conBonus, Integer wisBonus, Integer defBonus, RaceSize raceSize) {
+        this.name = name;
+        this.isPlayable = isPlayable;
+        this.strBonus = strBonus;
+        this.dexBonus = dexBonus;
+        this.conBonus = conBonus;
+        this.wisBonus = wisBonus;
+        this.defBonus = defBonus;
+        this.raceSize = raceSize;
+    }
 }

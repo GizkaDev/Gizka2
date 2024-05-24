@@ -18,7 +18,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class Fight {
 
     @Id
@@ -48,4 +47,12 @@ public class Fight {
 
     @ManyToMany(mappedBy = "fights")
     private List<ItemPattern> loot;
+
+    public Fight(Hero hero, Creature creature, String turns, Result result, Date createdAt) {
+        this.hero = hero;
+        this.creature = creature;
+        this.turns = turns;
+        this.result = result;
+        this.createdAt = createdAt;
+    }
 }

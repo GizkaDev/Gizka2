@@ -17,10 +17,11 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import ru.gizka.api.model.user.AppUser;
-import ru.gizka.api.model.user.AuthUser;
-import ru.gizka.api.model.user.Role;
-import ru.gizka.api.service.AppUserService;
+import ru.gizka.api.config.security.jwt.JwtFilter;
+import ru.gizka.api.model.appUser.AppUser;
+import ru.gizka.api.model.appUser.AuthUser;
+import ru.gizka.api.model.appUser.Role;
+import ru.gizka.api.service.appUser.AppUserService;
 
 import java.util.Optional;
 
@@ -48,7 +49,7 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService() {
         return login -> {
             log.debug("Получение учетной записи: {}", login);
-            Optional<AppUser> optionalUser = appUserService.getByLogin(login);
+            Optional<AppUser> optionalUser = appUserService.getByLoginOptional(login);
             return new AuthUser(optionalUser.orElseThrow(
                     () -> new BadCredentialsException(String.format("Неверные учетные данные: %s", login))
             ));
@@ -78,8 +79,8 @@ public class SecurityConfig {
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
                                 .requestMatchers("/api/admin/**").hasRole(Role.ADMIN.name())
-                                .requestMatchers("/api/auth/registration").anonymous()
-                                .requestMatchers("/api/auth/token").permitAll()
+                                .requestMatchers("/api/user/registration").anonymous()
+                                .requestMatchers("/api/user/token").permitAll()
                                 .requestMatchers("/api/**").authenticated())
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                         httpSecurityExceptionHandlingConfigurer

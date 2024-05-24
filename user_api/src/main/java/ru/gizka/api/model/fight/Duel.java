@@ -15,7 +15,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class Duel {
 
     @Id
@@ -37,4 +36,11 @@ public class Duel {
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+
+    public Duel(List<Hero> heroes, String turns, Result result, Date createdAt) {
+        this.heroes = heroes;
+        this.turns = turns;
+        this.result = result;
+        this.createdAt = createdAt;
+    }
 }

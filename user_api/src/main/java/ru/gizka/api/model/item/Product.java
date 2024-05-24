@@ -16,7 +16,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class Product {
 
     @Id
@@ -42,4 +41,9 @@ public class Product {
             fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE)
     private List<ItemObject> itemObjects;
+
+    public Product(String name, Long price) {
+        this.name = name;
+        this.price = price;
+    }
 }

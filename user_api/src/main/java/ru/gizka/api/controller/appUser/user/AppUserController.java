@@ -1,4 +1,4 @@
-package ru.gizka.api.controller;
+package ru.gizka.api.controller.appUser.user;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -7,33 +7,32 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.gizka.api.dto.user.RequestAppUserDto;
-import ru.gizka.api.dto.user.ResponseAppUserDto;
-import ru.gizka.api.facade.AuthFacade;
+import ru.gizka.api.dto.appUser.RequestAppUserDto;
+import ru.gizka.api.dto.appUser.ResponseAppUserDto;
+import ru.gizka.api.facade.AppUserFacade;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/user")
 @Slf4j
-public class AuthController {
+public class AppUserController {
 
-    private final AuthFacade authFacade;
+    private final AppUserFacade appUserFacade;
 
     @Autowired
-    public AuthController (AuthFacade authFacade){
-        this.authFacade = authFacade;
+    public AppUserController (AppUserFacade appUserFacade){
+        this.appUserFacade = appUserFacade;
     }
 
     @PostMapping("/registration")
     public ResponseEntity<ResponseAppUserDto> create(@Valid @RequestBody RequestAppUserDto userDto,
                                                      BindingResult bindingResult)  {
-        log.info("Контроллер аутентификации принял запрос POST /registration для пользователя: {}", userDto.getLogin());
-        ResponseAppUserDto responseUser = authFacade.create(userDto, bindingResult);
+        log.info("Принят запрос POST /api/user/registration");
+        ResponseAppUserDto responseUser = appUserFacade.create(userDto, bindingResult);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }
-
     @PostMapping("/token")
     public ResponseEntity<String> getToken(@RequestBody RequestAppUserDto userDto) {
         log.info("Контроллер аутентификации принял запрос POST /token для пользователя: {}", userDto.getLogin());
-        return ResponseEntity.ok(authFacade.getToken(userDto));
+        return ResponseEntity.ok(appUserFacade.getToken(userDto));
     }
 }

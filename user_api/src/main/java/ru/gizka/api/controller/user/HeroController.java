@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.gizka.api.dto.hero.RequestHeroDto;
 import ru.gizka.api.dto.hero.ResponseHeroDto;
 import ru.gizka.api.facade.HeroFacade;
-import ru.gizka.api.model.user.AuthUser;
+import ru.gizka.api.model.appUser.AuthUser;
 
 import java.util.List;
 

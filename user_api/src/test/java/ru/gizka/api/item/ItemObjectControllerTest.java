@@ -25,7 +25,7 @@ import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.item.ResponseItemDto;
 import ru.gizka.api.dto.item.armor.RequestArmorPatternDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
-import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.dto.appUser.RequestAppUserDto;
 import ru.gizka.api.model.item.armor.ArmorType;
 import ru.gizka.api.model.race.RaceSize;
 
@@ -64,20 +64,18 @@ public class ItemObjectControllerTest {
         raceDto = new RequestRaceDto("Человек", true,
                 0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
-        heroDto = RequestHeroDto.builder()
-                .name("NameЯ")
-                .lastName("LastnameБ")
-                .str(10)
-                .dex(10)
-                .con(10)
-                .wis(10)
-                .race(raceDto.getName())
-                .build();
+        heroDto = new RequestHeroDto(
+                "NameЯ",
+                "LastnameБ",
+                10,
+                10,
+                10,
+                10,
+                raceDto.getName());
 
-        userDto = RequestAppUserDto.builder()
-                .login("Login123_.-")
-                .password("Qwerty12345!")
-                .build();
+        userDto = new RequestAppUserDto(
+                "Login123_.-",
+                "Qwerty12345!");
 
         RequestBuilder userCreationBuilder =
                 MockMvcRequestBuilders
@@ -115,29 +113,27 @@ public class ItemObjectControllerTest {
             raceDto = new RequestRaceDto("Человек", true,
                     0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
-            userDto = RequestAppUserDto.builder()
-                    .login("Biba")
-                    .password("Qwerty12345!")
-                    .build();
+            userDto = new RequestAppUserDto(
+                    "Biba",
+                    "Qwerty12345!");
 
-            heroDto = RequestHeroDto.builder()
-                    .name("Gizka")
-                    .lastName("Green")
-                    .str(10)
-                    .dex(8)
-                    .con(12)
-                    .wis(10)
-                    .race("Человек")
-                    .build();
+            heroDto = new RequestHeroDto(
+                    "Gizka",
+                    "Green",
+                    10,
+                    8,
+                    12,
+                    10,
+                    "Человек");
 
-            creatureDto = RequestCreatureDto.builder()
-                    .name("Разбойник")
-                    .str(1)
-                    .dex(1)
-                    .con(1)
-                    .def(0)
-                    .race(raceDto.getName())
-                    .build();
+
+            creatureDto = new RequestCreatureDto(
+                    "Разбойник",
+                    1,
+                    1,
+                    1,
+                    0,
+                    raceDto.getName());
 
             productDto = new RequestProductDto(
                     "Роскошь", 500L);
@@ -439,20 +435,19 @@ public class ItemObjectControllerTest {
             raceDto = new RequestRaceDto("Человек", true,
                     0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
-            userDto = RequestAppUserDto.builder()
-                    .login("Biba")
-                    .password("Qwerty12345!")
-                    .build();
+            userDto = new RequestAppUserDto(
+                    "Biba",
+                    "Qwerty12345!");
 
-            heroDto = RequestHeroDto.builder()
-                    .name("Gizka")
-                    .lastName("Green")
-                    .str(10)
-                    .dex(8)
-                    .con(12)
-                    .wis(10)
-                    .race("Человек")
-                    .build();
+            heroDto = new RequestHeroDto(
+                    "Gizka",
+                    "Green",
+                    10,
+                    8,
+                    12,
+                    10,
+                    "Человек");
+
 
             creatureDto = new RequestCreatureDto("Разбойник", 1, 1, 1, 0, raceDto.getName());
 

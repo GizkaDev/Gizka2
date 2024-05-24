@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class RequestCreatureDto {
     @Size(min = 1, max = 100, message = "Название моба должно состоять из 1 - 100 символов")
     @NotBlank(message = "Название моба должно состоять из 1 - 100 символов")

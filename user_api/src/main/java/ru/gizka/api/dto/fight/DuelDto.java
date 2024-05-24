@@ -11,7 +11,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class DuelDto {
     private Long id;
     private List<Fighter> heroFighters;

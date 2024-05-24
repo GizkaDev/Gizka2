@@ -9,7 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.gizka.api.dto.hero.ResponseHeroDto;
 import ru.gizka.api.facade.item.armor.ArmorObjectFacade;
-import ru.gizka.api.model.user.AuthUser;
+import ru.gizka.api.model.appUser.AuthUser;
 
 @RestController
 @Slf4j

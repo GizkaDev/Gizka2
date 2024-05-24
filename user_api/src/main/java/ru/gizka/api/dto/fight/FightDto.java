@@ -14,7 +14,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class FightDto {
     private Long id;
     private ResponseHeroDto heroFighter;

@@ -13,7 +13,7 @@ import ru.gizka.api.dto.hero.RequestHeroDto;
 import ru.gizka.api.dto.hero.ResponseHeroDto;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.race.Race;
-import ru.gizka.api.model.user.AppUser;
+import ru.gizka.api.model.appUser.AppUser;
 import ru.gizka.api.service.HeroService;
 import ru.gizka.api.service.actionLogic.HeroActionLogic;
 import ru.gizka.api.service.notification.NotificationBuilder;

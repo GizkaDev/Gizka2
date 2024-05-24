@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.RequestParentTest;
 import ru.gizka.api.dto.item.RequestProductDto;
-import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.dto.appUser.RequestAppUserDto;
 
 import java.util.Random;
 
@@ -53,15 +53,13 @@ public class AdminProductControllerTest {
                     .post(uri)
                     .contentType(MediaType.APPLICATION_JSON);
 
-            userDto = RequestAppUserDto.builder()
-                    .login("Biba")
-                    .password("Qwerty12345!")
-                    .build();
+            userDto = new RequestAppUserDto(
+                    "Biba",
+                    "Qwerty12345!");
 
-            productDto = RequestProductDto.builder()
-                    .name("Роскошь")
-                    .price(500L)
-                    .build();
+            productDto = new RequestProductDto(
+                    "Роскошь",
+                    500L);
         }
 
         @Test
@@ -133,9 +131,9 @@ public class AdminProductControllerTest {
         @Description(value = "Тест на создание товара без названия")
         void Product_create_NoName() throws Exception {
             //given
-            productDto = RequestProductDto.builder()
-                    .price(100L)
-                    .build();
+            productDto = new RequestProductDto(
+                    null,
+                    100L);
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);

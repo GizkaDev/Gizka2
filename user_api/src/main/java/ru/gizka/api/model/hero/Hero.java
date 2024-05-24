@@ -13,7 +13,7 @@ import ru.gizka.api.model.fight.Fight;
 import ru.gizka.api.model.item.ItemObject;
 import ru.gizka.api.model.item.armor.ArmorObject;
 import ru.gizka.api.model.race.Race;
-import ru.gizka.api.model.user.AppUser;
+import ru.gizka.api.model.appUser.AppUser;
 
 import java.util.Date;
 import java.util.List;

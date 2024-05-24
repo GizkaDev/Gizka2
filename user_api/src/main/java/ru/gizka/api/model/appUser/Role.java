@@ -1,4 +1,4 @@
-package ru.gizka.api.model.user;
+package ru.gizka.api.model.appUser;
 
 import org.springframework.security.core.GrantedAuthority;
 

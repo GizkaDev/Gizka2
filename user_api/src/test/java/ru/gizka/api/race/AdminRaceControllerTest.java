@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.RequestParentTest;
 import ru.gizka.api.dto.race.RequestRaceDto;
-import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.dto.appUser.RequestAppUserDto;
 import ru.gizka.api.model.race.RaceSize;
 
 import java.util.Random;
@@ -51,10 +51,9 @@ public class AdminRaceControllerTest {
 
         @BeforeEach
         void setUp() throws Exception {
-            userDto = RequestAppUserDto.builder()
-                    .login("Biba")
-                    .password("Qwerty12345!")
-                    .build();
+            userDto = new RequestAppUserDto(
+                    "Boba",
+                    "Qwerty12345!");
 
             raceDto = new RequestRaceDto("Человек", true,
                     0, 0, 0, 0, 0, RaceSize.AVERAGE.name());

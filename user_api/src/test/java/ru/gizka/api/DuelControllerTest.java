@@ -23,7 +23,7 @@ import ru.gizka.api.dto.hero.RequestHeroDto;
 import ru.gizka.api.dto.item.RequestItemPatternDto;
 import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
-import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.dto.appUser.RequestAppUserDto;
 import ru.gizka.api.model.race.RaceSize;
 
 import java.util.Date;
@@ -62,35 +62,31 @@ public class DuelControllerTest extends RequestParentTest {
         raceDto = new RequestRaceDto("Человек", true,
                 0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
-        userDto = RequestAppUserDto.builder()
-                .login("Biba")
-                .password("Qwerty12345!")
-                .build();
+        userDto = new RequestAppUserDto(
+                "Biba",
+                "Qwerty12345!");
 
-        userDto2 = RequestAppUserDto.builder()
-                .login("Boba")
-                .password("Qwerty12345!")
-                .build();
+        userDto2 = new RequestAppUserDto(
+                "Boba",
+                "Qwerty12345!");
 
-        heroDto = RequestHeroDto.builder()
-                .name("Gizka")
-                .lastName("Green")
-                .str(10)
-                .dex(8)
-                .con(12)
-                .wis(10)
-                .race("Человек")
-                .build();
+        heroDto = new RequestHeroDto(
+                "Gizka",
+                "Green",
+                10,
+                8,
+                12,
+                10,
+                "Человек");
 
-        heroDto2 = RequestHeroDto.builder()
-                .name("Lyakusha")
-                .lastName("Swamp")
-                .str(10)
-                .dex(12)
-                .con(8)
-                .wis(10)
-                .race("Человек")
-                .build();
+        heroDto2 = new RequestHeroDto(
+                "Lyakusha",
+                "Swamp",
+                10,
+                12,
+                8,
+                10,
+                "Человек");
     }
 
     @Nested
@@ -514,14 +510,13 @@ public class DuelControllerTest extends RequestParentTest {
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto2), token2);
             RequestParentTest.insertCreature(mockMvc, token1,
-                    objectMapper.writeValueAsString(RequestCreatureDto.builder()
-                            .name("Титан")
-                            .str(1000)
-                            .dex(1000)
-                            .con(1000)
-                            .def(0)
-                            .race(raceDto.getName())
-                            .build()));
+                    objectMapper.writeValueAsString(new RequestCreatureDto(
+                            "Титан",
+                            1000,
+                            1000,
+                            1000,
+                            0,
+                            raceDto.getName())));
 
             token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
 
@@ -554,14 +549,13 @@ public class DuelControllerTest extends RequestParentTest {
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto2), token2);
             RequestParentTest.insertCreature(mockMvc, token1,
-                    objectMapper.writeValueAsString(RequestCreatureDto.builder()
-                            .name("Титан")
-                            .str(1000)
-                            .dex(1000)
-                            .con(1000)
-                            .def(0)
-                            .race(raceDto.getName())
-                            .build()));
+                    objectMapper.writeValueAsString(new RequestCreatureDto(
+                            "Титан",
+                            1000,
+                            1000,
+                            1000,
+                            0,
+                            raceDto.getName())));
 
             token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
 

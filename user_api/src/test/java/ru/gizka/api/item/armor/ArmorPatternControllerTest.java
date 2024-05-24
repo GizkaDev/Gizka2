@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.RequestParentTest;
 import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.item.armor.RequestArmorPatternDto;
-import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.dto.appUser.RequestAppUserDto;
 import ru.gizka.api.model.item.armor.ArmorType;
 
 import java.util.Random;
@@ -52,10 +52,9 @@ public class ArmorPatternControllerTest {
 
         @BeforeEach
         void setUp() {
-            userDto = RequestAppUserDto.builder()
-                    .login("Biba")
-                    .password("Qwerty12345!")
-                    .build();
+            userDto = new RequestAppUserDto(
+                    "Biba",
+                    "Qwerty12345!");
 
             armorDto = new RequestArmorPatternDto(
                     "Кольчуга",

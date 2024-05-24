@@ -19,7 +19,7 @@ import ru.gizka.api.dto.hero.RequestHeroDto;
 import ru.gizka.api.dto.item.RequestItemPatternDto;
 import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
-import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.dto.appUser.RequestAppUserDto;
 import ru.gizka.api.model.race.RaceSize;
 
 import java.util.Random;
@@ -56,29 +56,26 @@ public class FightControllerTest {
         raceDto = new RequestRaceDto("Человек", true,
                 0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
-        userDto = RequestAppUserDto.builder()
-                .login("Biba")
-                .password("Qwerty12345!")
-                .build();
+        userDto = new RequestAppUserDto(
+                "Biba",
+                "Qwerty12345!");
 
-        heroDto = RequestHeroDto.builder()
-                .name("Gizka")
-                .lastName("Green")
-                .str(10)
-                .dex(8)
-                .con(12)
-                .wis(10)
-                .race("Человек")
-                .build();
+        heroDto = new RequestHeroDto(
+                "Gizka",
+                "Green",
+                10,
+                8,
+                12,
+                10,
+                "Человек");
 
-        creatureDto = RequestCreatureDto.builder()
-                .name("Разбойник")
-                .str(4)
-                .dex(7)
-                .con(5)
-                .def(0)
-                .race(raceDto.getName())
-                .build();
+        creatureDto = new RequestCreatureDto(
+                "Разбойник",
+                4,
+                7,
+                5,
+                0,
+                raceDto.getName());
 
         productDto = new RequestProductDto(
                 "Роскошь", 500L);
@@ -413,14 +410,13 @@ public class FightControllerTest {
             RequestParentTest.setAdminRights(mockMvc, token1);
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
-            RequestCreatureDto megaCreature = RequestCreatureDto.builder()
-                    .name("Титан")
-                    .str(1000)
-                    .dex(1000)
-                    .con(1000)
-                    .def(0)
-                    .race(raceDto.getName())
-                    .build();
+            RequestCreatureDto megaCreature = new RequestCreatureDto(
+                    "Титан",
+                    1000,
+                    1000,
+                    1000,
+                    0,
+                    raceDto.getName());
             RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(megaCreature));
 
             requestBuilder = MockMvcRequestBuilders

@@ -17,7 +17,6 @@ import java.util.List;
 @Entity
 @Table(name = "creature")
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Creature {
@@ -91,4 +90,12 @@ public class Creature {
             fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE)
     private List<Fight> fights;
+
+    public Creature(String name, Integer str, Integer dex, Integer con, Integer def) {
+        this.name = name;
+        this.str = str;
+        this.dex = dex;
+        this.con = con;
+        this.def = def;
+    }
 }

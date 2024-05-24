@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.RequestParentTest;
 import ru.gizka.api.dto.item.RequestItemPatternDto;
 import ru.gizka.api.dto.item.RequestProductDto;
-import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.dto.appUser.RequestAppUserDto;
 
 import java.util.Random;
 
@@ -55,22 +55,19 @@ public class AdminItemPatternControllerTest {
                     .post(uri)
                     .contentType(MediaType.APPLICATION_JSON);
 
-            userDto = RequestAppUserDto.builder()
-                    .login("Biba")
-                    .password("Qwerty12345!")
-                    .build();
+            userDto = new RequestAppUserDto(
+                    "Biba",
+                    "Qwerty12345!");
 
-            productDto = RequestProductDto.builder()
-                    .name("Роскошь")
-                    .price(500L)
-                    .build();
+            productDto = new RequestProductDto(
+                    "Роскошь",
+                    500L);
 
-            itemDto = RequestItemPatternDto.builder()
-                    .name("Золотой кубок")
-                    .value(1)
-                    .weight(1000L)
-                    .product("Роскошь")
-                    .build();
+            itemDto = new RequestItemPatternDto(
+                    "Золотой кубок",
+                    1000L,
+                    1,
+                    "Роскошь");
         }
 
         @Test

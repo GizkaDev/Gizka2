@@ -1,4 +1,4 @@
-package ru.gizka.api.service;
+package ru.gizka.api.config.security.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;

@@ -1,17 +1,15 @@
-package ru.gizka.api.dto.user;
+package ru.gizka.api.dto.appUser;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class RequestAppUserDto {
 
     @Pattern(regexp = "^[a-zA-Z0-9_.-]+$",

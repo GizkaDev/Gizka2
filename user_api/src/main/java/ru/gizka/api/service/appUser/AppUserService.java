@@ -1,4 +1,4 @@
-package ru.gizka.api.service;
+package ru.gizka.api.service.appUser;
 
 
 import jakarta.persistence.EntityNotFoundException;
@@ -6,9 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.gizka.api.model.hero.Hero;
-import ru.gizka.api.model.user.AppUser;
-import ru.gizka.api.model.user.Role;
+import ru.gizka.api.model.appUser.AppUser;
+import ru.gizka.api.model.appUser.Role;
 import ru.gizka.api.repo.AppUserRepo;
 
 import java.util.*;
@@ -27,20 +26,23 @@ public class AppUserService {
         this.appUserRepo = appUserRepo;
     }
 
-    public Optional<AppUser> getByLogin(String login) {
-        log.info("Сервис пользователей ищет пользователя: {}", login);
+    public Optional<AppUser> getByLoginOptional(String login) {
+        log.info("Ищем пользователя: {}", login);
         return appUserRepo.findByLogin(login);
+    }
+
+    public AppUser getByLogin(String login) {
+        log.info("Ищем пользователя: {}", login);
+        return appUserRepo.findByLogin(login)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Пользователь не найден"));
     }
 
     @Transactional
     public AppUser create(AppUser user) {
-        log.info("Сервис пользователей создает нового пользователя: {}", user.getLogin());
-        Set<Role> roles = new HashSet<>();
-        List<Hero> heroes = new ArrayList<>();
-        user.setHeroes(heroes);
-        user.setRoles(roles);
+        log.info("Создаем нового пользователя: {}", user.getLogin());
         user.getRoles().add(Role.USER);
-        user.setRegisteredAt(new Date());
+        log.info("Шифруем пароль");
         user.setPassword(PASSWORD_ENCODER.encode((user.getPassword())));
         return appUserRepo.save(user);
     }
@@ -53,7 +55,7 @@ public class AppUserService {
 
     @Transactional
     public AppUser addAdminRights(String login) {
-        AppUser appUser = getByLogin(login)
+        AppUser appUser = getByLoginOptional(login)
                 .orElseThrow(() ->
                         new EntityNotFoundException(String.format("Пользователь %s не найден", login)));
         log.info(String.format("Сервис пользователей наделяет пользователя: %s правами администратора", login));
@@ -62,7 +64,7 @@ public class AppUserService {
     }
 
     @Transactional
-    public AppUser save(AppUser appUser){
+    public AppUser save(AppUser appUser) {
         log.info("Сервис пользователей сохраняет пользователя: {}", appUser.getLogin());
         return appUserRepo.save(appUser);
     }

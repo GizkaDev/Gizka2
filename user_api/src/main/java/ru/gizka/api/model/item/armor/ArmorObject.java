@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import ru.gizka.api.model.item.ItemObject;
 
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "armor_object")
 @Data

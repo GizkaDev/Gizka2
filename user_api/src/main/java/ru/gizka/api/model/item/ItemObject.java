@@ -16,7 +16,6 @@ import ru.gizka.api.model.hero.Hero;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Inheritance(strategy = InheritanceType.JOINED)
 public class ItemObject {
 

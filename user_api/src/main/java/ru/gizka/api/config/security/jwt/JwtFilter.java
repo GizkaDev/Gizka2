@@ -1,4 +1,4 @@
-package ru.gizka.api.config.security;
+package ru.gizka.api.config.security.jwt;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import jakarta.servlet.FilterChain;
@@ -12,13 +12,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.gizka.api.model.user.AppUser;
-import ru.gizka.api.model.user.AuthUser;
-import ru.gizka.api.service.AppUserService;
-import ru.gizka.api.service.JwtService;
+import ru.gizka.api.model.appUser.AppUser;
+import ru.gizka.api.model.appUser.AuthUser;
+import ru.gizka.api.service.appUser.AppUserService;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Optional;
 
 @Component
@@ -42,12 +40,12 @@ public class JwtFilter extends OncePerRequestFilter {
             String jwt = authHeader.substring(7);
 
             if (jwt.isEmpty() || jwt.isBlank()) {
-                log.error("Фильтр перехватил пустой токен");
+                log.error("Перехвачен пустой токен");
                 response.setHeader("Reason", "Фильтр перехватил пустой токен");
             } else {
                 try {
                     String username = jwtService.validateToken(jwt);
-                    Optional<AppUser> optionalUser = appUserService.getByLogin(username);
+                    Optional<AppUser> optionalUser = appUserService.getByLoginOptional(username);
                     log.info("Извлечен логин из токена: {}", username);
                     if (optionalUser.isEmpty()) {
                         log.error("Пользователь не найден: {}", username);

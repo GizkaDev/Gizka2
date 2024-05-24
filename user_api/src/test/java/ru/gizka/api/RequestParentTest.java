@@ -11,7 +11,7 @@ public class RequestParentTest {
     public static void insertUser(MockMvc mockMvc, String userDtoAsString) throws Exception {
         RequestBuilder userRequest =
                 MockMvcRequestBuilders
-                        .post("/api/auth/registration")
+                        .post("/api/user/registration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userDtoAsString);
         mockMvc.perform(userRequest);
@@ -19,7 +19,7 @@ public class RequestParentTest {
 
     public static String getTokenRequest(MockMvc mockMvc, String userDtoAsString) throws Exception {
         RequestBuilder tokenRequest = MockMvcRequestBuilders
-                .post("/api/auth/token")
+                .post("/api/user/token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userDtoAsString);
 

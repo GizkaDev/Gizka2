@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.RequestParentTest;
 import ru.gizka.api.dto.item.RequestProductDto;
-import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.dto.appUser.RequestAppUserDto;
 
 import java.util.Random;
 
@@ -50,15 +50,13 @@ public class ProductControllerTest {
 
         @BeforeEach
         void setUp() {
-            userDto = RequestAppUserDto.builder()
-                    .login("Biba")
-                    .password("Qwerty12345!")
-                    .build();
+            userDto = new RequestAppUserDto(
+                    "Biba",
+                    "Qwerty12345!");
 
-            productDto = RequestProductDto.builder()
-                    .name("Оружие")
-                    .price(50L)
-                    .build();
+            productDto = new RequestProductDto(
+                    "Оружие",
+                    50L);
         }
 
         @Test
@@ -195,35 +193,29 @@ public class ProductControllerTest {
 
         @BeforeEach
         void setUp() {
-            userDto = RequestAppUserDto.builder()
-                    .login("Biba")
-                    .password("Qwerty12345!")
-                    .build();
+            userDto = new RequestAppUserDto(
+                    "Biba",
+                    "Qwerty12345!");
 
-            productDto1 = RequestProductDto.builder()
-                    .name("Оружие")
-                    .price(50L)
-                    .build();
+            productDto1 = new RequestProductDto(
+                    "Оружие",
+                    50L);
 
-            productDto2 = RequestProductDto.builder()
-                    .name("Еда")
-                    .price(50L)
-                    .build();
+            productDto2 = new RequestProductDto(
+                    "Еда",
+                    50L);
 
-            productDto3 = RequestProductDto.builder()
-                    .name("Роскошь")
-                    .price(50L)
-                    .build();
+            productDto3 = new RequestProductDto(
+                    "Роскошь",
+                    50L);
 
-            productDto4 = RequestProductDto.builder()
-                    .name("Броня")
-                    .price(50L)
-                    .build();
+            productDto4 = new RequestProductDto(
+                    "Броня",
+                    50L);
 
-            productDto5 = RequestProductDto.builder()
-                    .name("Одежда")
-                    .price(50L)
-                    .build();
+            productDto5 = new RequestProductDto(
+                    "Одежда",
+                    50L);
         }
 
         @Test

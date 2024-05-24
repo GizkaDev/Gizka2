@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.gizka.api.model.user.AppUser;
+import ru.gizka.api.model.appUser.AppUser;
 
 import java.util.Date;
 
@@ -14,7 +14,6 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class Notification {
     @Id
     @Column(name = "id")
@@ -32,4 +31,9 @@ public class Notification {
     @ManyToOne
     @JoinColumn(name = "app_user_notification", referencedColumnName = "login")
     private AppUser appUser;
+
+    public Notification(String message, Date createdAt) {
+        this.message = message;
+        this.createdAt = createdAt;
+    }
 }

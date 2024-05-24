@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.dto.fight.DuelDto;
 import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.model.hero.Hero;
-import ru.gizka.api.model.user.AppUser;
-import ru.gizka.api.service.AppUserService;
+import ru.gizka.api.model.appUser.AppUser;
+import ru.gizka.api.service.appUser.AppUserService;
 import ru.gizka.api.service.DuelService;
 import ru.gizka.api.service.HeroService;
 import ru.gizka.api.service.actionLogic.HeroActionLogic;
@@ -56,7 +56,7 @@ public class DuelFacade {
         if (user1.getLogin().equals(login)) {
             throw new IllegalArgumentException("Нельзя выбрать своего героя в качестве соперника");
         }
-        AppUser user2 = appUserService.getByLogin(login)
+        AppUser user2 = appUserService.getByLoginOptional(login)
                 .orElseThrow(() ->
                         new EntityNotFoundException("Пользователь не найден"));
         List<Hero> heroes1 = heroService.getAliveByUser(user1);

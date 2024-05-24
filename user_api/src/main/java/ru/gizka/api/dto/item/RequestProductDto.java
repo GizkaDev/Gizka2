@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class RequestProductDto {
     @Size(min = 3, max = 100, message = "Название категории товара должно состоять из 3-255 знаков")
     @NotBlank(message = "Название категории товара должно состоять из 3-255 знаков")

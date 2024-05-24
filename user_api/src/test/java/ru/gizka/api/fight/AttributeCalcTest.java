@@ -8,7 +8,7 @@ import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.hero.Status;
 import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.race.RaceSize;
-import ru.gizka.api.model.user.AppUser;
+import ru.gizka.api.model.appUser.AppUser;
 import ru.gizka.api.service.AttributeCalculator;
 
 import java.util.Collections;

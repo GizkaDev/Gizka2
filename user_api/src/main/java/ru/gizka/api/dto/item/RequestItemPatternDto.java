@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class RequestItemPatternDto {
 
     @Size(min = 1, max = 200, message = "Название шаблона предмета должно состоять из 1-200 символов")

@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.RequestParentTest;
 import ru.gizka.api.dto.creature.RequestCreatureDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
-import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.dto.appUser.RequestAppUserDto;
 import ru.gizka.api.model.race.RaceSize;
 
 import java.util.Random;
@@ -53,22 +53,20 @@ public class AdminCreatureControllerTest {
 
         @BeforeEach
         void setUp() throws Exception {
-            userDto = RequestAppUserDto.builder()
-                    .login("Biba")
-                    .password("Qwerty12345!")
-                    .build();
+            userDto = new RequestAppUserDto(
+                    "Biba",
+                    "Qwerty12345!");
 
             raceDto = new RequestRaceDto("Гоблин", true,
                     0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
-            creatureDto = RequestCreatureDto.builder()
-                    .name("Безумный гоблин")
-                    .str(4)
-                    .dex(7)
-                    .con(5)
-                    .def(0)
-                    .race(raceDto.getName())
-                    .build();
+            creatureDto = new RequestCreatureDto(
+                    "Безумный гоблин",
+                    4,
+                    7,
+                    5,
+                    0,
+                    raceDto.getName());
 
             createRequest = MockMvcRequestBuilders
                     .post(uri)
@@ -193,11 +191,13 @@ public class AdminCreatureControllerTest {
         @Description(value = "Тест на создание моба без названия null")
         void Creature_create_NoName() throws Exception {
             //given
-            creatureDto = RequestCreatureDto.builder()
-                    .str(4)
-                    .dex(7)
-                    .con(5)
-                    .build();
+            creatureDto = new RequestCreatureDto(
+                    null,
+                    4,
+                    7,
+                    5,
+                    0,
+                    raceDto.getName());
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
@@ -217,12 +217,13 @@ public class AdminCreatureControllerTest {
         @Description(value = "Тест на создание моба без названия null")
         void Creature_create_NullName() throws Exception {
             //given
-            creatureDto = RequestCreatureDto.builder()
-                    .name(null)
-                    .str(4)
-                    .dex(7)
-                    .con(5)
-                    .build();
+            creatureDto = new RequestCreatureDto(
+                    null,
+                    4,
+                    7,
+                    5,
+                    0,
+                    raceDto.getName());
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
@@ -242,13 +243,13 @@ public class AdminCreatureControllerTest {
         @Description(value = "Тест на создание моба без названия blank")
         void Creature_create_BlankName() throws Exception {
             //given
-            creatureDto = RequestCreatureDto.builder()
-                    .name("      ")
-                    .str(4)
-                    .dex(7)
-                    .con(5)
-                    .def(0)
-                    .build();
+            creatureDto = new RequestCreatureDto(
+                    "      ",
+                    4,
+                    7,
+                    5,
+                    0,
+                    raceDto.getName());
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
@@ -268,12 +269,13 @@ public class AdminCreatureControllerTest {
         @Description(value = "Тест на создание моба без названия empty")
         void Creature_create_EmptyName() throws Exception {
             //given
-            creatureDto = RequestCreatureDto.builder()
-                    .name("")
-                    .str(4)
-                    .dex(7)
-                    .con(5)
-                    .build();
+            creatureDto = new RequestCreatureDto(
+                    "",
+                    4,
+                    7,
+                    5,
+                    0,
+                    raceDto.getName());
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
@@ -293,13 +295,13 @@ public class AdminCreatureControllerTest {
         @Description(value = "Тест на создание моба c 0 характеристиками")
         void Creature_create_ZeroChar() throws Exception {
             //given
-            creatureDto = RequestCreatureDto.builder()
-                    .name("Безумный гоблин")
-                    .str(0)
-                    .dex(0)
-                    .con(0)
-                    .def(0)
-                    .build();
+            creatureDto = new RequestCreatureDto(
+                    "Безумный гоблин",
+                    0,
+                    0,
+                    0,
+                    0,
+                    raceDto.getName());
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
@@ -323,13 +325,13 @@ public class AdminCreatureControllerTest {
         @Description(value = "Тест на создание моба c null характеристиками")
         void Creature_create_NullChar() throws Exception {
             //given
-            creatureDto = RequestCreatureDto.builder()
-                    .name("Безумный гоблин")
-                    .str(null)
-                    .dex(null)
-                    .con(null)
-                    .def(null)
-                    .build();
+            creatureDto = new RequestCreatureDto(
+                    "Безумный гоблин",
+                    null,
+                    null,
+                    null,
+                    null,
+                    raceDto.getName());
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);
@@ -376,13 +378,13 @@ public class AdminCreatureControllerTest {
         @Description(value = "Тест на создание моба c отрицательной защитой")
         void Creature_create_NegativeDef() throws Exception {
             //given
-            creatureDto = RequestCreatureDto.builder()
-                    .name("Безумный гоблин")
-                    .str(1)
-                    .dex(1)
-                    .con(1)
-                    .def(-1)
-                    .build();
+            creatureDto = new RequestCreatureDto(
+                    "Безумный гоблин",
+                    0,
+                    0,
+                    0,
+                    -1,
+                    raceDto.getName());
             RequestParentTest.insertUser(mockMvc, objectMapper.writeValueAsString(userDto));
             String token = RequestParentTest.getTokenRequest(mockMvc, objectMapper.writeValueAsString(userDto));
             RequestParentTest.setAdminRights(mockMvc, token);

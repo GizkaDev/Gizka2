@@ -9,6 +9,8 @@ import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.item.ItemPattern;
 import ru.gizka.api.model.notification.Notification;
 
+import java.util.Date;
+
 @Service
 @Slf4j
 public class NotificationBuilder {
@@ -24,10 +26,9 @@ public class NotificationBuilder {
         } else {
             result = ", и у вас ничья";
         }
-        return Notification.builder()
-                .message(String.format("Вы встретились в бою с %s %s.",
-                        fight.getCreature().getName(), result))
-                .build();
+        return new Notification(
+                String.format("Вы встретились в бою с %s %s.", fight.getCreature().getName(), result),
+                new Date());
     }
 
     public Notification buildForAttacker(Duel duel) {
@@ -41,11 +42,9 @@ public class NotificationBuilder {
         } else {
             result = ", и у вас ничья";
         }
-        return Notification.builder()
-                .message(String.format("Вы вызвали на дуэль %s %s(%s)%s.",
-                        duel.getHeroes().get(1).getName(), duel.getHeroes().get(1).getLastname(), duel.getHeroes().get(1).getAppUser().getLogin(),
-                        result))
-                .build();
+        return new Notification(
+                String.format("Вы вызвали на дуэль %s %s(%s)%s.", duel.getHeroes().get(1).getName(), duel.getHeroes().get(1).getLastname(), duel.getHeroes().get(1).getAppUser().getLogin(), result),
+                new Date());
     }
 
     public Notification buildForDefender(Duel duel) {
@@ -59,35 +58,33 @@ public class NotificationBuilder {
         } else {
             result = "у вас ничья";
         }
-        return Notification.builder()
-                .message(String.format("Вас вызвал на дуэль %s %s(%s), %s.",
-                        duel.getHeroes().get(0).getName(), duel.getHeroes().get(0).getLastname(), duel.getHeroes().get(0).getAppUser().getLogin(),
-                        result))
-                .build();
+        return new Notification(
+                String.format("Вас вызвал на дуэль %s %s(%s), %s.", duel.getHeroes().get(0).getName(), duel.getHeroes().get(0).getLastname(), duel.getHeroes().get(0).getAppUser().getLogin(), result),
+                new Date());
     }
 
     public Notification buildForDeath(Hero hero) {
         log.info("Сервис оповещений создает новое оповещение для героя: {} {}({}) при смерти",
                 hero.getName(), hero.getLastname(), hero.getAppUser().getLogin());
-        return Notification.builder()
-                .message(String.format("Ваш герой %s %s погиб", hero.getName(), hero.getLastname()))
-                .build();
+        return new Notification(
+                String.format("Ваш герой %s %s погиб", hero.getName(), hero.getLastname()),
+                new Date());
     }
 
     public Notification buildForNewHero(Hero hero) {
         log.info("Сервис оповещений создает новое оповещение для героя: {} {}({}) при новом герое",
                 hero.getName(), hero.getLastname(), hero.getAppUser().getLogin());
-        return Notification.builder()
-                .message(String.format("Еще один авантюрист %s %s готов к приключениям", hero.getName(), hero.getLastname()))
-                .build();
+        return new Notification(
+                String.format("Еще один авантюрист %s %s готов к приключениям", hero.getName(), hero.getLastname()),
+                new Date());
     }
 
     public Notification buildForTreat(Hero hero, int beforeHeal) {
         log.info("Сервис оповещений создает новое оповещение для героя: {} {}({}) при лечении",
                 hero.getName(), hero.getLastname(), hero.getAppUser().getLogin());
-        return Notification.builder()
-                .message(String.format("Герой %s %s перевязал свои раны на %d ОЗ", hero.getName(), hero.getLastname(), hero.getCurrentHp() - beforeHeal))
-                .build();
+        return new Notification(
+                String.format("Герой %s %s перевязал свои раны на %d ОЗ", hero.getName(), hero.getLastname(), hero.getCurrentHp() - beforeHeal),
+                new Date());
     }
 
     public Notification buildForLoot(Fight fight) {
@@ -97,8 +94,8 @@ public class NotificationBuilder {
         for (ItemPattern itemPattern : fight.getLoot()) {
             loots.append(itemPattern.getName()).append(" ");
         }
-        return Notification.builder()
-                .message(String.format("С поверженного врага вы сняли %s", loots))
-                .build();
+        return new Notification(
+                String.format("С поверженного врага вы сняли %s", loots),
+                new Date());
     }
 }

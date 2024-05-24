@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.gizka.api.dto.appUser.RequestAppUserDto;
+import ru.gizka.api.dto.appUser.ResponseAppUserDto;
 import ru.gizka.api.dto.creature.RequestCreatureDto;
 import ru.gizka.api.dto.creature.ResponseCreatureDto;
 import ru.gizka.api.dto.fight.DuelDto;
@@ -26,8 +28,7 @@ import ru.gizka.api.dto.item.weapon.ResponseWeaponDto;
 import ru.gizka.api.dto.notification.NotificationDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
 import ru.gizka.api.dto.race.ResponseRaceDto;
-import ru.gizka.api.dto.user.RequestAppUserDto;
-import ru.gizka.api.dto.user.ResponseAppUserDto;
+import ru.gizka.api.model.appUser.AppUser;
 import ru.gizka.api.model.creature.Creature;
 import ru.gizka.api.model.fight.Duel;
 import ru.gizka.api.model.fight.Fight;
@@ -42,7 +43,6 @@ import ru.gizka.api.model.item.weapon.WeaponPattern;
 import ru.gizka.api.model.notification.Notification;
 import ru.gizka.api.model.race.Race;
 import ru.gizka.api.model.race.RaceSize;
-import ru.gizka.api.model.user.AppUser;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,7 +62,7 @@ public class DtoConverter {
     }
 
     public ResponseWeaponDto getResponseDto(WeaponPattern weaponPattern) {
-        log.info("Конвертер переводит {} в {}", WeaponPattern.class, ResponseWeaponDto.class);
+        logConverting(WeaponPattern.class, ResponseWeaponDto.class);
         return new ResponseWeaponDto(
                 weaponPattern.getId(),
                 weaponPattern.getName(),
@@ -71,12 +71,11 @@ public class DtoConverter {
                 getResponseDto(weaponPattern.getProduct()),
                 weaponPattern.getDamageMult(),
                 weaponPattern.getIsTwoHanded(),
-                weaponPattern.getDamageTypes()
-                );
+                weaponPattern.getDamageTypes());
     }
 
     public WeaponPattern getModel(RequestWeaponPatternDto weaponDto, Product product) {
-        log.info("Конвертер переводит {} в {}", RequestWeaponPatternDto.class, WeaponPattern.class);
+        logConverting(RequestWeaponPatternDto.class, WeaponPattern.class);
         return new WeaponPattern(
                 weaponDto.getName(),
                 weaponDto.getWeight(),
@@ -85,170 +84,161 @@ public class DtoConverter {
                 new ArrayList<Fight>(),
                 weaponDto.getDamageMult(),
                 weaponDto.getIsTwoHanded(),
-                weaponDto.getDamageTypes()
-                );
+                weaponDto.getDamageTypes());
     }
 
     public ResponseArmorDto getResponseDto(ArmorObject armorObject) {
-        log.info("Конвертер переводит {} в {}", ArmorObject.class, ResponseArmorDto.class);
+        logConverting(ArmorObject.class, ResponseArmorDto.class);
         return new ResponseArmorDto(
                 armorObject.getId(),
                 armorObject.getName(),
                 armorObject.getWeight(),
                 armorObject.getValue(),
-                getResponseDto(armorObject.getProduct() == null?new Product(0L,"Тряпье", 0L, null, null):armorObject.getProduct()),
+                getResponseDto(armorObject.getProduct() == null ? new Product(0L, "Тряпье", 0L, null, null) : armorObject.getProduct()),
                 armorObject.getArmor(),
                 armorObject.getDexPenalty(),
                 armorObject.getArmorType());
     }
 
     public ResponseArmorDto getResponseDto(ArmorPattern armorPattern) {
-        log.info("Конвертер переводит {} в {}", ArmorPattern.class, ResponseArmorDto.class);
+        logConverting(ArmorPattern.class, ResponseArmorDto.class);
         return new ResponseArmorDto(armorPattern.getId(), armorPattern.getName(), armorPattern.getWeight(), armorPattern.getValue(), getResponseDto(armorPattern.getProduct()),
                 armorPattern.getArmor(), armorPattern.getDexPenalty(), armorPattern.getArmorType());
     }
 
     public ArmorPattern getModel(RequestArmorPatternDto armorDto) {
-        log.info("Конвертер переводит {} в {}", RequestArmorPatternDto.class, ArmorPattern.class);
+        logConverting(RequestArmorPatternDto.class, ArmorPattern.class);
         ArmorType armorType = ArmorType.valueOf(ArmorType.class, armorDto.getArmorType());
         return new ArmorPattern(armorDto.getName(), armorDto.getWeight(), armorDto.getValue(),
                 armorDto.getArmor(), armorDto.getDexPenalty(), armorType);
     }
 
     public ResponseItemDto getResponseDto(ItemObject itemObject) {
-        log.info("Конвертер переводит {} в {}", ItemPattern.class, ResponseItemDto.class);
-        return ResponseItemDto.builder()
-                .id(itemObject.getId())
-                .name(itemObject.getName())
-                .weight(itemObject.getWeight())
-                .value(itemObject.getValue())
-                .productDto(getResponseDto(itemObject.getProduct()))
-                .build();
+        logConverting(ItemObject.class, ResponseItemDto.class);
+        return new ResponseItemDto(
+                itemObject.getId(),
+                itemObject.getName(),
+                itemObject.getWeight(),
+                itemObject.getValue(),
+                getResponseDto(itemObject.getProduct()));
     }
 
     public ResponseItemDto getResponseDto(ItemPattern itemPattern) {
-        log.info("Конвертер переводит {} в {}", ItemPattern.class, ResponseItemDto.class);
-        return ResponseItemDto.builder()
-                .id(itemPattern.getId())
-                .name(itemPattern.getName())
-                .weight(itemPattern.getWeight())
-                .value(itemPattern.getValue())
-                .productDto(getResponseDto(itemPattern.getProduct()))
-                .build();
+        logConverting(ItemPattern.class, ResponseItemDto.class);
+        return new ResponseItemDto(
+                itemPattern.getId(),
+                itemPattern.getName(),
+                itemPattern.getWeight(),
+                itemPattern.getValue(),
+                getResponseDto(itemPattern.getProduct()));
     }
 
     public ItemPattern getModel(RequestItemPatternDto itemDto) {
-        log.info("Конвертер переводит {} в {}", RequestItemPatternDto.class, ItemPattern.class);
-        return ItemPattern.builder()
-                .name(itemDto.getName())
-                .weight(itemDto.getWeight())
-                .value(itemDto.getValue())
-                .build();
+        logConverting(RequestItemPatternDto.class, ItemPattern.class);
+        return new ItemPattern(
+                itemDto.getName(),
+                itemDto.getWeight(),
+                itemDto.getValue());
     }
 
     public ResponseProductDto getResponseDto(Product product) {
-        log.info("Конвертер переводит {} в {}", Product.class, ResponseProductDto.class);
-        return ResponseProductDto.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .price(product.getPrice())
-                .build();
+        logConverting(Product.class, ResponseProductDto.class);
+        return new ResponseProductDto(
+                product.getId(),
+                product.getName(),
+                product.getPrice());
     }
 
     public Product getModel(RequestProductDto productDto) {
-        log.info("Конвертер переводит {} в {}", RequestProductDto.class, Product.class);
-        return Product.builder()
-                .name(productDto.getName())
-                .price(productDto.getPrice())
-                .build();
+        logConverting(RequestProductDto.class, Product.class);
+        return new Product(
+                productDto.getName(),
+                productDto.getPrice());
     }
 
     public ResponseCreatureDto getResponseDto(Creature creature) {
-        log.info("Конвертер переводит {} в {}", Creature.class, ResponseCreatureDto.class);
-        return ResponseCreatureDto.builder()
-                .id(creature.getId())
-                .name(creature.getName())
-                .str(creature.getStr())
-                .dex(creature.getDex())
-                .con(creature.getCon())
-                .createdAt(creature.getCreatedAt())
-                .race(creature.getRace().getName())
-                .minInit(creature.getMinInit())
-                .maxInit(creature.getMaxInit())
-                .minAttack(creature.getMinAttack())
-                .maxAttack(creature.getMaxAttack())
-                .minEvasion(creature.getMinEvasion())
-                .maxEvasion(creature.getMaxEvasion())
-                .minPhysDamage(creature.getMinPhysDamage())
-                .maxPhysDamage(creature.getMaxPhysDamage())
-                .maxHp(creature.getMaxHp())
-                .endurance(creature.getEndurance())
-                .currentHp(creature.getCurrentHp())
-                .def(creature.getDef())
-                .build();
+        logConverting(Creature.class, ResponseCreatureDto.class);
+        return new ResponseCreatureDto(
+                creature.getId(),
+                creature.getName(),
+                creature.getCreatedAt(),
+                creature.getRace().getName(),
+
+                creature.getStr(),
+                creature.getDex(),
+                creature.getCon(),
+
+                creature.getMinInit(),
+                creature.getMaxInit(),
+                creature.getMinAttack(),
+                creature.getMaxAttack(),
+                creature.getMinEvasion(),
+                creature.getMaxEvasion(),
+                creature.getMinPhysDamage(),
+                creature.getMaxPhysDamage(),
+                creature.getMaxHp(),
+                creature.getEndurance(),
+
+                creature.getCurrentHp(),
+                creature.getDef());
     }
 
     public Creature getModel(RequestCreatureDto creatureDto) {
-        log.info("Конвертер переводит {} в {}", RequestCreatureDto.class, Creature.class);
-        return Creature.builder()
-                .name(creatureDto.getName())
-                .str(creatureDto.getStr())
-                .dex(creatureDto.getDex())
-                .con(creatureDto.getCon())
-                .def(creatureDto.getDef())
-                .build();
+        logConverting(RequestCreatureDto.class, Creature.class);
+        return new Creature(
+                creatureDto.getName(),
+                creatureDto.getStr(),
+                creatureDto.getDex(),
+                creatureDto.getCon(),
+                creatureDto.getDef());
     }
 
     public ResponseRaceDto getResponseDto(Race race) {
-        log.info("Конвертер переводит {} в {}", Race.class, ResponseRaceDto.class);
-        return ResponseRaceDto.builder()
-                .id(race.getId())
-                .name(race.getName())
-                .createdAt(race.getCreatedAt())
-                .isPlayable(race.getIsPlayable())
-                .strBonus(race.getStrBonus())
-                .dexBonus(race.getDexBonus())
-                .conBonus(race.getConBonus())
-                .wisBonus(race.getWisBonus())
-                .defBonus(race.getDefBonus())
-                .raceSize(race.getRaceSize())
-                .build();
+        logConverting(Race.class, ResponseRaceDto.class);
+        return new ResponseRaceDto(
+                race.getId(),
+                race.getName(),
+                race.getCreatedAt(),
+                race.getIsPlayable(),
+                race.getStrBonus(),
+                race.getDexBonus(),
+                race.getConBonus(),
+                race.getWisBonus(),
+                race.getDefBonus(),
+                race.getRaceSize());
     }
 
     public Race getModel(RequestRaceDto raceDto) {
-        log.info("Конвертер переводит {} в {}", RequestRaceDto.class, Race.class);
-        return Race.builder()
-                .name(raceDto.getName())
-                .isPlayable(raceDto.getIsPlayable())
-                .strBonus(raceDto.getStrBonus())
-                .dexBonus(raceDto.getDexBonus())
-                .conBonus(raceDto.getConBonus())
-                .wisBonus(raceDto.getWisBonus())
-                .defBonus(raceDto.getDefBonus())
-                .raceSize(RaceSize.valueOf(RaceSize.class, raceDto.getRaceSize()))
-                .build();
+        logConverting(RequestRaceDto.class, Race.class);
+        return new Race(
+                raceDto.getName(),
+                raceDto.getIsPlayable(),
+                raceDto.getStrBonus(),
+                raceDto.getDexBonus(),
+                raceDto.getConBonus(),
+                raceDto.getWisBonus(),
+                raceDto.getDefBonus(),
+                RaceSize.valueOf(RaceSize.class, raceDto.getRaceSize()));
     }
 
     public AppUser getModel(RequestAppUserDto userDto) {
-        log.info("Конвертер переводит {} в {} для пользователя: {}", RequestAppUserDto.class, AppUser.class, userDto.getLogin());
-        return AppUser.builder()
-                .login(userDto.getLogin())
-                .password(userDto.getPassword())
-                .build();
+        logConverting(RequestAppUserDto.class, AppUser.class);
+        return new AppUser(
+                userDto.getLogin(),
+                userDto.getPassword());
     }
 
     public ResponseAppUserDto getResponseDto(AppUser appUser) {
-        log.info("Конвертер переводит {} в {} для пользователя: {}", AppUser.class, ResponseAppUserDto.class, appUser.getLogin());
-        return ResponseAppUserDto.builder()
-                .id(appUser.getId())
-                .login(appUser.getLogin())
-                .registeredAt(appUser.getRegisteredAt())
-                .roles(appUser.getRoles())
-                .build();
+        logConverting(AppUser.class, ResponseAppUserDto.class);
+        return new ResponseAppUserDto(
+                appUser.getId(),
+                appUser.getLogin(),
+                appUser.getRegisteredAt(),
+                appUser.getRoles());
     }
 
     public Hero getModel(RequestHeroDto heroDto) {
-        log.info("Конвертер переводит {} в {}", RequestHeroDto.class, Hero.class);
+        logConverting(RequestHeroDto.class, Hero.class);
         return Hero.builder()
                 .name(heroDto.getName())
                 .lastname(heroDto.getLastName())
@@ -260,53 +250,52 @@ public class DtoConverter {
     }
 
     public ResponseHeroDto getResponseDto(Hero hero) {
-        log.info("Конвертер переводит {} в {}", Hero.class, ResponseHeroDto.class);
-        return ResponseHeroDto.builder()
-                .id(hero.getId())
-                .name(hero.getName())
-                .lastname(hero.getLastname())
+        logConverting(Hero.class, ResponseHeroDto.class);
+        return new ResponseHeroDto(
+                hero.getId(),
+                hero.getName(),
+                hero.getLastname(),
 
-                .str(hero.getStr())
-                .dex(hero.getDex())
-                .con(hero.getCon())
-                .wis(hero.getWis())
+                hero.getStr(),
+                hero.getDex(),
+                hero.getCon(),
+                hero.getWis(),
 
-                .minInit(hero.getMinInit())
-                .maxInit(hero.getMaxInit())
-                .minAttack(hero.getMinAttack())
-                .maxAttack(hero.getMaxAttack())
-                .minEvasion(hero.getMinEvasion())
-                .maxEvasion(hero.getMaxEvasion())
-                .minPhysDamage(hero.getMinPhysDamage())
-                .maxPhysDamage(hero.getMaxPhysDamage())
-                .maxHp(hero.getMaxHp())
-                .endurance(hero.getEndurance())
-                .maxWeight(hero.getMaxWeight())
-                .search(hero.getSearch())
-                .treat(hero.getTreat())
+                hero.getMinInit(),
+                hero.getMaxInit(),
+                hero.getMinAttack(),
+                hero.getMaxAttack(),
+                hero.getMinEvasion(),
+                hero.getMaxEvasion(),
+                hero.getMinPhysDamage(),
+                hero.getMaxPhysDamage(),
+                hero.getMaxHp(),
+                hero.getEndurance(),
+                hero.getMaxWeight(),
+                hero.getSearch(),
+                hero.getTreat(),
 
-                .currentHp(hero.getCurrentHp())
-                .currentWeight(hero.getCurrentWeight())
-                .def(hero.getDef())
+                hero.getCurrentHp(),
+                hero.getCurrentWeight(),
+                hero.getDef(),
 
-                .equippedArmor(getResponseDto(hero.getEquippedArmor() == null ? new ArmorObject(
+                getResponseDto(hero.getEquippedArmor() == null ? new ArmorObject(
                         "Без доспеха",
                         0L,
                         0,
                         0,
                         0,
-                        ArmorType.CLOTHES) : hero.getEquippedArmor()))
+                        ArmorType.CLOTHES) : hero.getEquippedArmor()),
 
-                .createdAt(hero.getCreatedAt())
-                .userLogin(hero.getAppUser().getLogin())
-                .status(hero.getStatus().name())
-                .race(hero.getRace().getName())
-                .treatAt(hero.getTreatAt())
-                .build();
+                hero.getCreatedAt(),
+                hero.getAppUser().getLogin(),
+                hero.getStatus().name(),
+                hero.getRace().getName(),
+                hero.getTreatAt());
     }
 
     public DuelDto getResponseDto(Duel duel) {
-        log.info("Конвертер переводит {} в {}", Duel.class, DuelDto.class);
+        logConverting(Duel.class, DuelDto.class);
         List<Turn> turns;
         try {
             turns = objectMapper.readValue(duel.getTurns(), new TypeReference<>() {
@@ -317,17 +306,16 @@ public class DtoConverter {
         List<Fighter> heroFighters = duel.getHeroes().stream()
                 .map(Fighter::new)
                 .toList();
-        return DuelDto.builder()
-                .id(duel.getId())
-                .heroFighters(heroFighters)
-                .turns(turns)
-                .result(duel.getResult().name())
-                .createdAt(duel.getCreatedAt())
-                .build();
+        return new DuelDto(
+                duel.getId(),
+                heroFighters,
+                turns,
+                duel.getResult().name(),
+                duel.getCreatedAt());
     }
 
     public FightDto getResponseDto(Fight fight) {
-        log.info("Конвертер переводит {} в {}", Fight.class, FightDto.class);
+        logConverting(Fight.class, FightDto.class);
         List<Turn> turns;
         try {
             turns = objectMapper.readValue(fight.getTurns(), new TypeReference<>() {
@@ -337,26 +325,26 @@ public class DtoConverter {
         }
         ResponseHeroDto responseHeroDto = getResponseDto(fight.getHero());
         ResponseCreatureDto responseCreatureDto = getResponseDto(fight.getCreature());
-        FightDto fightDto = FightDto.builder()
-                .id(fight.getId())
-                .heroFighter(responseHeroDto)
-                .creatureFighter(responseCreatureDto)
-                .turns(turns)
-                .result(fight.getResult().name())
-                .createdAt(fight.getCreatedAt())
-                .build();
-        if (fight.getLoot() != null) {
-            List<ResponseItemDto> loot = fight.getLoot().isEmpty() ? Collections.emptyList() :
-                    fight.getLoot().stream()
-                            .map(this::getResponseDto)
-                            .toList();
-            fightDto.setLoot(loot);
-        }
-        return fightDto;
+        return new FightDto(
+                fight.getId(),
+                responseHeroDto,
+                responseCreatureDto,
+                turns,
+                fight.getResult().name(),
+                fight.getCreatedAt(),
+                fight.getLoot().isEmpty() ?
+                        Collections.emptyList() :
+                        fight.getLoot().stream()
+                                .map(this::getResponseDto)
+                                .toList());
     }
 
     public NotificationDto getResponseDto(Notification notification) {
-        log.info("Конвертер переводит {} в {}", Notification.class, NotificationDto.class);
+        logConverting(Notification.class, NotificationDto.class);
         return modelMapper.map(notification, NotificationDto.class);
+    }
+
+    private <T, R> void logConverting(Class<T> source, Class<R> destClass) {
+        log.info("Переводим {} в {}", source.getSimpleName(), destClass.getSimpleName());
     }
 }

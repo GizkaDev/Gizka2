@@ -1,4 +1,4 @@
-package ru.gizka.api.controller.user;
+package ru.gizka.api.controller.appUser.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,19 +6,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import ru.gizka.api.dto.user.ResponseAppUserDto;
+import ru.gizka.api.dto.appUser.ResponseAppUserDto;
 import ru.gizka.api.facade.AppUserFacade;
-import ru.gizka.api.model.user.AuthUser;
+import ru.gizka.api.model.appUser.AuthUser;
 
 @RestController
 @RequestMapping("/api/user")
 @Slf4j
-public class AppUserController {
+public class AppUserController1 {
 
     private final AppUserFacade appUserFacade;
 
     @Autowired
-    public AppUserController(AppUserFacade appUserFacade) {
+    public AppUserController1(AppUserFacade appUserFacade) {
         this.appUserFacade = appUserFacade;
     }
 

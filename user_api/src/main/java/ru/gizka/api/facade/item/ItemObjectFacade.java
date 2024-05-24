@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.gizka.api.dto.item.ResponseItemDto;
 import ru.gizka.api.model.hero.Hero;
 import ru.gizka.api.model.item.ItemObject;
-import ru.gizka.api.model.user.AppUser;
+import ru.gizka.api.model.appUser.AppUser;
 import ru.gizka.api.service.HeroService;
 import ru.gizka.api.service.actionLogic.HeroActionLogic;
 import ru.gizka.api.service.item.ItemObjectService;

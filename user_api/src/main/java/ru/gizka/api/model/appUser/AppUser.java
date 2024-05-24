@@ -1,19 +1,16 @@
-package ru.gizka.api.model.user;
+package ru.gizka.api.model.appUser;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.gizka.api.model.notification.Notification;
 import ru.gizka.api.model.hero.Hero;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "app_user",
@@ -21,7 +18,6 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class AppUser {
 
     @Id
@@ -61,5 +57,23 @@ public class AppUser {
             fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE)
     private List<Notification> notifications;
+
+    public AppUser(String login, String password, Date registeredAt, Set<Role> roles, List<Hero> heroes, List<Notification> notifications) {
+        this.login = login;
+        this.password = password;
+        this.registeredAt = registeredAt;
+        this.roles = roles;
+        this.heroes = heroes;
+        this.notifications = notifications;
+    }
+
+    public AppUser(String login, String password) {
+        this.login = login;
+        this.password = password;
+        this.registeredAt = new Date();
+        this.roles = new HashSet<>();
+        this.heroes = new ArrayList<>();
+        this.notifications = new ArrayList<>();
+    }
 }
 

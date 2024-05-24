@@ -1,9 +1,8 @@
-package ru.gizka.api.model.user;
+package ru.gizka.api.model.appUser;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import org.springframework.security.core.userdetails.User;
-import ru.gizka.api.model.user.AppUser;
 
 @Getter
 public class AuthUser extends User {

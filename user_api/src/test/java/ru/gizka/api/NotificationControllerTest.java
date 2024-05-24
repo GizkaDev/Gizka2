@@ -22,7 +22,7 @@ import ru.gizka.api.dto.item.RequestItemPatternDto;
 import ru.gizka.api.dto.item.RequestProductDto;
 import ru.gizka.api.dto.notification.NotificationDto;
 import ru.gizka.api.dto.race.RequestRaceDto;
-import ru.gizka.api.dto.user.RequestAppUserDto;
+import ru.gizka.api.dto.appUser.RequestAppUserDto;
 import ru.gizka.api.model.race.RaceSize;
 
 import java.util.Date;
@@ -63,53 +63,48 @@ public class NotificationControllerTest extends RequestParentTest {
         raceDto = new RequestRaceDto("Человек", true,
                 0, 0, 0, 0, 0, RaceSize.AVERAGE.name());
 
-        userDto = RequestAppUserDto.builder()
-                .login("Biba")
-                .password("Qwerty12345!")
-                .build();
+        userDto = new RequestAppUserDto(
+                "Biba",
+                "Qwerty12345!");
 
-        userDto2 = RequestAppUserDto.builder()
-                .login("Boba")
-                .password("Qwerty12345!")
-                .build();
+        userDto2 = new RequestAppUserDto(
+                "Boba",
+                "Qwerty12345!");
 
-        heroDto = RequestHeroDto.builder()
-                .name("Gizka")
-                .lastName("Green")
-                .str(10)
-                .dex(8)
-                .con(12)
-                .wis(10)
-                .race("Человек")
-                .build();
+        heroDto = new RequestHeroDto(
+                "Gizka",
+                "Green",
+                10,
+                8,
+                12,
+                10,
+                "Человек");
 
-        heroDto2 = RequestHeroDto.builder()
-                .name("Lyakusha")
-                .lastName("Swamp")
-                .str(10)
-                .dex(12)
-                .con(8)
-                .wis(10)
-                .race("Человек")
-                .build();
 
-        weakCreatureDto = RequestCreatureDto.builder()
-                .name("Разбойник")
-                .str(5)
-                .dex(5)
-                .con(5)
-                .def(0)
-                .race(raceDto.getName())
-                .build();
+        heroDto2 = new RequestHeroDto(
+                "Lyakusha",
+                "Swamp",
+                10,
+                12,
+                8,
+                10,
+                "Человек");
 
-        strongCreatureDto = RequestCreatureDto.builder()
-                .name("Примарх")
-                .str(1000)
-                .dex(1000)
-                .con(1000)
-                .def(0)
-                .race(raceDto.getName())
-                .build();
+        weakCreatureDto = new RequestCreatureDto(
+                "Разбойник",
+                5,
+                5,
+                5,
+                0,
+                raceDto.getName());
+
+        strongCreatureDto = new RequestCreatureDto(
+                "Примарх",
+                1000,
+                1000,
+                1000,
+                0,
+                raceDto.getName());
 
         productDto = new RequestProductDto(
                 "Роскошь", 500L);
@@ -384,7 +379,7 @@ public class NotificationControllerTest extends RequestParentTest {
             RequestParentTest.setAdminRights(mockMvc, token1);
             RequestParentTest.insertRace(mockMvc, token1, objectMapper.writeValueAsString(raceDto));
             RequestParentTest.insertHero(mockMvc, objectMapper.writeValueAsString(heroDto), token1);
-            weakCreatureDto.setDex(100);
+            weakCreatureDto.setDex(1000);
             RequestParentTest.insertCreature(mockMvc, token1, objectMapper.writeValueAsString(weakCreatureDto));
             RequestParentTest.insertProduct(mockMvc, objectMapper.writeValueAsString(new RequestProductDto("Броня", 30L)), token1);
             RequestParentTest.insertItemPattern(mockMvc, objectMapper.writeValueAsString(new RequestItemPatternDto("Кольчуга", 5L, 30, "Броня")), token1);
