@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.gizka.api.dto.item.RequestProductDto;
-import ru.gizka.api.dto.item.ResponseProductDto;
-import ru.gizka.api.facade.item.ProductFacade;
+import ru.gizka.api.dto.old.item.RequestProductDto;
+import ru.gizka.api.dto.old.item.ResponseProductDto;
+import ru.gizka.api.facade.old.item.ProductFacade;
 
 @RestController
 @RequestMapping("/api/admin/product")

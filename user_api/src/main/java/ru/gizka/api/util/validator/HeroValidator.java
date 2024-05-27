@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import ru.gizka.api.dto.hero.RequestHeroDto;
+import ru.gizka.api.dto.old.hero.RequestHeroDto;
 
 @Component
 @Slf4j

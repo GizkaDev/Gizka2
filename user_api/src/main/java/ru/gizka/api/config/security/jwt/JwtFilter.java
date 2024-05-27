@@ -41,7 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             if (jwt.isEmpty() || jwt.isBlank()) {
                 log.error("Перехвачен пустой токен");
-                response.setHeader("Reason", "Фильтр перехватил пустой токен");
+                response.setHeader("Reason", "Перехвачен пустой токен");
             } else {
                 try {
                     String username = jwtService.validateToken(jwt);
@@ -59,7 +59,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(),
                                     userDetails.getAuthorities());
-                    log.info("Фильтр проверил токен для пользователя: {}", username);
+                    log.info("Токен пользователя: {} проверен", username);
 
                     if (SecurityContextHolder.getContext().getAuthentication() == null) {
                         SecurityContextHolder.getContext().setAuthentication(authToken);

@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.gizka.api.dto.item.armor.RequestArmorPatternDto;
-import ru.gizka.api.dto.item.armor.ResponseArmorDto;
-import ru.gizka.api.facade.item.armor.ArmorPatternFacade;
+import ru.gizka.api.dto.old.item.armor.RequestArmorPatternDto;
+import ru.gizka.api.dto.old.item.armor.ResponseArmorDto;
+import ru.gizka.api.facade.old.item.armor.ArmorPatternFacade;
 
 @RestController
 @RequestMapping("/api/admin/armor")

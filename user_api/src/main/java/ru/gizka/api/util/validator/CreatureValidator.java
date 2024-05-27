@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import ru.gizka.api.dto.creature.RequestCreatureDto;
-import ru.gizka.api.service.CreatureService;
+import ru.gizka.api.dto.old.creature.RequestCreatureDto;
+import ru.gizka.api.service.old.CreatureService;
 
 @Component
 @Slf4j
@@ -31,7 +31,7 @@ public class CreatureValidator implements Validator {
     }
 
     private void validateCreate(RequestCreatureDto creatureDto, Errors errors) {
-        if (creatureService.getByName(creatureDto.getName()).isPresent()) {
+        if (creatureService.getByNameOptional(creatureDto.getName()).isPresent()) {
             errors.rejectValue("name", "", "Моб с таким названием уже существует");
             log.info("Валидатор мобов сообщает, что название занято: {}", creatureDto.getName());
         }

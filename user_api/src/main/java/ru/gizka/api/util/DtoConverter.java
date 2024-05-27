@@ -9,42 +9,41 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.gizka.api.dto.appUser.RequestAppUserDto;
 import ru.gizka.api.dto.appUser.ResponseAppUserDto;
-import ru.gizka.api.dto.creature.RequestCreatureDto;
-import ru.gizka.api.dto.creature.ResponseCreatureDto;
-import ru.gizka.api.dto.fight.DuelDto;
-import ru.gizka.api.dto.fight.FightDto;
-import ru.gizka.api.dto.fight.Fighter;
-import ru.gizka.api.dto.fight.Turn;
-import ru.gizka.api.dto.hero.RequestHeroDto;
-import ru.gizka.api.dto.hero.ResponseHeroDto;
-import ru.gizka.api.dto.item.RequestItemPatternDto;
-import ru.gizka.api.dto.item.RequestProductDto;
-import ru.gizka.api.dto.item.ResponseItemDto;
-import ru.gizka.api.dto.item.ResponseProductDto;
-import ru.gizka.api.dto.item.armor.RequestArmorPatternDto;
-import ru.gizka.api.dto.item.armor.ResponseArmorDto;
-import ru.gizka.api.dto.item.weapon.RequestWeaponPatternDto;
-import ru.gizka.api.dto.item.weapon.ResponseWeaponDto;
-import ru.gizka.api.dto.notification.NotificationDto;
-import ru.gizka.api.dto.race.RequestRaceDto;
-import ru.gizka.api.dto.race.ResponseRaceDto;
+import ru.gizka.api.dto.old.creature.RequestCreatureDto;
+import ru.gizka.api.dto.old.creature.ResponseCreatureDto;
+import ru.gizka.api.dto.old.fight.DuelDto;
+import ru.gizka.api.dto.old.fight.FightDto;
+import ru.gizka.api.dto.old.fight.Fighter;
+import ru.gizka.api.dto.old.fight.Turn;
+import ru.gizka.api.dto.old.hero.RequestHeroDto;
+import ru.gizka.api.dto.old.hero.ResponseHeroDto;
+import ru.gizka.api.dto.old.item.RequestItemPatternDto;
+import ru.gizka.api.dto.old.item.RequestProductDto;
+import ru.gizka.api.dto.old.item.ResponseItemDto;
+import ru.gizka.api.dto.old.item.ResponseProductDto;
+import ru.gizka.api.dto.old.item.armor.RequestArmorPatternDto;
+import ru.gizka.api.dto.old.item.armor.ResponseArmorDto;
+import ru.gizka.api.dto.old.item.weapon.RequestWeaponPatternDto;
+import ru.gizka.api.dto.old.item.weapon.ResponseWeaponDto;
+import ru.gizka.api.dto.old.notification.NotificationDto;
+import ru.gizka.api.dto.old.race.RequestRaceDto;
+import ru.gizka.api.dto.old.race.ResponseRaceDto;
 import ru.gizka.api.model.appUser.AppUser;
-import ru.gizka.api.model.creature.Creature;
-import ru.gizka.api.model.fight.Duel;
-import ru.gizka.api.model.fight.Fight;
-import ru.gizka.api.model.hero.Hero;
-import ru.gizka.api.model.item.ItemObject;
-import ru.gizka.api.model.item.ItemPattern;
-import ru.gizka.api.model.item.Product;
-import ru.gizka.api.model.item.armor.ArmorObject;
-import ru.gizka.api.model.item.armor.ArmorPattern;
-import ru.gizka.api.model.item.armor.ArmorType;
-import ru.gizka.api.model.item.weapon.WeaponPattern;
-import ru.gizka.api.model.notification.Notification;
-import ru.gizka.api.model.race.Race;
-import ru.gizka.api.model.race.RaceSize;
+import ru.gizka.api.model.old.creature.Creature;
+import ru.gizka.api.model.old.fight.Duel;
+import ru.gizka.api.model.old.fight.Fight;
+import ru.gizka.api.model.old.hero.Hero;
+import ru.gizka.api.model.old.item.ItemObject;
+import ru.gizka.api.model.old.item.ItemPattern;
+import ru.gizka.api.model.old.item.Product;
+import ru.gizka.api.model.old.item.armor.ArmorObject;
+import ru.gizka.api.model.old.item.armor.ArmorPattern;
+import ru.gizka.api.model.old.item.armor.ArmorType;
+import ru.gizka.api.model.old.item.weapon.WeaponPattern;
+import ru.gizka.api.model.old.notification.Notification;
+import ru.gizka.api.model.old.race.Race;
+import ru.gizka.api.model.old.race.RaceSize;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -81,7 +80,7 @@ public class DtoConverter {
                 weaponDto.getWeight(),
                 weaponDto.getValue(),
                 product,
-                new ArrayList<Fight>(),
+                Collections.emptyList(),
                 weaponDto.getDamageMult(),
                 weaponDto.getIsTwoHanded(),
                 weaponDto.getDamageTypes());

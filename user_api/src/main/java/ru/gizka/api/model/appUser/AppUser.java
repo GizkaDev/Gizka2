@@ -7,14 +7,16 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.gizka.api.model.notification.Notification;
-import ru.gizka.api.model.hero.Hero;
+import ru.gizka.api.model.old.notification.Notification;
+import ru.gizka.api.model.old.hero.Hero;
 
 import java.util.*;
 
 @Entity
 @Table(name = "app_user",
-        indexes = {@Index(name = "idx_login", columnList = "login")})
+        indexes = {
+                @Index(name = "idx_login", columnList = "login"),
+                @Index(name = "idx_id", columnList = "id")})
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

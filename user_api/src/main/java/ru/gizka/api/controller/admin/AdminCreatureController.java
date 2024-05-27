@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.gizka.api.dto.creature.RequestCreatureDto;
-import ru.gizka.api.dto.creature.ResponseCreatureDto;
-import ru.gizka.api.facade.CreatureFacade;
+import ru.gizka.api.dto.old.creature.RequestCreatureDto;
+import ru.gizka.api.dto.old.creature.ResponseCreatureDto;
+import ru.gizka.api.facade.old.CreatureFacade;
 
 @RestController
 @RequestMapping("/api/admin/creature")

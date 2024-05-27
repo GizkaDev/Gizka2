@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.gizka.api.dto.creature.ResponseCreatureDto;
-import ru.gizka.api.facade.CreatureFacade;
+import ru.gizka.api.dto.old.creature.ResponseCreatureDto;
+import ru.gizka.api.facade.old.CreatureFacade;
 
 import java.util.List;
 

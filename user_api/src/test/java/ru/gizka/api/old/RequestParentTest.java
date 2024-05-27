@@ -1,0 +1,174 @@
+package ru.gizka.api.old;
+
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+public class RequestParentTest {
+    public static void insertUser(MockMvc mockMvc, String userDtoAsString) throws Exception {
+        RequestBuilder userRequest =
+                MockMvcRequestBuilders
+                        .post("/api/user/registration")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(userDtoAsString);
+        mockMvc.perform(userRequest);
+    }
+
+    public static String getTokenRequest(MockMvc mockMvc, String userDtoAsString) throws Exception {
+        RequestBuilder tokenRequest = MockMvcRequestBuilders
+                .post("/api/user/token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userDtoAsString);
+
+        return mockMvc.perform(tokenRequest)
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+    }
+
+    public static void insertHero(MockMvc mockMvc, String heroDtoAsString, String token) throws Exception {
+        RequestBuilder heroRequest = MockMvcRequestBuilders
+                .post("/api/user/hero")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(heroDtoAsString)
+                .header("Authorization", String.format("Bearer %s", token));
+        mockMvc.perform(heroRequest);
+    }
+
+    public static void insertDuel(MockMvc mockMvc, String opponentLogin, String token) throws Exception {
+        RequestBuilder duelRequest = MockMvcRequestBuilders
+                .post(String.format("%s?login=%s", "/api/user/hero/duel", opponentLogin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", String.format("Bearer %s", token));
+        mockMvc.perform(duelRequest);
+    }
+
+    public static ResultActions getCurrentHero(MockMvc mockMvc, String token) throws Exception {
+        RequestBuilder getCurrentHeroRequest = MockMvcRequestBuilders
+                .get("/api/user/hero")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", String.format("Bearer %s", token));
+        return mockMvc.perform(getCurrentHeroRequest);
+    }
+
+    public static ResultActions getEventsSortedByDate(MockMvc mockMvc, String token) throws Exception {
+        MockHttpServletRequestBuilder eventRequest = MockMvcRequestBuilders
+                .get("/api/user/notification")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", String.format("Bearer %s", token));
+        return mockMvc.perform(eventRequest);
+    }
+
+    public static ResultActions setAdminRights(MockMvc mockMvc, String token) throws Exception {
+        MockHttpServletRequestBuilder adminRequest = MockMvcRequestBuilders
+                .patch("/api/user/own")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("ADMIN")
+                .header("Authorization", "Bearer " + token);
+        return mockMvc.perform(adminRequest);
+    }
+
+    public static ResultActions insertRace(MockMvc mockMvc, String token, String raceDtoAsString) throws Exception {
+        MockHttpServletRequestBuilder raceRequest = MockMvcRequestBuilders
+                .post("/api/admin/race")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(raceDtoAsString)
+                .header("Authorization", "Bearer " + token);
+        return mockMvc.perform(raceRequest);
+    }
+
+    public static ResultActions insertCreature(MockMvc mockMvc, String token, String creatureDtoAsString) throws Exception {
+        MockHttpServletRequestBuilder creatureRequest = MockMvcRequestBuilders
+                .post("/api/admin/creature")
+                .contentType(jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
+                .content(creatureDtoAsString)
+                .header("Authorization", "Bearer " + token);
+        return mockMvc.perform(creatureRequest);
+    }
+
+    public static ResultActions getCreature(MockMvc mockMvc, String token, String name) throws Exception {
+        RequestBuilder getCurrentHeroRequest = MockMvcRequestBuilders
+                .get(String.format("/api/creature/%s", name))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", String.format("Bearer %s", token));
+        return mockMvc.perform(getCurrentHeroRequest);
+    }
+
+    public static ResultActions insertFight(MockMvc mockMvc, String name, String token) throws Exception {
+        RequestBuilder fightRequest = MockMvcRequestBuilders
+                .post(String.format("%s?name=%s", "/api/user/hero/fight", name))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", String.format("Bearer %s", token));
+        return mockMvc.perform(fightRequest);
+    }
+
+    public static ResultActions treat(MockMvc mockMvc, String token) throws Exception {
+        RequestBuilder getTreatRequest = MockMvcRequestBuilders
+                .put("/api/user/hero")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", String.format("Bearer %s", token));
+        return mockMvc.perform(getTreatRequest);
+    }
+
+    public static ResultActions insertProduct(MockMvc mockMvc, String productDtoAsString, String token) throws Exception {
+        RequestBuilder productRequest = MockMvcRequestBuilders
+                .post("/api/admin/product")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(productDtoAsString)
+                .header("Authorization", "Bearer " + token);
+        return mockMvc.perform(productRequest);
+    }
+
+    public static ResultActions insertItemPattern(MockMvc mockMvc, String itemDtoAsString, String token) throws Exception {
+        RequestBuilder productRequest = MockMvcRequestBuilders
+                .post("/api/admin/item")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(itemDtoAsString)
+                .header("Authorization", "Bearer " + token);
+        return mockMvc.perform(productRequest);
+    }
+
+    public static ResultActions getInventory(MockMvc mockMvc, String token) throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/api/user/hero/inventory")
+                .header("Authorization", String.format("Bearer %s", token))
+                .contentType(MediaType.APPLICATION_JSON);
+        return mockMvc.perform(requestBuilder);
+    }
+
+    public static ResultActions insertArmorPattern(MockMvc mockMvc, String armorDtoAsString, String token) throws Exception {
+        RequestBuilder productRequest = MockMvcRequestBuilders
+                .post("/api/admin/armor")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(armorDtoAsString)
+                .header("Authorization", "Bearer " + token);
+        return mockMvc.perform(productRequest);
+    }
+
+    public static ResultActions equipArmor(MockMvc mockMvc, String id, String token) throws Exception {
+        RequestBuilder equipRequest = MockMvcRequestBuilders
+                .put("/api/user/hero/inventory/armor/" + id)
+                .header("Authorization", String.format("Bearer %s", token))
+                .contentType(MediaType.APPLICATION_JSON);
+        return mockMvc.perform(equipRequest);
+    }
+
+    public static ResultActions dropItem(MockMvc mockMvc, String id, String token) throws Exception {
+        RequestBuilder dropBuilder = MockMvcRequestBuilders
+                .delete("/api/user/hero/inventory/" + id)
+                .header("Authorization", String.format("Bearer %s", token))
+                .contentType(MediaType.APPLICATION_JSON);
+        return mockMvc.perform(dropBuilder);
+    }
+
+    public static ResultActions takeOffArmor(MockMvc mockMvc, String token) throws Exception {
+        RequestBuilder equipRequest = MockMvcRequestBuilders
+                .delete("/api/user/hero/inventory/armor")
+                .header("Authorization", String.format("Bearer %s", token))
+                .contentType(MediaType.APPLICATION_JSON);
+        return mockMvc.perform(equipRequest);
+    }
+}

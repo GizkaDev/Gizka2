@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import ru.gizka.api.dto.race.RequestRaceDto;
-import ru.gizka.api.service.race.RaceService;
+import ru.gizka.api.dto.old.race.RequestRaceDto;
+import ru.gizka.api.service.old.race.RaceService;
 
 @Component
 @Slf4j

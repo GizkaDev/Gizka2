@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gizka.api.model.appUser.AppUser;
 import ru.gizka.api.model.appUser.Role;
-import ru.gizka.api.repo.AppUserRepo;
+import ru.gizka.api.repo.appUser.AppUserRepo;
 
 import java.util.*;
 
@@ -49,23 +49,21 @@ public class AppUserService {
 
     @Transactional
     public void delete(AppUser user) {
-        log.info("Сервис пользователей удаляет пользователя: {}", user.getLogin());
+        log.info("Удаляем пользователя: {}", user.getLogin());
         appUserRepo.deleteById(user.getId());
     }
 
     @Transactional
     public AppUser addAdminRights(String login) {
-        AppUser appUser = getByLoginOptional(login)
-                .orElseThrow(() ->
-                        new EntityNotFoundException(String.format("Пользователь %s не найден", login)));
-        log.info(String.format("Сервис пользователей наделяет пользователя: %s правами администратора", login));
+        AppUser appUser = getByLogin(login);
+        log.info(String.format("Добавляем пользователю: %s права администратора", login));
         appUser.getRoles().add(Role.ADMIN);
         return appUserRepo.save(appUser);
     }
 
     @Transactional
     public AppUser save(AppUser appUser) {
-        log.info("Сервис пользователей сохраняет пользователя: {}", appUser.getLogin());
+        log.info("Сохраняем пользователя: {}", appUser.getLogin());
         return appUserRepo.save(appUser);
     }
 }

@@ -17,15 +17,17 @@ import java.util.Date;
 public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
-    @Value("${jwt.suitability.minutes}")
+    @Value("${jwt.suitability.seconds}")
     private String suitability;
+    @Value("${admin.verify.secret}")
+    private String adminSecret;
 
     public JwtService() {
     }
 
     public String generateToken(String username) {
-        Date expirationDate = Date.from(ZonedDateTime.now().plusMinutes(Integer.parseInt(suitability)).toInstant());
-        log.info("Генерация токена для пользователя: {}", username);
+        Date expirationDate = Date.from(ZonedDateTime.now().plusSeconds(Integer.parseInt(suitability)).toInstant());
+        log.info("Генерируем токена для пользователя: {}", username);
         return JWT.create()
                 .withSubject("User details")
                 .withClaim("username", username)
@@ -42,12 +44,12 @@ public class JwtService {
                 .build();
 
         DecodedJWT jwt = verifier.verify(token);
-        log.info("Токен верифицирован для пользователя: {}", jwt.getClaim("username").asString());
+        log.info("Токен пользователя: {} верифицирован", jwt.getClaim("username").asString());
         return jwt.getClaim("username").asString();
     }
 
     public Boolean verifyAdmin(String secret){
         log.info("Верификация администратора...");
-        return secret.equals(this.secret);
+        return secret.equals(this.adminSecret);
     }
 }

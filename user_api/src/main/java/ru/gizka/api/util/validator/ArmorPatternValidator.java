@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import ru.gizka.api.dto.item.armor.RequestArmorPatternDto;
-import ru.gizka.api.service.item.armor.ArmorPatternService;
+import ru.gizka.api.dto.old.item.armor.RequestArmorPatternDto;
+import ru.gizka.api.service.old.item.armor.ArmorPatternService;
 
 @Component
 @Slf4j

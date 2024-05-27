@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import ru.gizka.api.dto.hero.ResponseHeroDto;
-import ru.gizka.api.facade.item.armor.ArmorObjectFacade;
+import ru.gizka.api.dto.old.hero.ResponseHeroDto;
+import ru.gizka.api.facade.old.item.armor.ArmorObjectFacade;
 import ru.gizka.api.model.appUser.AuthUser;
 
 @RestController

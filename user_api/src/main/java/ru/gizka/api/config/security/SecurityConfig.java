@@ -48,7 +48,7 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return login -> {
-            log.debug("Получение учетной записи: {}", login);
+            log.debug("Ищем пользователя: {}", login);
             Optional<AppUser> optionalUser = appUserService.getByLoginOptional(login);
             return new AuthUser(optionalUser.orElseThrow(
                     () -> new BadCredentialsException(String.format("Неверные учетные данные: %s", login))
@@ -58,7 +58,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        log.debug("Загрузка модуля шифрования...");
+        log.debug("Модуль шифрования...");
         return PASSWORD_ENCODER;
     }
 
@@ -69,13 +69,13 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authManager(AuthenticationConfiguration authConfig) throws Exception {
-        log.debug("Загрузка менеджера аутентификации...");
+        log.debug("Менеджер аутентификации...");
         return authConfig.getAuthenticationManager();
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        log.debug("Загрузка фильтров аутентификации...");
+        log.debug("Фильтры аутентификации...");
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
                                 .requestMatchers("/api/admin/**").hasRole(Role.ADMIN.name())
@@ -92,7 +92,6 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable);
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-        log.debug("Загрузка фильтров аутентификации завершена успешно.");
         return http.build();
     }
 }

@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.gizka.api.dto.item.ResponseItemDto;
-import ru.gizka.api.facade.item.ItemPatternFacade;
+import ru.gizka.api.dto.old.item.ResponseItemDto;
+import ru.gizka.api.facade.old.item.ItemPatternFacade;
 
 @RestController
 @RequestMapping("/api/item")
